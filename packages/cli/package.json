@@ -1,0 +1,35 @@
+{
+  "private": true,
+  "name": "lre-up-cli",
+  "version": "0.1.0",
+  "description": "LRE Unified Platform Command-Line Application",
+  "license": "MIT",
+  "author": {
+    "name": "Doug Kulak",
+    "email": "dougkulak@gmail.com"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lre-water/up.git",
+    "directory": "packages/cli"
+  },
+  "bin": "bin/index.js",
+  "engines": {
+    "node": ">=14"
+  },
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch"
+  },
+  "files": [
+    "index.js"
+  ],
+  "dependencies": {
+    "chalk": "^4.1.2",
+    "commander": "^8.1.0",
+    "inquirer": "^8.1.2",
+    "readline": "^1.3.0",
+    "semver": "^7.3.5",
+    "tslib": "^2.3.1"
+  }
+}

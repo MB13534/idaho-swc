@@ -1,0 +1,67 @@
+{
+  "private": true,
+  "version": "0.1.0",
+  "name": "lre-up",
+  "description": "LRE Water Unified Platform Monorepo",
+  "license": "MIT",
+  "author": {
+    "name": "Doug Kulak",
+    "email": "dougkulak@gmail.com"
+  },
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "start": "run-p start:backend start:frontend",
+    "start:frontend": "cd packages/frontend && npm start",
+    "start:backend": "cd packages/backend && npm run dev",
+    "bootstrap": "lerna bootstrap",
+    "commit": "cz",
+    "lint": "eslint --cache \"**/*.{js,jsx,ts,tsx}\"",
+    "lint:fix": "yarn lint --fix",
+    "cli": "lrewater-up-poc-cli",
+    "prepare": "husky install",
+    "add:model": "cd packages/backend && npm run add:model",
+    "add:page": "cd packages/backend && npm run add:page",
+    "lint-staged": "lint-staged --allow-empty"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^13.1.0",
+    "@commitlint/config-conventional": "^13.1.0",
+    "@typescript-eslint/eslint-plugin": "^4.29.3",
+    "@typescript-eslint/parser": "^4.29.3",
+    "commitizen": "^4.2.4",
+    "cz-conventional-changelog": "^3.3.0",
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb": "^18.2.1",
+    "eslint-config-prettier": "^8.3.0",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-jsx-a11y": "^6.4.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-prettier": "^3.4.1",
+    "eslint-plugin-react": "^7.24.0",
+    "eslint-plugin-react-hooks": "^4.2.0",
+    "husky": "^7.0.0",
+    "lerna": "^4.0.0",
+    "lint-staged": "^10.5.4",
+    "npm-run-all": "^4.1.5",
+    "prettier": "^2.3.2",
+    "typescript": "^4.3.5"
+  },
+  "config": {
+    "commitizen": {
+      "path": "cz-conventional-changelog"
+    }
+  },
+  "lint-staged": {
+    "*.{js,jsx,ts,tsx}": [
+      "eslint --fix"
+    ],
+    "*.{md,mdx}": [
+      "prettier --write"
+    ]
+  },
+  "dependencies": {
+    "eslint-config-react-app": "^6.0.0"
+  }
+}

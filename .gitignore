@@ -1,0 +1,24 @@
+# IDEs
+.DS_Store
+.vscode
+.idea
+*.iml
+*.code-workspace
+
+# Node
+node_modules
+.env
+
+# Cache
+.eslintcache
+
+# Testing
+/coverage
+
+# Production
+/build
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*

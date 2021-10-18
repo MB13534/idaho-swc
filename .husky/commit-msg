@@ -1,0 +1,9 @@
+#!/bin/bash
+. "$(dirname "$0")/_/husky.sh"
+
+if [[ $(grep MINGW64 /proc/version) ]]; then
+  echo "Bash is running on WSL, skipping..."
+  exit 0
+else
+  npx --no-install commitlint --edit "$1"
+fi

@@ -1,0 +1,36 @@
+const express = require("express");
+const { checkAccessToken, checkPermission } = require("../middleware/auth.js");
+
+// Create Express Router
+const router = express.Router();
+
+// Attach middleware to ensure that user is authenticated & has permissions
+router.use(
+  checkAccessToken(process.env.AUTH0_DOMAIN, process.env.AUTH0_AUDIENCE)
+);
+
+// GET /api/user/password-change
+// Route for initiating a password reset
+router.get("/password-change", (req, res, next) => {
+  const ManagementClient = require("auth0").ManagementClient;
+  const auth0 = new ManagementClient({
+    domain: process.env.AUTH0_DOMAIN,
+    clientId: process.env.AUTH0_CLIENT_ID,
+    clientSecret: process.env.AUTH0_CLIENT_SECRET,
+    scope: "create:user_tickets",
+  });
+
+  auth0.createPasswordChangeTicket(
+    {
+      user_id: req.user.sub,
+    },
+    function (err) {
+      if (err) {
+        next(err);
+      }
+      res.sendStatus(200);
+    }
+  );
+});
+
+module.exports = router;
