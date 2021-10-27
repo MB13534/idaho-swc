@@ -76,6 +76,7 @@
   },
   "devDependencies": {
     "genversion": "^3.0.1",
+    "netlify-plugin-cache": "^1.0.3",
     "prop-types": "15.7.2",
     "redux-devtools-extension": "2.13.9"
   }
