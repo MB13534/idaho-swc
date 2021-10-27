@@ -19,7 +19,7 @@
     "commit": "cz",
     "lint": "eslint --cache \"**/*.{js,jsx,ts,tsx}\"",
     "lint:fix": "yarn lint --fix",
-    "cli": "lrewater-up-poc-cli",
+    "cli": "lre-up-cli",
     "prepare": "husky install",
     "add:model": "cd packages/backend && npm run add:model",
     "add:page": "cd packages/backend && npm run add:page",
