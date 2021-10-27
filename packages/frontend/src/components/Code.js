@@ -10,9 +10,9 @@ const Base = styled(SyntaxHighlighter)`
   background-color: ${(props) => props.theme.sidebar.background} !important;
 `;
 
-const Code = ({ children }) => {
+const Code = ({ children, language = "javascript" }) => {
   return (
-    <Base language="javascript" style={darcula}>
+    <Base language={language} style={darcula}>
       {children}
     </Base>
   );
