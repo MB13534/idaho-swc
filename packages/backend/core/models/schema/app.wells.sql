@@ -24,4 +24,4 @@ create table app.wells
 );
 
 create unique index if not exists wells_id_cindex
-  on app.wells2 (id);
+  on app.wells (id);
