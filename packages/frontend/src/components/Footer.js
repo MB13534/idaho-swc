@@ -78,7 +78,7 @@ function Footer() {
                   <ListItem
                     button={true}
                     component="a"
-                    href="/documentation/welcome"
+                    href="/documentation/introduction"
                   >
                     <ListItemText primary="Documentation" />
                   </ListItem>

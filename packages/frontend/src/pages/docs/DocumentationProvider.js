@@ -17,9 +17,10 @@ import { spacing } from "@material-ui/system";
 import { scrollWindowToTop } from "../../utils";
 
 const pages = [
-  { title: "Welcome", href: ROUTES.PAGE_DOCS_WELCOME },
+  { title: "Introduction", href: ROUTES.PAGE_DOCS_INTRODUCTION },
   { title: "Getting Started", href: ROUTES.PAGE_DOCS_GETTING_STARTED },
   { title: "CRUD", href: ROUTES.PAGE_DOCS_CRUD },
+  { title: "Deploy", href: ROUTES.PAGE_DOCS_DEPLOY },
   { title: "Support", href: ROUTES.PAGE_DOCS_SUPPORT },
   { title: "Changelog", href: ROUTES.PAGE_CHANGELOG },
 ];
@@ -94,7 +95,7 @@ export const DocumentationProvider = ({ children }) => {
             <Link component={NavLink} exact to="/dashboard">
               Dashboard
             </Link>
-            <Link component={NavLink} exact to="/documentation/welcome">
+            <Link component={NavLink} exact to="/documentation/introduction">
               Documentation
             </Link>
             <Typography>{page.title}</Typography>

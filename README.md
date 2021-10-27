@@ -13,63 +13,55 @@
 
 ## Introduction
 
-This project is the home LRE Water's Unified Platform, a water-centric starter-kit for modern web applications. Here are some of the highlights:
-
-- Mobile First UI
-- Auth0 Integration
-- Public, Private, and Role/Permission-based Routing
-- Theming
-- "Dashboard" Layout
-- CRUD Example(s)
-- Chart Example(s)
-- Common UI Component Example(s)
+LRE Water's Unified Platform (UP) is a modern CMS and Dashboard Starter
+Kit built with React, Node.js, and Material UI. UP provides a standard
+and robust starting point for any project requiring modern content
+management tools with a responsive, mobile-first design.
 
 ## Installation
 
 It is recommended that you fork the project on GitHub so that you can have a repository to commit your project-specific changes while still being able to pull in any future unified platform updates or push any code from your project that would also be a good contribution to the platform.
 
-Before forking, ensure you are logged into GitHub with the LRE Water GitHub account and not your personal account.
+To fork, visit https://github.com/lre-water/up and click the **Fork** button in the upper-right corner.
 
-To fork, visit https://github.com/lre-water/up and click the **Fork** button in the upper-right corner. Please prefix your for names with `up-` so we can easily identify the projects built on the Unified Platform.
-
-After forking, use the following commands to clone your fork and install the starter kit.
+After forking, use the following commands to clone your fork and install the starter kit. Be sure to replace *yourusername*, *yourforkname*, and *yourappname* with the appropriate values.
 
 ```sh
-git clone https://github.com/lre-water/up-yourforkname <app-name> && cd app-name
+git clone https://github.com/yourusername/yourforkname yourappname
 ```
 
 ```sh
-yarn
+cd yourappname && yarn install
 ```
 
-At this point, you should be able to start the development server and begin work on your project.
+You can now start the development server and begin work on your project!
 
-To start the development server:
-
-```shell
+```sh
 yarn start:frontend && yarn start:backend
 ```
 
+To learn more, check out our [documentation](https://lre-up.com/documentation/introduction) and be sure to leave a message in Slack (#lre-unified-platform) if you have any questions.
+
 ## Usage
 
-```sh
-$ yarn start           > Starts the development server
+```text
+$ yarn start           > Start the development server
                          NOTE: We recommend starting frontend and backend
                          separately for stability and ease of debugging
 
-$ yarn start:frontend  > Starts the development frontend server
+$ yarn start:frontend  > Start the development frontend server
 
-$ yarn start:backend   > Starts the development backend server
+$ yarn start:backend   > Start the development backend server
 
-$ yarn cli             > Starts the development command-line tools
+$ yarn cli             > Start the development command-line wizard
 
-$ yarn lint            > Lints the code
+$ yarn lint            > Lint the code
 
-$ yarn format          > Formats the code
+$ yarn format          > Format the code
 
-$ yarn build           > Builds and bundles the project
+$ yarn build           > Build and bundle the project
 
-$ yarn commit          > Commits the code using a wizard
+$ yarn commit          > Commit the code using a wizard
 ```
 
 ## Links

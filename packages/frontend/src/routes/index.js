@@ -23,7 +23,7 @@ import Blank from "../pages/pages/Blank";
 import Changelog from "../pages/docs/Changelog";
 import Landing from "../pages/presentation/Landing";
 import ProtectedPage from "../pages/protected/ProtectedPage";
-import Welcome from "../pages/docs/Welcome";
+import Introduction from "../pages/docs/Introduction";
 import Support from "../pages/docs/Support";
 import { All, EXAMPLE_COMPONENTS } from "../pages/components/All";
 import { DocumentationProvider } from "../pages/docs/DocumentationProvider";
@@ -33,6 +33,7 @@ import GettingStarted from "../pages/docs/GettingStarted";
 import Default from "../pages/dashboards/Default";
 import { CrudProvider } from "../CrudProvider";
 import CRUD from "../pages/docs/CRUD";
+import Deploy from "../pages/docs/Deploy";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -176,9 +177,9 @@ const documentationRoutes = {
   provider: DocumentationProvider,
   children: [
     {
-      path: ROUTES.PAGE_DOCS_WELCOME,
-      name: "Welcome",
-      component: Welcome,
+      path: ROUTES.PAGE_DOCS_INTRODUCTION,
+      name: "Introduction",
+      component: Introduction,
       guard: AdminGuard,
     },
     {
@@ -191,6 +192,12 @@ const documentationRoutes = {
       path: ROUTES.PAGE_DOCS_CRUD,
       name: "CRUD",
       component: CRUD,
+      guard: AdminGuard,
+    },
+    {
+      path: ROUTES.PAGE_DOCS_DEPLOY,
+      name: "Deploy",
+      component: Deploy,
       guard: AdminGuard,
     },
     {

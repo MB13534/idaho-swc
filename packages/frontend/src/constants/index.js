@@ -36,9 +36,10 @@ export const ROUTES = {
   NOTFOUND: "/404",
   PAGE_BLANK: "/coming-soon",
   PAGE_DASHBOARD: "/dashboard",
-  PAGE_DOCS_WELCOME: "/documentation/welcome",
+  PAGE_DOCS_INTRODUCTION: "/documentation/introduction",
   PAGE_DOCS_GETTING_STARTED: "/documentation/getting-started",
   PAGE_DOCS_CRUD: "/documentation/crud",
+  PAGE_DOCS_DEPLOY: "/documentation/deploy",
   PAGE_DOCS_STATE_MANAGEMENT: "/documentation/state-management",
   PAGE_DOCS_SUPPORT: "/documentation/support",
 };

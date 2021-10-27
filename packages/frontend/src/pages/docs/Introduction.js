@@ -11,21 +11,22 @@ import { useDocumentation } from "./DocumentationProvider";
 
 const Typography = styled(MuiTypography)(spacing);
 
-function Introduction() {
+function Intro() {
   return (
     <Box mb={10}>
       <Typography variant="h3" gutterBottom>
         Introduction
       </Typography>
       <Typography variant="subtitle1" gutterBottom my={4}>
-        LRE Water Unified Platform is a React based CMS starter kit themed with
-        Material UI. The intention is to provide a standard and robust starting
-        point for any project requiring modern content management tools.
+        LRE Water's Unified Platform (UP) is a modern CMS and Dashboard Starter
+        Kit built with React, Node.js, and Material UI. UP provides a standard
+        and robust starting point for any project requiring modern content
+        management tools with a responsive, mobile-first design.
       </Typography>
       <Typography variant="subtitle1" gutterBottom my={4}>
-        This documentation includes information to understand how the starter
-        kit is organized, how to compile and extend it to fit your needs, and
-        how to make changes to the source code.
+        This documentation includes information to understand how the Unified
+        Platform is organized, how to install and extend it to fit your needs,
+        and how to contribute any valuable additions back to the core.
       </Typography>
     </Box>
   );
@@ -52,17 +53,17 @@ function TableOfContents({ pages }) {
   );
 }
 
-function Welcome() {
+function Introduction() {
   const documentation = useDocumentation();
 
   return (
     <>
-      <Helmet title="Welcome" />
+      <Helmet title="Introduction" />
 
-      <Introduction />
+      <Intro />
       <TableOfContents pages={documentation.pages} />
     </>
   );
 }
 
-export default Welcome;
+export default Introduction;
