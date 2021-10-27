@@ -4,7 +4,7 @@
 
 [build]
   command = "yarn build"
-  publish = "packages/frontend/build"
+  publish = "build"
 
 [build.environment]
   NETLIFY_USE_YARN = "true"
