@@ -229,9 +229,13 @@ const initOpenRoutes = (location) => {
   let _routes = {};
 
   routes.forEach((route, index) => {
-    const isActive = pathName.indexOf(route.path) === 0;
     const isOpen = route.open;
     const isHome = route.containsHome && pathName === "/";
+
+    let isActive = pathName.indexOf(route.path) === 0;
+    const childPaths =
+      (route.children && route.children.map((x) => x.path)) || [];
+    if (childPaths.includes(pathName)) isActive = true;
 
     _routes = Object.assign({}, _routes, {
       [index]: isActive || isOpen || isHome,
