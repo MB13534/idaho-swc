@@ -3,7 +3,7 @@ import { green } from "@material-ui/core/colors";
 import { THEMES } from "../constants";
 import { darken, lighten } from "@material-ui/core";
 
-const secondarySource = "#84c0d1";
+const secondarySource = "#b50128";
 
 export const customSecondary = {
   50: darken(secondarySource, 0.25),
@@ -18,7 +18,7 @@ export const customSecondary = {
   900: lighten(secondarySource, 0.2),
 };
 
-const highlightSource = "#008FBA";
+const highlightSource = "#01236a";
 
 export const customHighlight = {
   50: darken(highlightSource, 0.25),

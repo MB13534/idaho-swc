@@ -336,7 +336,7 @@ const Sidebar = ({
           alt="LRE Icon"
         />{" "}
         <Box ml={1} style={{ display: "flex" }}>
-          Unified Platform{" "}
+          Clearwater{" "}
         </Box>
       </Brand>
       <Scrollbar
