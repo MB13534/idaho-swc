@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT, UUID, DATE, NUMBER, BOOLEAN} = DataTypes;
-  const ListWells = sequelize.define(
-    'list_wells',
+  const {INTEGER, TEXT, UUID, NUMBER, BOOLEAN, DATE} = DataTypes;
+  const DmWells = sequelize.define(
+    'dm_wells',
     {
       well_ndx: {
         type: INTEGER,
@@ -10,6 +10,9 @@ module.exports = (sequelize, DataTypes) => {
         type: TEXT,
       },
       state_well_number: {
+        type: TEXT,
+      },
+      well_name: {
         type: TEXT,
       },
       longitude_dd: {
@@ -21,17 +24,48 @@ module.exports = (sequelize, DataTypes) => {
       elevation_ftabmsl: {
         type: NUMBER,
       },
-      halff_last_edited_by: {
-        type: TEXT,
-      },
-      halff_last_edited_date: {
-        type: DATE,
-      },
       well_notes: {
         type: TEXT,
       },
-      removed: {
+      aquifer_ndx: {
+        type: INTEGER,
+      },
+      driller_ndx: {
+        type: INTEGER,
+      },
+      date_drilled: {
+        type: DATE,
+      },
+      drillers_log: {
         type: BOOLEAN,
+      },
+      well_depth_ft: {
+        type: NUMBER,
+      },
+      screen_top_depth_ft: {
+        type: NUMBER,
+      },
+      screen_bottom_depth_ft: {
+        type: NUMBER,
+      },
+      construction_notes: {
+        type: TEXT,
+      },
+      well_status_ndx: {
+        type: INTEGER,
+      },
+      exempt: {
+        type: BOOLEAN,
+      },
+      primary_well_use_ndx: {
+        type: INTEGER,
+      },
+      secondary_well_use_ndx: {
+        type: INTEGER,
+      },
+      id: {
+        type: UUID,
+        primaryKey: true,
       },
       parent_id: {
         type: UUID,
@@ -42,27 +76,14 @@ module.exports = (sequelize, DataTypes) => {
       status_id: {
         type: INTEGER,
       },
-      created_at: {
-        type: DATE,
-      },
       created_by: {
         type: UUID,
-      },
-      updated_at: {
-        type: DATE,
       },
       updated_by: {
         type: UUID,
       },
-      deleted_at: {
-        type: DATE,
-      },
       deleted_by: {
         type: UUID,
-      },
-      id: {
-        type: UUID,
-        primaryKey: true,
       },
     },
     {
@@ -74,22 +95,22 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  ListWells.associate = function (models) {
+  DmWells.associate = function (models) {
     /* Core Associations */
-    ListWells.belongsTo(models.content_node_statuses, {
+    DmWells.belongsTo(models.content_node_statuses, {
       foreignKey: 'status_id',
       as: 'content_node_statuses',
     });
-    ListWells.hasMany(models.list_wells, {
+    DmWells.hasMany(models.dm_wells, {
       foreignKey: 'parent_id',
       as: 'versions',
     });
-    ListWells.belongsTo(models.list_wells, {
+    DmWells.belongsTo(models.dm_wells, {
       foreignKey: 'parent_id',
       as: 'parent',
     });
     /* App Associations */
   };
 
-  return ListWells;
+  return DmWells;
 };

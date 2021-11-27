@@ -1,10 +1,6 @@
 const express = require('express');
 const {checkAccessToken} = require('../../core/middleware/auth.js');
-const {
-  well_types: model,
-  content_node_statuses,
-  wells,
-} = require('../../core/models');
+const {dm_wells: model, content_node_statuses} = require('../../core/models');
 const {buildAppCrudRoutes} = require('../../core/routes/crud/handlers');
 
 const router = express.Router();
@@ -28,11 +24,6 @@ const options = {
       {
         model: model,
         as: 'parent',
-        required: false,
-      },
-      {
-        model: wells,
-        as: 'wells',
         required: false,
       },
     ],

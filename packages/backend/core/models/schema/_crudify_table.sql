@@ -1,39 +1,39 @@
-alter table client_clearwater.data_well_productions
+alter table client_clearwater.dm_wells
   add column id uuid default uuid_generate_v4() not null
-    constraint data_well_productions_pkey
+    constraint dm_wells_pkey
       primary key;
 -- SPLITTER: DO NOT REMOVE --
-alter table client_clearwater.data_well_productions
+alter table client_clearwater.dm_wells
   add column parent_id uuid;
 -- SPLITTER: DO NOT REMOVE --
-alter table client_clearwater.data_well_productions
+alter table client_clearwater.dm_wells
   add column former_parent_id uuid;
 -- SPLITTER: DO NOT REMOVE --
-alter table client_clearwater.data_well_productions
+alter table client_clearwater.dm_wells
   add column status_id integer default 1
-    constraint data_well_productions_content_node_statuses_id_fk
+    constraint dm_wells_content_node_statuses_id_fk
       references core.content_node_statuses;
 -- SPLITTER: DO NOT REMOVE --
-alter table client_clearwater.data_well_productions
+alter table client_clearwater.dm_wells
   add column created_at timestamp default CURRENT_TIMESTAMP;
 -- SPLITTER: DO NOT REMOVE --
-alter table client_clearwater.data_well_productions
+alter table client_clearwater.dm_wells
   add column created_by uuid;
 -- SPLITTER: DO NOT REMOVE --
-alter table client_clearwater.data_well_productions
+alter table client_clearwater.dm_wells
   add column updated_at timestamp;
 -- SPLITTER: DO NOT REMOVE --
-alter table client_clearwater.data_well_productions
+alter table client_clearwater.dm_wells
   add column updated_by uuid;
 -- SPLITTER: DO NOT REMOVE --
-alter table client_clearwater.data_well_productions
+alter table client_clearwater.dm_wells
   add column deleted_at timestamp;
 -- SPLITTER: DO NOT REMOVE --
-alter table client_clearwater.data_well_productions
+alter table client_clearwater.dm_wells
   add column deleted_by uuid;
 -- SPLITTER: DO NOT REMOVE --
-alter table client_clearwater.data_well_productions
-  owner to web_admin;
+-- alter table client_clearwater.dm_wells
+--   owner to web_admin;
 -- SPLITTER: DO NOT REMOVE --
-create unique index if not exists data_well_productions_id_cindex
-  on client_clearwater.data_well_productions (id);
+create unique index if not exists dm_wells_id_cindex
+  on client_clearwater.dm_wells (id);

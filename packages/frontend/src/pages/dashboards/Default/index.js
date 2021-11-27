@@ -20,6 +20,8 @@ import DoughnutChart from "./DoughnutChart";
 import Stats from "./Stats";
 import Table from "./Table";
 import { useAuth0 } from "@auth0/auth0-react";
+import Panel from "../../../components/panels/Panel";
+import Map from "../../../components/map/Map";
 
 const Divider = styled(MuiDivider)(spacing);
 
@@ -43,6 +45,16 @@ function Default() {
 
         <Grid item>
           <Actions />
+        </Grid>
+      </Grid>
+
+      <Divider my={6} />
+
+      <Grid container spacing={6}>
+        <Grid item xs={12}>
+          <Panel minHeight="calc(100vh - 375px)">
+            <Map />
+          </Panel>
         </Grid>
       </Grid>
 
