@@ -7,28 +7,69 @@ import {
   Grid,
   Divider as MuiDivider,
   Typography as MuiTypography,
+  Accordion,
+  AccordionDetails,
 } from "@material-ui/core";
 
 import { spacing } from "@material-ui/system";
 
-import { green, red } from "@material-ui/core/colors";
-
 import Actions from "./Actions";
-import BarChart from "./BarChart";
-import LineChart from "./LineChart";
-import DoughnutChart from "./DoughnutChart";
-import Stats from "./Stats";
-import Table from "./Table";
+
 import { useAuth0 } from "@auth0/auth0-react";
 import Panel from "../../../components/panels/Panel";
 import Map from "../../../components/map/Map";
+import { useQuery } from "react-query";
+import { findRawRecords } from "../../../services/crudService";
+import useService from "../../../hooks/useService";
+import { useApp } from "../../../AppProvider";
+import AccordionSummary from "@material-ui/core/AccordionSummary";
+import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import Table from "../../../components/Table";
 
 const Divider = styled(MuiDivider)(spacing);
 
 const Typography = styled(MuiTypography)(spacing);
 
+const TableWrapper = styled.div`
+  overflow-y: auto;
+  max-width: calc(100vw - ${(props) => props.theme.spacing(12)}px);
+  height: calc(100% - 84px);
+  width: 100%;
+`;
+
+const MapContainer = styled.div`
+  height: calc(400px);
+  width: 100%;
+`;
+
 function Default() {
   const { user } = useAuth0();
+
+  const service = useService({ toast: false });
+  const { currentUser } = useApp();
+
+  const { data, isLoading, error } = useQuery(
+    ["UiListWells", currentUser],
+    async () => {
+      try {
+        const response = await service([findRawRecords, ["UiListWells"]]);
+        // const data = filterDataByUser(response, currentUser);
+        return response.filter((location) => location.location_geometry);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    { keepPreviousData: true }
+  );
+
+  const tableColumns = [
+    { title: "CUWCD Well Name", field: "cuwcd_well_number" },
+    { title: "State Well Name", field: "state_well_number" },
+    { title: "Source Aquifer", field: "source_aquifer" },
+    { title: "Primary Well Use", field: "primary_use" },
+    { title: "Current Owner", field: "well_owner" },
+    { title: "Well Status", field: "well_status" },
+  ];
 
   return (
     <React.Fragment>
@@ -52,67 +93,52 @@ function Default() {
 
       <Grid container spacing={6}>
         <Grid item xs={12}>
-          <Panel minHeight="calc(100vh - 375px)">
-            <Map />
-          </Panel>
-        </Grid>
-      </Grid>
-
-      <Divider my={6} />
-
-      <Grid container spacing={6}>
-        <Grid item xs={12} sm={12} md={6} lg={3} xl>
-          <Stats
-            title="Readings Today"
-            amount="2.532"
-            chip="Today"
-            percentageText="+26%"
-            percentagecolor={green[500]}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={3} xl>
-          <Stats
-            title="Water Pressure"
-            amount="170.212"
-            chip="Annual"
-            percentageText="-14%"
-            percentagecolor={red[500]}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={3} xl>
-          <Stats
-            title="Total Costs"
-            amount="$ 24.300"
-            chip="Monthly"
-            percentageText="+18%"
-            percentagecolor={green[500]}
-          />
-        </Grid>
-        <Grid item xs={12} sm={12} md={6} lg={3} xl>
-          <Stats
-            title="Compliant Wells"
-            amount="45"
-            chip="Yearly"
-            percentageText="-9%"
-            percentagecolor={red[500]}
-          />
+          <Accordion defaultExpanded>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="map"
+              id="map"
+            >
+              <Typography variant="h4" ml={2}>
+                Map
+              </Typography>
+            </AccordionSummary>
+            <AccordionDetails>
+              <MapContainer>
+                <Map data={data} isLoading={isLoading} error={error} />
+              </MapContainer>
+            </AccordionDetails>
+          </Accordion>
         </Grid>
       </Grid>
 
       <Grid container spacing={6}>
-        <Grid item xs={12} lg={8}>
-          <LineChart />
-        </Grid>
-        <Grid item xs={12} lg={4}>
-          <DoughnutChart />
-        </Grid>
-      </Grid>
-      <Grid container spacing={6}>
-        <Grid item xs={12} lg={4}>
-          <BarChart />
-        </Grid>
-        <Grid item xs={12} lg={8}>
-          <Table />
+        <Grid item xs={12}>
+          <Accordion defaultExpanded>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="table-content"
+              id="table-header"
+            >
+              <Typography variant="h4" ml={2}>
+                Search Wells
+              </Typography>
+            </AccordionSummary>
+            <Panel>
+              <AccordionDetails>
+                <TableWrapper>
+                  <Table
+                    pageSize={5}
+                    isLoading={isLoading}
+                    label="Streamflow Timeseries Table"
+                    columns={tableColumns}
+                    data={data}
+                    height="235px"
+                  />
+                </TableWrapper>
+              </AccordionDetails>
+            </Panel>
+          </Accordion>
         </Grid>
       </Grid>
     </React.Fragment>

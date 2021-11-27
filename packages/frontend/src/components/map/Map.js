@@ -1,13 +1,8 @@
 import React, { useEffect, useRef, useState } from "react";
-import useService from "../../hooks/useService";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 import styled from "styled-components/macro";
-import { useQuery } from "react-query";
-import { findRawRecords } from "../../services/crudService";
 import ResetZoomControl from "./ResetZoomControl";
 import { STARTING_LOCATION } from "../../constants";
-import { useApp } from "../../AppProvider";
-// import { filterDataByUser } from "../../../utils";
 import ToggleBasemapControl from "./ToggleBasemapControl";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
@@ -33,7 +28,7 @@ const Coordinates = styled.pre`
   display: none;
 `;
 
-const Map = () => {
+const Map = ({ data, isLoading, error }) => {
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
   const [map, setMap] = useState();
   const mapContainer = useRef(null); // create a reference to the map container
@@ -48,23 +43,6 @@ const Map = () => {
     coordinates.current.style.display = "block";
     coordinates.current.innerHTML = `Longitude: ${e.features[0].geometry.coordinates[0]}<br />Latitude: ${e.features[0].geometry.coordinates[1]}`;
   }
-  const service = useService({ toast: false });
-
-  const { currentUser } = useApp();
-
-  const { data, isLoading, error } = useQuery(
-    ["UiListWells", currentUser],
-    async () => {
-      try {
-        const response = await service([findRawRecords, ["UiListWells"]]);
-        // const data = filterDataByUser(response, currentUser);
-        return response.filter((location) => location.location_geometry);
-      } catch (err) {
-        console.error(err);
-      }
-    },
-    { keepPreviousData: true }
-  );
 
   useEffect(() => {
     const map = new mapboxgl.Map({
@@ -189,9 +167,11 @@ const Map = () => {
   if (error) return "An error has occurred: " + error.message;
 
   return (
-    <MapContainer ref={mapContainer}>
-      <Coordinates ref={coordinates} />
-    </MapContainer>
+    <>
+      <MapContainer ref={mapContainer}>
+        <Coordinates ref={coordinates} />
+      </MapContainer>
+    </>
   );
 };
 
