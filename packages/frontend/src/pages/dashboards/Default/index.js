@@ -351,7 +351,7 @@ function Default() {
                     height="195px"
                     actions={[
                       {
-                        icon: "timeline",
+                        icon: "bar_chart",
                         tooltip: "Render Time Series Graph",
                         onClick: (event, rowData) =>
                           setCurrentSelectedPoint(rowData.well_ndx),

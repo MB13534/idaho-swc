@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import { withTheme } from "styled-components/macro";
 
-import { Chart, Line } from "react-chartjs-2";
+import { Chart, Bar } from "react-chartjs-2";
 import "chartjs-adapter-moment";
 import zoomPlugin from "chartjs-plugin-zoom";
 import Loader from "../Loader";
@@ -64,14 +64,14 @@ const TimeseriesLineChart = forwardRef(
             ctx.moveTo(x, yAxis.top);
             ctx.lineTo(x, yAxis.bottom);
             ctx.lineWidth = 9;
-            ctx.strokeStyle = "rgba(0, 0, 255, 0.2)";
+            ctx.strokeStyle = "rgba(181, 1, 40, 0.2)";
             ctx.stroke();
 
             ctx.beginPath();
             ctx.moveTo(x, yAxis.top);
             ctx.lineTo(x, yAxis.bottom);
             ctx.lineWidth = 1;
-            ctx.strokeStyle = "rgba(0, 0, 255, 0.4)";
+            ctx.strokeStyle = "rgba(181, 1, 40, 0.4)";
             ctx.stroke();
             ctx.restore();
           }
@@ -200,12 +200,12 @@ const TimeseriesLineChart = forwardRef(
         ) : (
           <>
             {data?.datasets?.length > 0 ? (
-              <Line
+              <Bar
                 plugins={plugins}
                 ref={ref}
                 data={data}
                 options={options}
-                type="line"
+                type="bar"
               />
             ) : (
               <Typography>No Data Available</Typography>
