@@ -28,7 +28,13 @@ const Coordinates = styled.pre`
   display: none;
 `;
 
-const Map = ({ data, isLoading, error, setCurrentSelectedPoint }) => {
+const Map = ({
+  data,
+  isLoading,
+  error,
+  setCurrentSelectedPoint,
+  radioValue,
+}) => {
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
   const [map, setMap] = useState();
   const mapContainer = useRef(null); // create a reference to the map container
@@ -107,6 +113,9 @@ const Map = ({ data, isLoading, error, setCurrentSelectedPoint }) => {
                   well_owner: location.well_owner,
                   well_status: location.well_status,
                   location_geometry: location.location_geometry,
+                  has_production: location.has_production,
+                  has_waterlevels: location.has_waterlevels,
+                  has_wqdata: location.has_wqdata,
                 },
                 geometry: {
                   type: location.location_geometry.type,
@@ -120,10 +129,13 @@ const Map = ({ data, isLoading, error, setCurrentSelectedPoint }) => {
         map.addLayer({
           id: "locations",
           type: "circle",
+
           source: "locations",
           paint: {
-            "circle-radius": 6,
-            "circle-color": "#B42222",
+            "circle-radius": 8,
+            "circle-color": "#74E0FF",
+            "circle-stroke-width": 1,
+            "circle-stroke-color": "black",
           },
         });
 
@@ -163,6 +175,16 @@ const Map = ({ data, isLoading, error, setCurrentSelectedPoint }) => {
       }
     }
   }, [isLoading, mapIsLoaded, map, data]); // eslint-disable-line
+
+  useEffect(() => {
+    if (map !== undefined) {
+      if (radioValue === "all") {
+        map.setFilter("locations", null);
+      } else {
+        map.setFilter("locations", ["get", radioValue]);
+      }
+    }
+  }, [data]); // eslint-disable-line
 
   if (error) return "An error has occurred: " + error.message;
 

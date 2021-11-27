@@ -12,6 +12,11 @@ import {
   lighten,
   CardHeader,
   Card,
+  FormControl,
+  FormLabel,
+  RadioGroup,
+  FormControlLabel,
+  Radio,
 } from "@material-ui/core";
 
 import { spacing } from "@material-ui/system";
@@ -54,26 +59,51 @@ const TimeseriesContainer = styled.div`
   width: 100%;
 `;
 
+const FiltersContainer = styled.div`
+  height: 100%;
+  width: 100%;
+`;
+
 function Default() {
   const saveRef = useRef(null);
   const { user, getAccessTokenSilently } = useAuth0();
 
+  const [radioValue, setRadioValue] = React.useState("all");
+
+  const handleRadioChange = (event) => {
+    setRadioValue(event.target.value);
+  };
+
   const service = useService({ toast: false });
   const { currentUser } = useApp();
 
+  const [filteredData, setFilteredData] = React.useState([]);
   const { data, isLoading, error } = useQuery(
     ["UiListWells", currentUser],
     async () => {
       try {
         const response = await service([findRawRecords, ["UiListWells"]]);
-        // const data = filterDataByUser(response, currentUser);
-        return response.filter((location) => location.location_geometry);
+        const filterData = response.filter(
+          (location) => location.location_geometry
+        );
+        setFilteredData(filterData);
+        return filterData;
       } catch (err) {
         console.error(err);
       }
     },
     { keepPreviousData: true }
   );
+
+  useEffect(() => {
+    if (data?.length > 0) {
+      if (radioValue === "all") {
+        setFilteredData(data);
+      } else {
+        setFilteredData(data.filter((item) => item[radioValue]));
+      }
+    }
+  }, [radioValue, data]);
 
   const [currentSelectedPoint, setCurrentSelectedPoint] = useState(null);
   const [currentSelectedTimeseriesData, setCurrentSelectedTimeseriesData] =
@@ -190,13 +220,69 @@ function Default() {
             <AccordionDetails>
               <MapContainer>
                 <Map
-                  data={data}
+                  data={filteredData}
                   isLoading={isLoading}
                   error={error}
                   setCurrentSelectedPoint={setCurrentSelectedPoint}
+                  radioValue={radioValue}
                 />
               </MapContainer>
             </AccordionDetails>
+          </Accordion>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={6}>
+        <Grid item xs={12}>
+          <Accordion defaultExpanded>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="date-filters"
+              id="date-filters"
+            >
+              <Typography variant="h4" ml={2}>
+                Data Filters
+              </Typography>
+            </AccordionSummary>
+            <Panel>
+              <AccordionDetails>
+                <FiltersContainer>
+                  <FormControl component="fieldset">
+                    <FormLabel component="legend">
+                      Do you want a label?
+                    </FormLabel>
+                    <RadioGroup
+                      row
+                      aria-label="data"
+                      name="data"
+                      value={radioValue}
+                      onChange={handleRadioChange}
+                    >
+                      <FormControlLabel
+                        value="all"
+                        control={<Radio />}
+                        label="All"
+                      />
+                      <FormControlLabel
+                        value="has_production"
+                        control={<Radio />}
+                        label="Production"
+                      />
+                      <FormControlLabel
+                        value="has_waterlevels"
+                        control={<Radio />}
+                        label="Water Levels"
+                      />
+                      <FormControlLabel
+                        value="has_wqdata"
+                        control={<Radio />}
+                        label="Water Quality"
+                      />
+                    </RadioGroup>
+                  </FormControl>
+                </FiltersContainer>
+              </AccordionDetails>
+            </Panel>
           </Accordion>
         </Grid>
       </Grid>
@@ -261,7 +347,7 @@ function Default() {
                     isLoading={isLoading}
                     label="Streamflow Timeseries Table"
                     columns={tableColumns}
-                    data={data}
+                    data={filteredData}
                     height="195px"
                     actions={[
                       {

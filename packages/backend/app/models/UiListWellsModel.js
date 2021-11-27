@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT, NUMBER, GEOMETRY} = DataTypes;
+  const {INTEGER, TEXT, NUMBER, GEOMETRY, BOOLEAN} = DataTypes;
   const UiListWells = sequelize.define(
     'ui_list_wells',
     {
@@ -33,6 +33,15 @@ module.exports = (sequelize, DataTypes) => {
       },
       location_geometry: {
         type: GEOMETRY,
+      },
+      has_production: {
+        type: BOOLEAN,
+      },
+      has_waterlevels: {
+        type: BOOLEAN,
+      },
+      has_wqdata: {
+        type: BOOLEAN,
       },
     },
     {
