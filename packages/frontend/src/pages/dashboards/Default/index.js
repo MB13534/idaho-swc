@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components/macro";
 
 import { Helmet } from "react-helmet-async";
@@ -9,6 +9,9 @@ import {
   Typography as MuiTypography,
   Accordion,
   AccordionDetails,
+  lighten,
+  CardHeader,
+  Card,
 } from "@material-ui/core";
 
 import { spacing } from "@material-ui/system";
@@ -25,6 +28,9 @@ import { useApp } from "../../../AppProvider";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Table from "../../../components/Table";
+import axios from "axios";
+import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart";
+import { lineColors } from "../../../utils";
 
 const Divider = styled(MuiDivider)(spacing);
 
@@ -42,8 +48,15 @@ const MapContainer = styled.div`
   width: 100%;
 `;
 
+const TimeseriesContainer = styled.div`
+  height: 600px;
+  overflow-y: auto;
+  width: 100%;
+`;
+
 function Default() {
-  const { user } = useAuth0();
+  const saveRef = useRef(null);
+  const { user, getAccessTokenSilently } = useAuth0();
 
   const service = useService({ toast: false });
   const { currentUser } = useApp();
@@ -61,6 +74,75 @@ function Default() {
     },
     { keepPreviousData: true }
   );
+
+  const [currentSelectedPoint, setCurrentSelectedPoint] = useState(null);
+  const [currentSelectedTimeseriesData, setCurrentSelectedTimeseriesData] =
+    useState(null);
+
+  useEffect(() => {
+    if (currentSelectedPoint) {
+      async function send() {
+        try {
+          const token = await getAccessTokenSilently();
+          const headers = { Authorization: `Bearer ${token}` };
+          const { data: results } = await axios.post(
+            `${process.env.REACT_APP_ENDPOINT}/api/graph-wellproductions/${currentSelectedPoint}`,
+            {
+              well_ndx: currentSelectedPoint,
+            },
+            { headers }
+          );
+
+          if (results.length) {
+            setCurrentSelectedTimeseriesData(results);
+          } else {
+            setCurrentSelectedTimeseriesData(null);
+          }
+        } catch (err) {
+          // Is this error because we cancelled it ourselves?
+          if (axios.isCancel(err)) {
+            console.log(`call was cancelled`);
+          } else {
+            console.error(err);
+          }
+        }
+      }
+
+      send();
+    }
+  }, [currentSelectedPoint]); // eslint-disable-line
+
+  const [filteredMutatedGraphData, setFilteredMutatedGraphData] = useState([]);
+
+  useEffect(() => {
+    if (currentSelectedTimeseriesData?.length) {
+      //mutate data for chartJS to use
+      const graphData = {
+        labels: currentSelectedTimeseriesData.map(
+          (item) => new Date(item.report_year, item.report_month)
+        ),
+        datasets: [
+          {
+            label: currentSelectedTimeseriesData[0].cuwcd_well_number,
+            backgroundColor: lighten(lineColors.blue, 0.5),
+            borderColor: lineColors.blue,
+            data: currentSelectedTimeseriesData.map(
+              (item) => item.production_gallons
+            ),
+            pointStyle: "point",
+            borderWidth: 2,
+            pointRadius: 0,
+            pointHoverRadius: 4,
+            fill: true,
+            spanGaps: true,
+          },
+        ],
+      };
+      setFilteredMutatedGraphData(graphData);
+    } else {
+      setFilteredMutatedGraphData(null);
+    }
+  }, [currentSelectedTimeseriesData]);
 
   const tableColumns = [
     { title: "CUWCD Well Name", field: "cuwcd_well_number" },
@@ -105,12 +187,57 @@ function Default() {
             </AccordionSummary>
             <AccordionDetails>
               <MapContainer>
-                <Map data={data} isLoading={isLoading} error={error} />
+                <Map
+                  data={data}
+                  isLoading={isLoading}
+                  error={error}
+                  setCurrentSelectedPoint={setCurrentSelectedPoint}
+                />
               </MapContainer>
             </AccordionDetails>
           </Accordion>
         </Grid>
       </Grid>
+
+      {Boolean(filteredMutatedGraphData) ? (
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <Accordion defaultExpanded>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="time-series"
+                id="time-series"
+              >
+                <Typography variant="h4" ml={2}>
+                  Well Production Time Series
+                </Typography>
+              </AccordionSummary>
+              <Panel>
+                <AccordionDetails>
+                  <TimeseriesContainer>
+                    <TimeseriesLineChart
+                      data={filteredMutatedGraphData}
+                      error={error}
+                      isLoading={isLoading}
+                      yLLabel="Acre-Feet"
+                      reverseLegend={false}
+                      ref={saveRef}
+                    />
+                  </TimeseriesContainer>
+                </AccordionDetails>
+              </Panel>
+            </Accordion>
+          </Grid>
+        </Grid>
+      ) : (
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader title="No Time Series Data Available for Selected Well" />
+            </Card>
+          </Grid>
+        </Grid>
+      )}
 
       <Grid container spacing={6}>
         <Grid item xs={12}>

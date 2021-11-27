@@ -18,7 +18,6 @@ import BarChart from "./BarChart";
 import DoughnutChart from "./DoughnutChart";
 import PieChart from "./PieChart";
 import RadarChart from "./RadarChart";
-import PolarChart from "./PolarChart";
 
 const Divider = styled(MuiDivider)(spacing);
 
@@ -58,7 +57,7 @@ function Blank() {
           <RadarChart />
         </Grid>
         <Grid item xs={12} md={6}>
-          <PolarChart />
+          <RadarChart />
         </Grid>
       </Grid>
     </React.Fragment>

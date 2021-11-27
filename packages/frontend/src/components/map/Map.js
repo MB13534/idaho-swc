@@ -28,7 +28,7 @@ const Coordinates = styled.pre`
   display: none;
 `;
 
-const Map = ({ data, isLoading, error }) => {
+const Map = ({ data, isLoading, error, setCurrentSelectedPoint }) => {
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
   const [map, setMap] = useState();
   const mapContainer = useRef(null); // create a reference to the map container
@@ -134,8 +134,8 @@ const Map = ({ data, isLoading, error }) => {
           const coordinates = e.features[0].geometry.coordinates.slice();
           const description = e.features[0].properties.cuwcd_well_number;
 
-          console.log(e.features[0]);
-
+          setCurrentSelectedPoint(e.features[0].properties.well_ndx);
+          // setCurrentSelectedPoint(5885);
           // Ensure that if the map is zoomed out such that multiple
           // copies of the feature are visible, the popup appears
           // over the copy being pointed to.
@@ -162,7 +162,7 @@ const Map = ({ data, isLoading, error }) => {
         });
       }
     }
-  }, [isLoading, mapIsLoaded, map, data]);
+  }, [isLoading, mapIsLoaded, map, data]); // eslint-disable-line
 
   if (error) return "An error has occurred: " + error.message;
 

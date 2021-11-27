@@ -6,7 +6,6 @@ import BarChart from "../../charts/Chartjs/BarChart";
 import DoughnutChart from "../../charts/Chartjs/DoughnutChart";
 import PieChart from "../../charts/Chartjs/PieChart";
 import RadarChart from "../../charts/Chartjs/RadarChart";
-import PolarChart from "../../charts/Chartjs/PolarChart";
 
 const Root = styled.div`
   .MuiCardContent-root {
@@ -52,7 +51,7 @@ export default function Charts() {
         </Grid>
         <Grid item xs={12} md={6}>
           <Well>
-            <PolarChart />
+            <RadarChart />
           </Well>
         </Grid>
       </Grid>
