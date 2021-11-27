@@ -1,12 +1,12 @@
-// import React from "react";
-// import { Map, Droplet, Activity, Box } from "react-feather";
+import React from "react";
+import { Droplet, CheckSquare, List, CreditCard } from "react-feather";
 
 // Configuration
 export const CRUD_MODELS = [
-  // { name: "Regions", icon: <Map />, header: "Data Management" },
-  { name: "ListWells", header: "Data Management" },
-  // { name: "Measurements", icon: <Activity /> },
-  // { name: "WellTypes", icon: <Box />, header: "Lookup Tables" },
+  { name: "ListPermits", header: "Data Management", icon: <CheckSquare /> },
+  { name: "ListWells", icon: <Droplet /> },
+  { name: "DataWellProductions", icon: <List /> },
+  { name: "ListRolodexes", icon: <CreditCard /> },
 ];
 
 export const THEME = {

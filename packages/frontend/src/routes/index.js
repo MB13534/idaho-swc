@@ -18,6 +18,7 @@ import {
   List,
   Monitor,
   Users,
+  Map,
 } from "react-feather";
 
 import AuthGuard from "../components/AuthGuard";
@@ -101,33 +102,9 @@ const getCrudRoutes = (list) => {
 const crudSidebarMenu = [...getSidebarMenu(CRUD_MODELS)];
 const modelCrudRoutes = [...getCrudRoutes(CRUD_MODELS)];
 
-const timeseriesRoutes = {
-  id: "Time Series",
-  header: "Data Access",
-  icon: <Activity />,
-  children: [
-    {
-      path: "/data-access/graphs/streamflow",
-      name: "Streamflow",
-      component: Blank,
-    },
-    {
-      path: "/data-access/graphs/flow-vs-targets",
-      name: "Flow vs Targets",
-      component: Blank,
-    },
-    {
-      path: "/data-access/graphs/temperature",
-      name: "Temperature",
-      component: Blank,
-    },
-  ],
-  guard: AdminGuard,
-  visibilityFilter: AdminVisibilityFilter,
-};
-
 const reportsRoutes = {
   id: "Reports",
+  header: "Data Access",
   icon: <FileText />,
   children: [
     {
@@ -143,6 +120,39 @@ const reportsRoutes = {
     {
       path: "/data-access/reports/ect",
       name: "Ect...",
+      component: Blank,
+    },
+  ],
+  guard: AdminGuard,
+  visibilityFilter: AdminVisibilityFilter,
+};
+const mapRoutes = {
+  id: "Map",
+  icon: <Map />,
+  path: "/data-access/map",
+  name: "Map",
+  component: Blank,
+  guard: AdminGuard,
+  visibilityFilter: AdminVisibilityFilter,
+};
+
+const timeseriesRoutes = {
+  id: "Time Series",
+  icon: <Activity />,
+  children: [
+    {
+      path: "/data-access/graphs/streamflow",
+      name: "Streamflow",
+      component: Blank,
+    },
+    {
+      path: "/data-access/graphs/flow-vs-targets",
+      name: "Flow vs Targets",
+      component: Blank,
+    },
+    {
+      path: "/data-access/graphs/temperature",
+      name: "Temperature",
       component: Blank,
     },
   ],
@@ -379,8 +389,9 @@ export const dashboardLayoutRoutes = [
   pageRoutes,
   mainRoutes,
   changelogRoutes,
-  timeseriesRoutes,
   reportsRoutes,
+  mapRoutes,
+  timeseriesRoutes,
   publicFilesRoutes,
   clientDocsRoutes,
   adminDocsRoutes,
@@ -407,12 +418,13 @@ export const protectedRoutes = [protectedPageRoutes];
 // Routes visible in the sidebar
 export const sidebarRoutes = [
   mainRoutes,
-  timeseriesRoutes,
+  ...crudSidebarMenu,
   reportsRoutes,
+  mapRoutes,
+  timeseriesRoutes,
   publicFilesRoutes,
   clientDocsRoutes,
   adminDocsRoutes,
-  ...crudSidebarMenu,
   adminRoutes,
   componentsRoutes,
   documentationRoutes,
