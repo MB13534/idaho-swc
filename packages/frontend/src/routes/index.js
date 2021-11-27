@@ -6,8 +6,13 @@ import { useAuth0 } from "@auth0/auth0-react";
 import async from "../components/Async";
 
 import {
+  Activity,
+  Archive,
   BookOpen,
+  Briefcase,
   Database,
+  FileText,
+  Folder,
   Grid,
   Home,
   List,
@@ -34,6 +39,8 @@ import Default from "../pages/dashboards/Default";
 import { CrudProvider } from "../CrudProvider";
 import CRUD from "../pages/docs/CRUD";
 import Deploy from "../pages/docs/Deploy";
+import UserVisibilityFilter from "../components/UserVisibilityFilter";
+import UserGuard from "../components/UserGuard";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -93,6 +100,84 @@ const getCrudRoutes = (list) => {
 
 const crudSidebarMenu = [...getSidebarMenu(CRUD_MODELS)];
 const modelCrudRoutes = [...getCrudRoutes(CRUD_MODELS)];
+
+const timeseriesRoutes = {
+  id: "Time Series",
+  header: "Data Access",
+  icon: <Activity />,
+  children: [
+    {
+      path: "/data-access/graphs/streamflow",
+      name: "Streamflow",
+      component: Blank,
+    },
+    {
+      path: "/data-access/graphs/flow-vs-targets",
+      name: "Flow vs Targets",
+      component: Blank,
+    },
+    {
+      path: "/data-access/graphs/temperature",
+      name: "Temperature",
+      component: Blank,
+    },
+  ],
+  guard: AdminGuard,
+  visibilityFilter: AdminVisibilityFilter,
+};
+
+const reportsRoutes = {
+  id: "Reports",
+  icon: <FileText />,
+  children: [
+    {
+      path: "/data-access/reports/production",
+      name: "Production",
+      component: Blank,
+    },
+    {
+      path: "/data-access/reports/permits",
+      name: "Permits",
+      component: Blank,
+    },
+    {
+      path: "/data-access/reports/ect",
+      name: "Ect...",
+      component: Blank,
+    },
+  ],
+  guard: AdminGuard,
+  visibilityFilter: AdminVisibilityFilter,
+};
+
+const publicFilesRoutes = {
+  id: "Public Files",
+  header: "Documents",
+  icon: <Archive />,
+  path: "/data-access/documents/public-files",
+  name: "Public Files",
+  component: Blank,
+};
+
+const clientDocsRoutes = {
+  id: "Client Docs",
+  icon: <Folder />,
+  path: "/data-access/documents/client-docs",
+  name: "Client Documents",
+  component: Blank,
+  guard: UserGuard,
+  visibilityFilter: UserVisibilityFilter,
+};
+
+const adminDocsRoutes = {
+  id: "Admin Docs",
+  icon: <Briefcase />,
+  path: "/data-access/documents/admin-docs",
+  name: "Admin Documents",
+  component: Blank,
+  guard: AdminGuard,
+  visibilityFilter: AdminVisibilityFilter,
+};
 
 const accountRoutes = {
   id: "Account",
@@ -294,6 +379,11 @@ export const dashboardLayoutRoutes = [
   pageRoutes,
   mainRoutes,
   changelogRoutes,
+  timeseriesRoutes,
+  reportsRoutes,
+  publicFilesRoutes,
+  clientDocsRoutes,
+  adminDocsRoutes,
   accountRoutes,
   documentationRoutes,
   componentsRoutes,
@@ -317,6 +407,11 @@ export const protectedRoutes = [protectedPageRoutes];
 // Routes visible in the sidebar
 export const sidebarRoutes = [
   mainRoutes,
+  timeseriesRoutes,
+  reportsRoutes,
+  publicFilesRoutes,
+  clientDocsRoutes,
+  adminDocsRoutes,
   ...crudSidebarMenu,
   adminRoutes,
   componentsRoutes,

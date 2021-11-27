@@ -269,7 +269,7 @@ const SidebarCategory = ({
   );
 };
 
-const SidebarLink = ({ name, to, badge, icon }) => {
+const SidebarLink = ({ name, to, badge }) => {
   return (
     <Link
       button
@@ -374,15 +374,21 @@ const Sidebar = ({
                           timeout="auto"
                           unmountOnExit
                         >
-                          {category.children.map((route, index) => (
-                            <SidebarLink
-                              key={index}
-                              name={route.name}
-                              to={route.path}
-                              icon={route.icon}
-                              badge={route.badge}
-                            />
-                          ))}
+                          {category.children.map((route, index) => {
+                            const VisibilityFilter =
+                              route.visibilityFilter || React.Fragment;
+                            return (
+                              <VisibilityFilter key={index}>
+                                <SidebarLink
+                                  key={index}
+                                  name={route.name}
+                                  to={route.path}
+                                  icon={route.icon}
+                                  badge={route.badge}
+                                />
+                              </VisibilityFilter>
+                            );
+                          })}
                         </Collapse>
                       </React.Fragment>
                     ) : category.icon ? (
