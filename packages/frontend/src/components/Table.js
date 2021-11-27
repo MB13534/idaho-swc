@@ -12,6 +12,7 @@ const Table = ({
   pageSize = 10,
   isLoading = false,
   height,
+  actions,
 }) => {
   const { doToast } = useApp();
   return (
@@ -41,6 +42,7 @@ const Table = ({
             }
           },
         },
+        ...actions,
       ]}
       options={{
         emptyRowsWhenPaging: false,

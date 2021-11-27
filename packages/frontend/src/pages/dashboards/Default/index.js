@@ -107,7 +107,6 @@ function Default() {
           }
         }
       }
-
       send();
     }
   }, [currentSelectedPoint]); // eslint-disable-line
@@ -145,7 +144,10 @@ function Default() {
   }, [currentSelectedTimeseriesData]);
 
   const tableColumns = [
-    { title: "CUWCD Well Name", field: "cuwcd_well_number" },
+    {
+      title: "CUWCD Well Name",
+      field: "cuwcd_well_number",
+    },
     { title: "State Well Name", field: "state_well_number" },
     { title: "Source Aquifer", field: "source_aquifer" },
     { title: "Primary Well Use", field: "primary_use" },
@@ -260,7 +262,15 @@ function Default() {
                     label="Streamflow Timeseries Table"
                     columns={tableColumns}
                     data={data}
-                    height="235px"
+                    height="195px"
+                    actions={[
+                      {
+                        icon: "timeline",
+                        tooltip: "Render Time Series Graph",
+                        onClick: (event, rowData) =>
+                          setCurrentSelectedPoint(rowData.well_ndx),
+                      },
+                    ]}
                   />
                 </TableWrapper>
               </AccordionDetails>
