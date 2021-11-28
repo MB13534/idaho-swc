@@ -36,6 +36,8 @@ import Table from "../../../components/Table";
 import axios from "axios";
 import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart";
 import { lineColors } from "../../../utils";
+import { add } from "date-fns";
+import TimeseriesDateFilters from "../../../components/filters/TimeseriesDateFilters";
 
 const Divider = styled(MuiDivider)(spacing);
 
@@ -67,6 +69,20 @@ const FiltersContainer = styled.div`
 function Default() {
   const saveRef = useRef(null);
   const { user, getAccessTokenSilently } = useAuth0();
+
+  //date filter defaults
+  const defaultFilterValues = {
+    startDate: add(new Date().getTime(), { days: -365 }),
+    endDate: new Date(),
+  };
+  const [filterValues, setFilterValues] = useState(defaultFilterValues);
+  const changeFilterValues = (name, value) => {
+    setFilterValues((prevState) => {
+      let newFilterValues = { ...prevState };
+      newFilterValues[name] = value;
+      return newFilterValues;
+    });
+  };
 
   const [radioValue, setRadioValue] = React.useState("all");
 
@@ -246,41 +262,57 @@ function Default() {
             </AccordionSummary>
             <Panel>
               <AccordionDetails>
-                <FiltersContainer>
-                  <FormControl component="fieldset">
-                    <FormLabel component="legend">
-                      Do you want a label?
-                    </FormLabel>
-                    <RadioGroup
-                      row
-                      aria-label="data"
-                      name="data"
-                      value={radioValue}
-                      onChange={handleRadioChange}
-                    >
-                      <FormControlLabel
-                        value="all"
-                        control={<Radio />}
-                        label="All"
-                      />
-                      <FormControlLabel
-                        value="has_production"
-                        control={<Radio />}
-                        label="Production"
-                      />
-                      <FormControlLabel
-                        value="has_waterlevels"
-                        control={<Radio />}
-                        label="Water Levels"
-                      />
-                      <FormControlLabel
-                        value="has_wqdata"
-                        control={<Radio />}
-                        label="Water Quality"
-                      />
-                    </RadioGroup>
-                  </FormControl>
-                </FiltersContainer>
+                <Grid container alignItems="center">
+                  <Grid item xs={12} sm={12} md={6}>
+                    <FiltersContainer>
+                      <FormControl component="fieldset">
+                        <FormLabel component="legend">
+                          {/*Do you want a label?*/}
+                        </FormLabel>
+                        <RadioGroup
+                          row
+                          aria-label="data"
+                          name="data"
+                          value={radioValue}
+                          onChange={handleRadioChange}
+                        >
+                          <FormControlLabel
+                            value="all"
+                            control={<Radio />}
+                            label="All"
+                          />
+                          <FormControlLabel
+                            value="has_production"
+                            control={<Radio />}
+                            label="Production"
+                          />
+                          <FormControlLabel
+                            value="has_waterlevels"
+                            control={<Radio />}
+                            label="Water Levels"
+                          />
+                          <FormControlLabel
+                            value="all"
+                            control={<Radio />}
+                            label="Virtual Bore"
+                          />
+                          <FormControlLabel
+                            value="has_wqdata"
+                            control={<Radio />}
+                            label="Water Quality"
+                          />
+                        </RadioGroup>
+                      </FormControl>
+                    </FiltersContainer>
+                  </Grid>
+
+                  <Grid item xs={12} sm={12} md={6}>
+                    <TimeseriesDateFilters
+                      filterValues={filterValues}
+                      changeFilterValues={changeFilterValues}
+                    />
+                  </Grid>
+                </Grid>
               </AccordionDetails>
             </Panel>
           </Accordion>
@@ -310,6 +342,7 @@ function Default() {
                       yLLabel="Acre-Feet"
                       reverseLegend={false}
                       ref={saveRef}
+                      filterValues={filterValues}
                     />
                   </TimeseriesContainer>
                 </AccordionDetails>

@@ -7,6 +7,7 @@ import zoomPlugin from "chartjs-plugin-zoom";
 import Loader from "../Loader";
 import { Typography } from "@material-ui/core";
 import { lineColors } from "../../utils";
+import { add } from "date-fns";
 
 Chart.register(zoomPlugin);
 
@@ -16,6 +17,7 @@ const TimeseriesLineChart = forwardRef(
       data,
       error,
       isLoading,
+      filterValues,
       yLLabel,
       reverseLegend = true,
       xLabelUnit = "day",
@@ -132,6 +134,18 @@ const TimeseriesLineChart = forwardRef(
       scales: {
         x: {
           type: "time",
+          min:
+            filterValues.previousDays === ""
+              ? null
+              : filterValues.checked
+              ? add(new Date().getTime(), { days: -filterValues.previousDays })
+              : filterValues.startDate,
+          max:
+            filterValues.previousDays === ""
+              ? null
+              : filterValues.checked
+              ? new Date()
+              : filterValues.endDate,
           time: {
             unit: xLabelUnit,
             displayFormats: {
