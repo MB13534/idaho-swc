@@ -4,7 +4,7 @@ import styled from "styled-components/macro";
 import { Helmet } from "react-helmet-async";
 
 import {
-  Grid,
+  Grid as MuiGrid,
   Divider as MuiDivider,
   Typography as MuiTypography,
   Accordion,
@@ -38,6 +38,8 @@ import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart"
 import { lineColors, renderStatusChip } from "../../../utils";
 import { add } from "date-fns";
 import TimeseriesDateFilters from "../../../components/filters/TimeseriesDateFilters";
+import SaveGraphButton from "../../../components/graphs/SaveGraphButton";
+import ExportDataButton from "../../../components/graphs/ExportDataButton";
 
 const Divider = styled(MuiDivider)(spacing);
 
@@ -56,8 +58,13 @@ const MapContainer = styled.div`
 `;
 
 const TimeseriesContainer = styled.div`
-  height: 600px;
+  height: calc(600px - 146px);
   overflow-y: auto;
+  width: 100%;
+`;
+
+const TimeseriesWrapper = styled.div`
+  height: calc(100% - 54px);
   width: 100%;
 `;
 
@@ -65,6 +72,8 @@ const FiltersContainer = styled.div`
   height: 100%;
   width: 100%;
 `;
+
+const Grid = styled(MuiGrid)(spacing);
 
 function Default() {
   const saveRef = useRef(null);
@@ -85,9 +94,18 @@ function Default() {
   };
 
   const [radioValue, setRadioValue] = React.useState("all");
+  const radioLabels = {
+    all: "All",
+    has_production: "Production",
+    has_waterlevels: "Water Levels",
+    has_virtualbore: "Virtual Bore",
+    has_wqdata: "Water Quality",
+  };
 
   const handleRadioChange = (event) => {
     setRadioValue(event.target.value);
+    setCurrentSelectedTimeseriesData(null);
+    setCurrentSelectedPoint(null);
   };
 
   const service = useService({ toast: false });
@@ -134,7 +152,7 @@ function Default() {
           const { data: results } = await axios.post(
             `${process.env.REACT_APP_ENDPOINT}/api/graph-wellproductions/${currentSelectedPoint}`,
             {
-              well_ndx: currentSelectedPoint,
+              cuwcd_well_number: currentSelectedPoint,
             },
             { headers }
           );
@@ -273,7 +291,7 @@ function Default() {
                     <FiltersContainer>
                       <FormControl component="fieldset">
                         <FormLabel component="legend">
-                          {/*Do you want a label?*/}
+                          Filter By Available Data Types
                         </FormLabel>
                         <RadioGroup
                           row
@@ -285,27 +303,27 @@ function Default() {
                           <FormControlLabel
                             value="all"
                             control={<Radio />}
-                            label="All"
+                            label={radioLabels["all"]}
                           />
                           <FormControlLabel
                             value="has_production"
                             control={<Radio />}
-                            label="Production"
+                            label={radioLabels["has_production"]}
                           />
                           <FormControlLabel
                             value="has_waterlevels"
                             control={<Radio />}
-                            label="Water Levels"
+                            label={radioLabels["has_waterlevels"]}
                           />
                           <FormControlLabel
-                            value="all"
+                            value="has_virtualbore"
                             control={<Radio />}
-                            label="Virtual Bore"
+                            label={radioLabels["has_virtualbore"]}
                           />
                           <FormControlLabel
                             value="has_wqdata"
                             control={<Radio />}
-                            label="Water Quality"
+                            label={radioLabels["has_wqdata"]}
                           />
                         </RadioGroup>
                       </FormControl>
@@ -335,21 +353,39 @@ function Default() {
                 id="time-series"
               >
                 <Typography variant="h4" ml={2}>
-                  Well Production Time Series
+                  {`Reported Well #${currentSelectedPoint} ${radioLabels[radioValue]} Summary`}
                 </Typography>
               </AccordionSummary>
               <Panel>
                 <AccordionDetails>
                   <TimeseriesContainer>
-                    <TimeseriesLineChart
-                      data={filteredMutatedGraphData}
-                      error={error}
-                      isLoading={isLoading}
-                      yLLabel="Acre-Feet"
-                      reverseLegend={false}
-                      ref={saveRef}
-                      filterValues={filterValues}
-                    />
+                    <Grid container pb={2}>
+                      <Grid item style={{ flexGrow: 1 }} />
+                      <Grid item>
+                        <ExportDataButton
+                          title="cuwcd_well_number"
+                          data={currentSelectedTimeseriesData}
+                          filterValues={filterValues}
+                        />
+                      </Grid>
+                      <Grid item>
+                        <SaveGraphButton
+                          ref={saveRef}
+                          title={currentSelectedPoint}
+                        />
+                      </Grid>
+                    </Grid>
+                    <TimeseriesWrapper>
+                      <TimeseriesLineChart
+                        data={filteredMutatedGraphData}
+                        error={error}
+                        isLoading={isLoading}
+                        yLLabel="Acre-Feet"
+                        reverseLegend={false}
+                        ref={saveRef}
+                        filterValues={filterValues}
+                      />
+                    </TimeseriesWrapper>
                   </TimeseriesContainer>
                 </AccordionDetails>
               </Panel>
@@ -360,7 +396,13 @@ function Default() {
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <Card>
-              <CardHeader title="No Time Series Data Available for Selected Well" />
+              <CardHeader
+                title={
+                  radioValue === "all"
+                    ? "Filter Data and Click a Point on the map to View Corresponding Summary"
+                    : `Select a Point on the Map to View ${radioLabels[radioValue]} Summary`
+                }
+              />
             </Card>
           </Grid>
         </Grid>
@@ -393,28 +435,28 @@ function Default() {
                         icon: "bar_chart",
                         tooltip: "Production",
                         onClick: (event, rowData) =>
-                          setCurrentSelectedPoint(rowData.well_ndx),
+                          setCurrentSelectedPoint(rowData.cuwcd_well_number),
                         disabled: !rowData.has_production,
                       }),
                       (rowData) => ({
                         icon: "water",
                         tooltip: "Water Levels",
                         onClick: (event, rowData) =>
-                          setCurrentSelectedPoint(rowData.well_ndx),
+                          setCurrentSelectedPoint(rowData.cuwcd_well_number),
                         disabled: !rowData.has_waterlevels,
                       }),
                       () => ({
                         icon: "desktop_windows",
                         tooltip: "Virtual Bore",
                         onClick: (event, rowData) =>
-                          setCurrentSelectedPoint(rowData.well_ndx),
+                          setCurrentSelectedPoint(rowData.cuwcd_well_number),
                         disabled: true,
                       }),
                       (rowData) => ({
                         icon: "bloodtype",
                         tooltip: "Water Quality",
                         onClick: (event, rowData) =>
-                          setCurrentSelectedPoint(rowData.well_ndx),
+                          setCurrentSelectedPoint(rowData.cuwcd_well_number),
                         disabled: !rowData.has_wqdata,
                       }),
                     ]}

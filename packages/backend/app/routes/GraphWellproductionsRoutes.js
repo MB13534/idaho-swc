@@ -8,7 +8,7 @@ router.use(checkAccessToken(process.env.AUTH0_DOMAIN, process.env.AUDIENCE));
 
 router.post('/:id', (req, res, next) => {
   const where = {};
-  where.well_ndx = +req.params.id;
+  where.cuwcd_well_number = req.params.id;
 
   model
     .findAll({where})
