@@ -4,19 +4,19 @@ import styled from "styled-components/macro";
 import { Helmet } from "react-helmet-async";
 
 import {
-  Grid as MuiGrid,
-  Divider as MuiDivider,
-  Typography as MuiTypography,
   Accordion,
   AccordionDetails,
-  lighten,
-  CardHeader,
   Card,
+  CardHeader,
+  Divider as MuiDivider,
   FormControl,
-  FormLabel,
-  RadioGroup,
   FormControlLabel,
+  FormLabel,
+  Grid as MuiGrid,
+  lighten,
   Radio,
+  RadioGroup,
+  Typography as MuiTypography,
 } from "@material-ui/core";
 
 import { spacing } from "@material-ui/system";
@@ -40,6 +40,7 @@ import { add } from "date-fns";
 import TimeseriesDateFilters from "../../../components/filters/TimeseriesDateFilters";
 import SaveGraphButton from "../../../components/graphs/SaveGraphButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
+import MultiOptionsPicker from "../../../components/pickers/MultiOptionsPicker";
 
 const Divider = styled(MuiDivider)(spacing);
 
@@ -48,7 +49,7 @@ const Typography = styled(MuiTypography)(spacing);
 const TableWrapper = styled.div`
   overflow-y: auto;
   max-width: calc(100vw - ${(props) => props.theme.spacing(12)}px);
-  height: calc(100% - 84px);
+  height: 100%;
   width: 100%;
 `;
 
@@ -106,6 +107,7 @@ function Default() {
     setRadioValue(event.target.value);
     setCurrentSelectedTimeseriesData(null);
     setCurrentSelectedPoint(null);
+    setSelectedWQParameters([]);
   };
 
   const service = useService({ toast: false });
@@ -128,6 +130,28 @@ function Default() {
     },
     { keepPreviousData: true }
   );
+
+  //locations in picker that are selected by user
+  const [selectedWQParameters, setSelectedWQParameters] = useState([]);
+  const { data: wQparameterOptions } = useQuery(
+    ["ListWQParameters", currentUser],
+    async () => {
+      try {
+        const response = await service([findRawRecords, ["ListWQParameters"]]);
+        return response.map((parameter) => ({
+          label: parameter.wq_parameter_name,
+          value: parameter.wq_parameter_ndx,
+        }));
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    { keepPreviousData: true }
+  );
+
+  useEffect(() => {
+    console.log(selectedWQParameters);
+  }, [selectedWQParameters]);
 
   useEffect(() => {
     if (data?.length > 0) {
@@ -287,11 +311,16 @@ function Default() {
             <Panel>
               <AccordionDetails>
                 <Grid container alignItems="center">
-                  <Grid item xs={12} sm={12} md={6}>
+                  <Grid
+                    item
+                    xs={12}
+                    sm={12}
+                    md={radioValue === "has_virtualbore" ? 12 : 6}
+                  >
                     <FiltersContainer>
                       <FormControl component="fieldset">
                         <FormLabel component="legend">
-                          Filter By Available Data Types
+                          Filter Wells by Their Available Data Types
                         </FormLabel>
                         <RadioGroup
                           row
@@ -330,12 +359,27 @@ function Default() {
                     </FiltersContainer>
                   </Grid>
 
-                  <Grid item xs={12} sm={12} md={6}>
-                    <TimeseriesDateFilters
-                      filterValues={filterValues}
-                      changeFilterValues={changeFilterValues}
-                    />
-                  </Grid>
+                  {radioValue !== "has_virtualbore" && (
+                    <Grid item xs={12} sm={12} md={6} mt={2}>
+                      <TimeseriesDateFilters
+                        filterValues={filterValues}
+                        changeFilterValues={changeFilterValues}
+                      />
+                    </Grid>
+                  )}
+                  {["has_wqdata", "all"].includes(radioValue) &&
+                    wQparameterOptions && (
+                      <Grid container spacing={6}>
+                        <Grid item xs={12} mt={6}>
+                          <MultiOptionsPicker
+                            selectedOptions={selectedWQParameters}
+                            setSelectedOptions={setSelectedWQParameters}
+                            options={wQparameterOptions}
+                            label="Water Quality Parameters"
+                          />
+                        </Grid>
+                      </Grid>
+                    )}
                 </Grid>
               </AccordionDetails>
             </Panel>
@@ -399,7 +443,7 @@ function Default() {
               <CardHeader
                 title={
                   radioValue === "all"
-                    ? "Filter Data and Click a Point on the map to View Corresponding Summary"
+                    ? "Filter Data and Click a Point on the Map to View Corresponding Summary"
                     : `Select a Point on the Map to View ${radioLabels[radioValue]} Summary`
                 }
               />
@@ -429,34 +473,49 @@ function Default() {
                     label="Streamflow Timeseries Table"
                     columns={tableColumns}
                     data={filteredData}
-                    height="195px"
+                    height="415px"
                     actions={[
                       (rowData) => ({
                         icon: "bar_chart",
                         tooltip: "Production",
-                        onClick: (event, rowData) =>
-                          setCurrentSelectedPoint(rowData.cuwcd_well_number),
+                        onClick: (event, rowData) => {
+                          setRadioValue("has_production");
+                          setCurrentSelectedPoint(rowData.cuwcd_well_number);
+                          setCurrentSelectedTimeseriesData(null);
+                          setSelectedWQParameters([]);
+                        },
                         disabled: !rowData.has_production,
                       }),
                       (rowData) => ({
                         icon: "water",
                         tooltip: "Water Levels",
-                        onClick: (event, rowData) =>
-                          setCurrentSelectedPoint(rowData.cuwcd_well_number),
+                        onClick: (event, rowData) => {
+                          setRadioValue("has_waterlevels");
+                          setCurrentSelectedPoint(rowData.cuwcd_well_number);
+                          setCurrentSelectedTimeseriesData(null);
+                          setSelectedWQParameters([]);
+                        },
                         disabled: !rowData.has_waterlevels,
                       }),
                       () => ({
                         icon: "desktop_windows",
                         tooltip: "Virtual Bore",
-                        onClick: (event, rowData) =>
-                          setCurrentSelectedPoint(rowData.cuwcd_well_number),
+                        onClick: (event, rowData) => {
+                          setRadioValue("has_virtualbore");
+                          setCurrentSelectedPoint(rowData.cuwcd_well_number);
+                          setCurrentSelectedTimeseriesData(null);
+                          setSelectedWQParameters([]);
+                        },
                         disabled: true,
                       }),
                       (rowData) => ({
                         icon: "bloodtype",
                         tooltip: "Water Quality",
-                        onClick: (event, rowData) =>
-                          setCurrentSelectedPoint(rowData.cuwcd_well_number),
+                        onClick: (event, rowData) => {
+                          setRadioValue("has_wqdata");
+                          setCurrentSelectedPoint(rowData.cuwcd_well_number);
+                          setCurrentSelectedTimeseriesData(null);
+                        },
                         disabled: !rowData.has_wqdata,
                       }),
                     ]}
