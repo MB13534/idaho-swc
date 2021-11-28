@@ -142,12 +142,24 @@ const Map = ({
         // When a click event occurs on a feature in the places layer, open a popup at the
         // location of the feature, with description HTML from its properties.
         map.on("click", "locations", (e) => {
+          setCurrentSelectedPoint(e.features[0].properties.well_ndx);
+        });
+
+        //for lat/long display
+        map.on("click", "locations", onPointClick);
+
+        let popup = new mapboxgl.Popup({
+          closeButton: false,
+          closeOnClick: false,
+        });
+
+        // Change the cursor to a pointer when the mouse is over the places layer.
+        map.on("mouseenter", "locations", (e) => {
+          map.getCanvas().style.cursor = "pointer";
+
           // Copy coordinates array.
           const coordinates = e.features[0].geometry.coordinates.slice();
           const description = e.features[0].properties.cuwcd_well_number;
-
-          setCurrentSelectedPoint(e.features[0].properties.well_ndx);
-          // setCurrentSelectedPoint(5885);
           // Ensure that if the map is zoomed out such that multiple
           // copies of the feature are visible, the popup appears
           // over the copy being pointed to.
@@ -155,23 +167,15 @@ const Map = ({
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
           }
 
-          new mapboxgl.Popup()
-            .setLngLat(coordinates)
-            .setHTML(description)
-            .addTo(map);
-        });
+          popup.setLngLat(coordinates).setHTML(description).addTo(map);
 
-        map.on("click", "locations", onPointClick);
-
-        // Change the cursor to a pointer when the mouse is over the places layer.
-        map.on("mouseenter", "locations", () => {
-          map.getCanvas().style.cursor = "pointer";
+          map.on("mouseleave", "locations", () => {
+            map.getCanvas().style.cursor = "";
+            popup.remove();
+          });
         });
 
         // Change it back to a pointer when it leaves.
-        map.on("mouseleave", "locations", () => {
-          map.getCanvas().style.cursor = "";
-        });
       }
     }
   }, [isLoading, mapIsLoaded, map, data]); // eslint-disable-line

@@ -78,8 +78,6 @@ export const renderStatusChip = (status) => {
   const Chip = styled(MuiChip)`
     ${spacing}
     height: 20px;
-    // padding: 4px 0;
-    // font-size: 90%;
     margin-top: 1px;
     margin-bottom: 1px;
     padding: 4px 0;
@@ -89,11 +87,14 @@ export const renderStatusChip = (status) => {
   `;
 
   const colors = {
-    GOOD: lineColors.blue,
-    STALE: lineColors.gray,
-    HIGHVAL: lineColors.orange,
-    BATTERY: lineColors.olive,
-    LOWVAL: lineColors.olive,
+    Active: lineColors.blue,
+    Inactive: lineColors.gray,
+    Abandoned: lineColors.gray,
+    "Never Drilled": lineColors.orange,
+    Capped: lineColors.red,
+    Plugged: lineColors.red,
+    Proposed: lineColors.green,
+    Unknown: lineColors.olive,
   };
   return typeof status === "string" ? (
     status.split(",").map((word) => {

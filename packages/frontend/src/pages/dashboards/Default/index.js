@@ -35,7 +35,7 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Table from "../../../components/Table";
 import axios from "axios";
 import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart";
-import { lineColors } from "../../../utils";
+import { lineColors, renderStatusChip } from "../../../utils";
 import { add } from "date-fns";
 import TimeseriesDateFilters from "../../../components/filters/TimeseriesDateFilters";
 
@@ -198,7 +198,13 @@ function Default() {
     { title: "Source Aquifer", field: "source_aquifer" },
     { title: "Primary Well Use", field: "primary_use" },
     { title: "Current Owner", field: "well_owner" },
-    { title: "Well Status", field: "well_status" },
+    {
+      title: "Well Status",
+      field: "well_status",
+      render: (rowData) => {
+        return renderStatusChip(rowData.well_status);
+      },
+    },
   ];
 
   return (
@@ -383,12 +389,34 @@ function Default() {
                     data={filteredData}
                     height="195px"
                     actions={[
-                      {
+                      (rowData) => ({
                         icon: "bar_chart",
-                        tooltip: "Render Time Series Graph",
+                        tooltip: "Production",
                         onClick: (event, rowData) =>
                           setCurrentSelectedPoint(rowData.well_ndx),
-                      },
+                        disabled: !rowData.has_production,
+                      }),
+                      (rowData) => ({
+                        icon: "water",
+                        tooltip: "Water Levels",
+                        onClick: (event, rowData) =>
+                          setCurrentSelectedPoint(rowData.well_ndx),
+                        disabled: !rowData.has_waterlevels,
+                      }),
+                      () => ({
+                        icon: "desktop_windows",
+                        tooltip: "Virtual Bore",
+                        onClick: (event, rowData) =>
+                          setCurrentSelectedPoint(rowData.well_ndx),
+                        disabled: true,
+                      }),
+                      (rowData) => ({
+                        icon: "bloodtype",
+                        tooltip: "Water Quality",
+                        onClick: (event, rowData) =>
+                          setCurrentSelectedPoint(rowData.well_ndx),
+                        disabled: !rowData.has_wqdata,
+                      }),
                     ]}
                   />
                 </TableWrapper>
