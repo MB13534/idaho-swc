@@ -79,11 +79,6 @@ export function columns(modelName) {
       width: 150,
     },
     {
-      field: "driller_ndx",
-      headerName: "Driller Index",
-      width: 150,
-    },
-    {
       field: "date_drilled",
       headerName: "Date Drilled",
       width: 150,
@@ -220,14 +215,6 @@ export const fields = [
   {
     name: "Aquifer Index",
     key: "aquifer_ndx",
-    required: true,
-    type: CRUD_FIELD_TYPES.TEXT,
-    cols: 12,
-    isOpen: true,
-  },
-  {
-    name: "Driller Index",
-    key: "driller_ndx",
     required: true,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,

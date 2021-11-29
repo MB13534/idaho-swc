@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import styled from "styled-components/macro";
+import { NavLink } from "react-router-dom";
 
 import { Helmet } from "react-helmet-async";
 
@@ -36,11 +37,12 @@ import Table from "../../../components/Table";
 import axios from "axios";
 import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart";
 import { lineColors, renderStatusChip } from "../../../utils";
-import { add } from "date-fns";
 import TimeseriesDateFilters from "../../../components/filters/TimeseriesDateFilters";
 import SaveGraphButton from "../../../components/graphs/SaveGraphButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
-import MultiOptionsPicker from "../../../components/pickers/MultiOptionsPicker";
+import OptionsPicker from "../../../components/pickers/OptionsPicker";
+import Link from "@material-ui/core/Link";
+import { Edit } from "@material-ui/icons";
 
 const Divider = styled(MuiDivider)(spacing);
 
@@ -77,12 +79,15 @@ const FiltersContainer = styled.div`
 const Grid = styled(MuiGrid)(spacing);
 
 function Default() {
+  const [map, setMap] = useState();
   const saveRef = useRef(null);
   const { user, getAccessTokenSilently } = useAuth0();
+  const service = useService({ toast: false });
+  const { currentUser } = useApp();
 
   //date filter defaults
   const defaultFilterValues = {
-    startDate: add(new Date().getTime(), { days: -365 }),
+    startDate: null,
     endDate: new Date(),
   };
   const [filterValues, setFilterValues] = useState(defaultFilterValues);
@@ -99,19 +104,16 @@ function Default() {
     all: "All",
     has_production: "Production",
     has_waterlevels: "Water Levels",
-    has_virtualbore: "Virtual Bore",
     has_wqdata: "Water Quality",
   };
 
   const handleRadioChange = (event) => {
     setRadioValue(event.target.value);
+    map.fire("closeAllPopups");
     setCurrentSelectedTimeseriesData(null);
     setCurrentSelectedPoint(null);
-    setSelectedWQParameters([]);
+    setSelectedWQParameter(2);
   };
-
-  const service = useService({ toast: false });
-  const { currentUser } = useApp();
 
   const [filteredData, setFilteredData] = React.useState([]);
   const { data, isLoading, error } = useQuery(
@@ -119,6 +121,7 @@ function Default() {
     async () => {
       try {
         const response = await service([findRawRecords, ["UiListWells"]]);
+        //filters out any well that does not have geometry data
         const filterData = response.filter(
           (location) => location.location_geometry
         );
@@ -131,8 +134,8 @@ function Default() {
     { keepPreviousData: true }
   );
 
-  //locations in picker that are selected by user
-  const [selectedWQParameters, setSelectedWQParameters] = useState([]);
+  //paramaters in picker that are selected by user
+  const [selectedWQParameter, setSelectedWQParameter] = useState(2);
   const { data: wQparameterOptions } = useQuery(
     ["ListWQParameters", currentUser],
     async () => {
@@ -150,10 +153,6 @@ function Default() {
   );
 
   useEffect(() => {
-    console.log(selectedWQParameters);
-  }, [selectedWQParameters]);
-
-  useEffect(() => {
     if (data?.length > 0) {
       if (radioValue === "all") {
         setFilteredData(data);
@@ -168,13 +167,20 @@ function Default() {
     useState(null);
 
   useEffect(() => {
-    if (currentSelectedPoint) {
+    if (currentSelectedPoint && radioValue !== "all") {
       async function send() {
         try {
           const token = await getAccessTokenSilently();
           const headers = { Authorization: `Bearer ${token}` };
+
+          const endpoint = {
+            has_production: "graph-wellproductions",
+            has_waterlevels: "graph-depthtowater",
+            has_wqdata: "graph-waterquality",
+          };
+
           const { data: results } = await axios.post(
-            `${process.env.REACT_APP_ENDPOINT}/api/graph-wellproductions/${currentSelectedPoint}`,
+            `${process.env.REACT_APP_ENDPOINT}/api/${endpoint[radioValue]}/${currentSelectedPoint}`,
             {
               cuwcd_well_number: currentSelectedPoint,
             },
@@ -199,37 +205,74 @@ function Default() {
     }
   }, [currentSelectedPoint]); // eslint-disable-line
 
-  const [filteredMutatedGraphData, setFilteredMutatedGraphData] = useState([]);
+  const [filteredMutatedGraphData, setFilteredMutatedGraphData] = useState({});
 
   useEffect(() => {
     if (currentSelectedTimeseriesData?.length) {
       //mutate data for chartJS to use
-      const graphData = {
-        labels: currentSelectedTimeseriesData.map(
-          (item) => new Date(item.report_year, item.report_month)
-        ),
-        datasets: [
-          {
-            label: currentSelectedTimeseriesData[0].cuwcd_well_number,
-            backgroundColor: lighten(lineColors.blue, 0.5),
-            borderColor: lineColors.blue,
-            data: currentSelectedTimeseriesData.map(
-              (item) => item.production_gallons
-            ),
-            pointStyle: "point",
-            borderWidth: 2,
-            pointRadius: 0,
-            pointHoverRadius: 4,
-            fill: true,
-            spanGaps: true,
-          },
-        ],
-      };
+      let graphData;
+      if (radioValue === "has_production") {
+        graphData = {
+          labels: currentSelectedTimeseriesData.map(
+            (item) => new Date(item.report_year, item.report_month)
+          ),
+          datasets: [
+            {
+              label: currentSelectedTimeseriesData[0].cuwcd_well_number,
+              backgroundColor: lighten(lineColors.blue, 0.5),
+              borderColor: lineColors.blue,
+              data: currentSelectedTimeseriesData.map(
+                (item) => item.production_gallons
+              ),
+              borderWidth: 2,
+              spanGaps: true,
+            },
+          ],
+        };
+      } else if (radioValue === "has_waterlevels") {
+        graphData = {
+          labels: currentSelectedTimeseriesData.map(
+            (item) => new Date(item.collected_date)
+          ),
+          datasets: [
+            {
+              label: currentSelectedTimeseriesData[0].cuwcd_well_number,
+              backgroundColor: lighten(lineColors.blue, 0.5),
+              borderColor: lineColors.blue,
+              data: currentSelectedTimeseriesData.map((item) => item.dtw_ft),
+              borderWidth: 2,
+              fill: true,
+              maxBarThickness: 25,
+            },
+          ],
+        };
+      } else if (radioValue === "has_wqdata") {
+        const parameterFilteredData = currentSelectedTimeseriesData.filter(
+          (item) => item.wq_parameter_ndx === selectedWQParameter
+        );
+        graphData = {
+          labels: parameterFilteredData.map((item) => new Date(item.test_date)),
+          units: parameterFilteredData[0].unit_desc,
+          datasets: [
+            {
+              label: parameterFilteredData[0].cuwcd_well_number,
+              backgroundColor: lighten(lineColors.blue, 0.5),
+              borderColor: lineColors.blue,
+              data: parameterFilteredData.map((item) => item.result_value),
+              pointStyle: "circle",
+              borderWidth: 2,
+              pointHoverRadius: 9,
+              pointRadius: 7,
+            },
+          ],
+        };
+      }
+
       setFilteredMutatedGraphData(graphData);
     } else {
       setFilteredMutatedGraphData(null);
     }
-  }, [currentSelectedTimeseriesData]);
+  }, [currentSelectedTimeseriesData, selectedWQParameter]); // eslint-disable-line
 
   const tableColumns = [
     {
@@ -284,6 +327,8 @@ function Default() {
             <AccordionDetails>
               <MapContainer>
                 <Map
+                  map={map}
+                  setMap={setMap}
                   data={filteredData}
                   isLoading={isLoading}
                   error={error}
@@ -311,12 +356,7 @@ function Default() {
             <Panel>
               <AccordionDetails>
                 <Grid container alignItems="center">
-                  <Grid
-                    item
-                    xs={12}
-                    sm={12}
-                    md={radioValue === "has_virtualbore" ? 12 : 6}
-                  >
+                  <Grid item xs={12} sm={12} md={6}>
                     <FiltersContainer>
                       <FormControl component="fieldset">
                         <FormLabel component="legend">
@@ -345,11 +385,6 @@ function Default() {
                             label={radioLabels["has_waterlevels"]}
                           />
                           <FormControlLabel
-                            value="has_virtualbore"
-                            control={<Radio />}
-                            label={radioLabels["has_virtualbore"]}
-                          />
-                          <FormControlLabel
                             value="has_wqdata"
                             control={<Radio />}
                             label={radioLabels["has_wqdata"]}
@@ -358,22 +393,19 @@ function Default() {
                       </FormControl>
                     </FiltersContainer>
                   </Grid>
-
-                  {radioValue !== "has_virtualbore" && (
-                    <Grid item xs={12} sm={12} md={6} mt={2}>
-                      <TimeseriesDateFilters
-                        filterValues={filterValues}
-                        changeFilterValues={changeFilterValues}
-                      />
-                    </Grid>
-                  )}
+                  <Grid item xs={12} sm={12} md={6} mt={2}>
+                    <TimeseriesDateFilters
+                      filterValues={filterValues}
+                      changeFilterValues={changeFilterValues}
+                    />
+                  </Grid>
                   {["has_wqdata", "all"].includes(radioValue) &&
                     wQparameterOptions && (
                       <Grid container spacing={6}>
                         <Grid item xs={12} mt={6}>
-                          <MultiOptionsPicker
-                            selectedOptions={selectedWQParameters}
-                            setSelectedOptions={setSelectedWQParameters}
+                          <OptionsPicker
+                            selectedOption={selectedWQParameter}
+                            setSelectedOption={setSelectedWQParameter}
                             options={wQparameterOptions}
                             label="Water Quality Parameters"
                           />
@@ -410,6 +442,7 @@ function Default() {
                           title="cuwcd_well_number"
                           data={currentSelectedTimeseriesData}
                           filterValues={filterValues}
+                          parameter={selectedWQParameter}
                         />
                       </Grid>
                       <Grid item>
@@ -424,10 +457,18 @@ function Default() {
                         data={filteredMutatedGraphData}
                         error={error}
                         isLoading={isLoading}
-                        yLLabel="Acre-Feet"
+                        yLLabel={
+                          radioValue === "has_waterlevels"
+                            ? "Feet"
+                            : radioValue === "has_production"
+                            ? "Acre-Feet"
+                            : filteredMutatedGraphData?.units
+                        }
                         reverseLegend={false}
+                        yLReverse={radioValue === "has_waterlevels"}
                         ref={saveRef}
                         filterValues={filterValues}
+                        type={radioValue === "has_wqdata" ? "scatter" : "bar"}
                       />
                     </TimeseriesWrapper>
                   </TimeseriesContainer>
@@ -482,7 +523,12 @@ function Default() {
                           setRadioValue("has_production");
                           setCurrentSelectedPoint(rowData.cuwcd_well_number);
                           setCurrentSelectedTimeseriesData(null);
-                          setSelectedWQParameters([]);
+                          setSelectedWQParameter(2);
+                          map.fire("closeAllPopups");
+                          map.flyTo({
+                            center: [rowData.longitude_dd, rowData.latitude_dd],
+                            zoom: 16,
+                          });
                         },
                         disabled: !rowData.has_production,
                       }),
@@ -493,20 +539,14 @@ function Default() {
                           setRadioValue("has_waterlevels");
                           setCurrentSelectedPoint(rowData.cuwcd_well_number);
                           setCurrentSelectedTimeseriesData(null);
-                          setSelectedWQParameters([]);
+                          setSelectedWQParameter(2);
+                          map.fire("closeAllPopups");
+                          map.flyTo({
+                            center: [rowData.longitude_dd, rowData.latitude_dd],
+                            zoom: 16,
+                          });
                         },
                         disabled: !rowData.has_waterlevels,
-                      }),
-                      () => ({
-                        icon: "desktop_windows",
-                        tooltip: "Virtual Bore",
-                        onClick: (event, rowData) => {
-                          setRadioValue("has_virtualbore");
-                          setCurrentSelectedPoint(rowData.cuwcd_well_number);
-                          setCurrentSelectedTimeseriesData(null);
-                          setSelectedWQParameters([]);
-                        },
-                        disabled: true,
                       }),
                       (rowData) => ({
                         icon: "bloodtype",
@@ -515,8 +555,41 @@ function Default() {
                           setRadioValue("has_wqdata");
                           setCurrentSelectedPoint(rowData.cuwcd_well_number);
                           setCurrentSelectedTimeseriesData(null);
+                          // setSelectedWQParameter(2);
+                          map.fire("closeAllPopups");
+                          map.flyTo({
+                            center: [rowData.longitude_dd, rowData.latitude_dd],
+                            zoom: 16,
+                          });
                         },
                         disabled: !rowData.has_wqdata,
+                      }),
+                      (rowData) => ({
+                        icon: () => {
+                          return (
+                            <Link
+                              component={NavLink}
+                              exact
+                              to={"/models/dm-wells/" + rowData.id}
+                              // target="_blank"
+                              // rel="noreferrer noopener"
+                            >
+                              <Edit />
+                            </Link>
+                          );
+                        },
+                        tooltip: "Edit Well",
+                      }),
+                      () => ({
+                        icon: "near_me",
+                        tooltip: "Fly to on Map",
+                        onClick: (event, rowData) => {
+                          map.fire("closeAllPopups");
+                          map.flyTo({
+                            center: [rowData.longitude_dd, rowData.latitude_dd],
+                            zoom: 16,
+                          });
+                        },
                       }),
                     ]}
                   />

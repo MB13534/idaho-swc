@@ -1,7 +1,7 @@
 import React, { forwardRef } from "react";
 import { withTheme } from "styled-components/macro";
 
-import { Chart, Bar } from "react-chartjs-2";
+import { Chart, Bar, Scatter } from "react-chartjs-2";
 import "chartjs-adapter-moment";
 import zoomPlugin from "chartjs-plugin-zoom";
 import Loader from "../Loader";
@@ -17,8 +17,10 @@ const TimeseriesLineChart = forwardRef(
       data,
       error,
       isLoading,
-      filterValues,
+      filterValues = "",
       yLLabel,
+      type = "bar",
+      yLReverse = false,
       reverseLegend = true,
       xLabelUnit = "day",
       xLabelFormat = "MMM YYYY",
@@ -28,7 +30,6 @@ const TimeseriesLineChart = forwardRef(
     },
     ref
   ) => {
-    // console.log(data);
     const plugins = [
       {
         id: "chartFillBackground",
@@ -54,31 +55,31 @@ const TimeseriesLineChart = forwardRef(
           }
         },
       },
-      {
-        id: "annotatedVerticalLine",
-        afterDraw(chart) {
-          if (chart.tooltip?._active?.length) {
-            let x = chart.tooltip._active[0].element.x;
-            let yAxis = chart.scales.yL;
-            let ctx = chart.ctx;
-            ctx.save();
-            ctx.beginPath();
-            ctx.moveTo(x, yAxis.top);
-            ctx.lineTo(x, yAxis.bottom);
-            ctx.lineWidth = 9;
-            ctx.strokeStyle = "rgba(181, 1, 40, 0.2)";
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(x, yAxis.top);
-            ctx.lineTo(x, yAxis.bottom);
-            ctx.lineWidth = 1;
-            ctx.strokeStyle = "rgba(181, 1, 40, 0.4)";
-            ctx.stroke();
-            ctx.restore();
-          }
-        },
-      },
+      // {
+      //   id: "annotatedVerticalLine",
+      //   afterDraw(chart) {
+      //     if (chart.tooltip?._active?.length) {
+      //       let x = chart.tooltip._active[0].element.x;
+      //       let yAxis = chart.scales.yL;
+      //       let ctx = chart.ctx;
+      //       ctx.save();
+      //       ctx.beginPath();
+      //       ctx.moveTo(x, yAxis.top);
+      //       ctx.lineTo(x, yAxis.bottom);
+      //       ctx.lineWidth = 9;
+      //       ctx.strokeStyle = "rgba(181, 1, 40, 0.2)";
+      //       ctx.stroke();
+      //
+      //       ctx.beginPath();
+      //       ctx.moveTo(x, yAxis.top);
+      //       ctx.lineTo(x, yAxis.bottom);
+      //       ctx.lineWidth = 1;
+      //       ctx.strokeStyle = "rgba(181, 1, 40, 0.4)";
+      //       ctx.stroke();
+      //       ctx.restore();
+      //     }
+      //   },
+      // },
     ];
 
     const options = {
@@ -134,6 +135,7 @@ const TimeseriesLineChart = forwardRef(
       scales: {
         x: {
           type: "time",
+          offset: true,
           min:
             filterValues.previousDays === ""
               ? null
@@ -158,12 +160,14 @@ const TimeseriesLineChart = forwardRef(
           },
           ticks: {
             color: lineColors.darkGray,
-            maxTicksLimit: 9,
+            maxTicksLimit: 8.3,
+            source: data.labels?.length === 1 ? "labels" : "auto",
           },
         },
 
         yL: {
           position: "left",
+          reverse: yLReverse,
           display: true,
           title: {
             display: true,
@@ -214,13 +218,23 @@ const TimeseriesLineChart = forwardRef(
         ) : (
           <>
             {data?.datasets?.length > 0 ? (
-              <Bar
-                plugins={plugins}
-                ref={ref}
-                data={data}
-                options={options}
-                type="bar"
-              />
+              type === "scatter" ? (
+                <Scatter
+                  plugins={plugins}
+                  ref={ref}
+                  data={data}
+                  options={options}
+                  type={type}
+                />
+              ) : (
+                <Bar
+                  plugins={plugins}
+                  ref={ref}
+                  data={data}
+                  options={options}
+                  type={type}
+                />
+              )
             ) : (
               <Typography>No Data Available</Typography>
             )}

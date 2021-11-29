@@ -30,9 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       aquifer_ndx: {
         type: INTEGER,
       },
-      driller_ndx: {
-        type: INTEGER,
-      },
       date_drilled: {
         type: DATE,
       },

@@ -12,17 +12,29 @@ import { dateFormatter } from "../../utils";
 
 const Tooltip = styled(MuiTooltip)(spacing);
 
-const ExportDataButton = ({ theme, title, data, filterValues }) => {
+const ExportDataButton = ({ theme, title, data, filterValues, parameter }) => {
   const downloadCsvString = (data) => {
+    console.log(parameter);
     // new Date(item.report_year, item.report_month)
     const header = Object.keys(data[0]).join(",");
+
     const values = data
       .filter(
         (object) =>
-          new Date(object.report_year, object.report_month) >=
-            filterValues.startDate &&
-          new Date(object.report_year, object.report_month) <=
-            add(filterValues.endDate, { months: 1 })
+          (object.report_year &&
+            new Date(object.report_year, object.report_month) >=
+              filterValues.startDate &&
+            new Date(object.report_year, object.report_month) <=
+              add(filterValues.endDate, { months: 1 })) ||
+          (object.test_date &&
+            new Date(object.test_date) >= filterValues.startDate &&
+            new Date(object.test_date) <=
+              add(filterValues.endDate, { months: 1 }) &&
+            object.wq_parameter_ndx === parameter) ||
+          (object.collected_date &&
+            new Date(object.collected_date) >= filterValues.startDate &&
+            new Date(object.collected_date) <=
+              add(filterValues.endDate, { months: 1 }))
       )
       .map((object) => Object.values(object).join(","))
       .join("\n");

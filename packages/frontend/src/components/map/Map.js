@@ -34,9 +34,11 @@ const Map = ({
   error,
   setCurrentSelectedPoint,
   radioValue,
+  map,
+  setMap,
 }) => {
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
-  const [map, setMap] = useState();
+
   const mapContainer = useRef(null); // create a reference to the map container
   const coordinates = useRef(null);
   const DUMMY_BASEMAP_LAYERS = [
@@ -139,27 +141,46 @@ const Map = ({
           },
         });
 
+        map.addLayer({
+          id: "locations-labels",
+          type: "symbol",
+          source: "locations",
+          minzoom: 12,
+          layout: {
+            "text-field": ["get", "cuwcd_well_number"],
+            "text-offset": [0, -2],
+            "text-size": 14,
+          },
+          paint: {
+            "text-halo-color": "#ffffff",
+            "text-halo-width": 0.5,
+          },
+        });
+
         // When a click event occurs on a feature in the places layer, open a popup at the
         // location of the feature, with description HTML from its properties.
         map.on("click", "locations", (e) => {
           setCurrentSelectedPoint(e.features[0].properties.cuwcd_well_number);
+          map.flyTo({
+            center: [
+              e.features[0].properties.longitude_dd,
+              e.features[0].properties.latitude_dd,
+            ],
+            zoom: 14,
+          });
         });
 
         //for lat/long display
         map.on("click", "locations", onPointClick);
 
-        let popup = new mapboxgl.Popup({
-          closeButton: false,
-          closeOnClick: false,
-        });
+        map.on("click", "locations", (e) => {
+          let popup = new mapboxgl.Popup();
 
-        // Change the cursor to a pointer when the mouse is over the places layer.
-        map.on("mouseenter", "locations", (e) => {
-          map.getCanvas().style.cursor = "pointer";
+          let data = e.features[0].properties;
 
           // Copy coordinates array.
           const coordinates = e.features[0].geometry.coordinates.slice();
-          const description = e.features[0].properties.cuwcd_well_number;
+          const description = data.cuwcd_well_number;
           // Ensure that if the map is zoomed out such that multiple
           // copies of the feature are visible, the popup appears
           // over the copy being pointed to.
@@ -169,9 +190,17 @@ const Map = ({
 
           popup.setLngLat(coordinates).setHTML(description).addTo(map);
 
+          map.on("closeAllPopups", () => {
+            popup.remove();
+          });
+        });
+
+        // Change the cursor to a pointer when the mouse is over the places layer.
+        map.on("mouseenter", "locations", () => {
+          map.getCanvas().style.cursor = "pointer";
+
           map.on("mouseleave", "locations", () => {
             map.getCanvas().style.cursor = "";
-            popup.remove();
           });
         });
 
@@ -184,8 +213,10 @@ const Map = ({
     if (map !== undefined) {
       if (radioValue === "all") {
         map.setFilter("locations", null);
+        map.setFilter("locations-labels", null);
       } else {
         map.setFilter("locations", ["get", radioValue]);
+        map.setFilter("locations-labels", ["get", radioValue]);
       }
     }
   }, [data]); // eslint-disable-line
