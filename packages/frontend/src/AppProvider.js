@@ -1,5 +1,7 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import { useAuth0 } from "@auth0/auth0-react";
+import { findRawRecords } from "./services/crudService";
+import { CRUD_LOOKUP_TABLES } from "./constants";
 
 export const AppContext = React.createContext();
 export const useApp = () => useContext(AppContext);
@@ -38,11 +40,34 @@ export const AppProvider = ({ children }) => {
     }
   }, [user]);
 
+  const { getAccessTokenSilently } = useAuth0();
+
+  useEffect(() => {
+    async function loadModels() {
+      const modelsToLoad = CRUD_LOOKUP_TABLES;
+      console.log(CRUD_LOOKUP_TABLES);
+      const token = await getAccessTokenSilently();
+      const myLookupTableCache = {};
+
+      for (const model of modelsToLoad) {
+        try {
+          myLookupTableCache[model] = await findRawRecords(model, token);
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      setLookupTableCache(myLookupTableCache);
+    }
+    loadModels();
+  }, []); // eslint-disable-line
+
   // Toast
   const [toastOpen, setToastOpen] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastSeverity, setToastSeverity] = useState("success");
   const [toastOptions, setToastOptions] = useState({});
+  const [lookupTableCache, setLookupTableCache] = useState([]);
 
   const doToast = (severity, message, options) => {
     setToastMessage(message);
@@ -86,6 +111,7 @@ export const AppProvider = ({ children }) => {
     <AppContext.Provider
       value={{
         currentUser,
+        lookupTableCache,
         ...toastValues,
         ...confirmationDialogValues,
       }}

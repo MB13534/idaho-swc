@@ -2,7 +2,7 @@ import { Renderers } from "../../components/crud/ResultsRenderers";
 import { CRUD_FIELD_TYPES } from "../../constants";
 
 export const displayName = (row) => {
-  return `${row.lastname}`;
+  return `${row.rolo_ndx}`;
 };
 
 export function columns(modelName) {

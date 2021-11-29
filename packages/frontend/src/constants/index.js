@@ -11,6 +11,12 @@ export const CRUD_MODELS = [
   { name: "ListRolodexes", icon: <CreditCard /> },
 ];
 
+export const CRUD_LOOKUP_TABLES = [
+  "list_aquifers",
+  "list_water_uses",
+  "list_well_statuses",
+];
+
 export const THEME = {
   MAIN_SIDEBAR_WIDTH: 258,
   DATETIME_FORMAT_SHORT: "MM/dd/yyyy hh:mm a",

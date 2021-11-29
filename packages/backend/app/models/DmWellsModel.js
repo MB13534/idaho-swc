@@ -30,6 +30,9 @@ module.exports = (sequelize, DataTypes) => {
       aquifer_ndx: {
         type: INTEGER,
       },
+      driller: {
+        type: TEXT,
+      },
       date_drilled: {
         type: DATE,
       },

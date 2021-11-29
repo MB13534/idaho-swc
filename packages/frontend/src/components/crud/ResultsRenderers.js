@@ -16,6 +16,7 @@ import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import { Visibility } from "@material-ui/icons";
 import Divider from "@material-ui/core/Divider";
+import { useApp } from "../../AppProvider";
 
 const Chip = styled(MuiChip)`
   &.MuiChip-root {
@@ -321,11 +322,32 @@ export function StatusDotRenderer(
   );
 }
 
+export const DropdownValueRenderer = (params) => {
+  const { lookupTableCache } = useApp();
+  console.log(params.value);
+  let returnValue = params.value;
+
+  if (
+    params.colDef.lookupModel &&
+    params.colDef.lookupKey &&
+    params.colDef.lookupValue
+  ) {
+    const cacheEntry = lookupTableCache[params.colDef.lookupModel].find(
+      (x) => x[params.colDef.lookupKey] === params.value
+    );
+
+    if (cacheEntry) returnValue = cacheEntry[params.colDef.lookupValue];
+  }
+
+  return <span>{returnValue}</span>;
+};
+
 export const Renderers = {
   AssociatedFieldRenderer,
   IdRenderer,
   ActionsRenderer,
   StatusDotRenderer,
+  DropdownValueRenderer,
   StatusHelpIconRenderer,
   TimestampRenderer,
   ValueWithIconRenderer,
