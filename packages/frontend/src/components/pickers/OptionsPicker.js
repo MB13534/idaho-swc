@@ -23,8 +23,8 @@ function OptionsPicker({ selectedOption, setSelectedOption, options, label }) {
       height="200px"
     >
       {options.map((item) => (
-        <MenuItem key={item} value={item}>
-          {item}
+        <MenuItem key={item.value} value={item.value}>
+          {item.label}
         </MenuItem>
       ))}
     </TextField>

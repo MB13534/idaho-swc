@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT, NUMBER, GEOMETRY, BOOLEAN} = DataTypes;
+  const {INTEGER, TEXT, NUMBER, GEOMETRY, BOOLEAN, UUID} = DataTypes;
   const UiListWells = sequelize.define(
     'ui_list_wells',
     {
@@ -42,6 +42,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       has_wqdata: {
         type: BOOLEAN,
+      },
+      id: {
+        type: UUID,
       },
     },
     {
