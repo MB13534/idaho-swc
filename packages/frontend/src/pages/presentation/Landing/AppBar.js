@@ -5,7 +5,6 @@ import { Link } from "react-router-dom";
 import { ROUTES } from "../../../constants";
 import {
   AppBar,
-  Box,
   Button as MuiButton,
   Container,
   Grid,
@@ -37,14 +36,11 @@ function AppBarComponent({ width }) {
             <Grid item>
               <Brand style={{ display: "flex", alignItems: "center" }}>
                 <BrandIcon
-                  src={`/static/img/lrewater-logo-square.svg`}
-                  width="32"
-                  height="32"
-                  alt="LRE Icon"
+                  src={`/static/img/clearwater-logo-simple.png`}
+                  width="150"
+                  height="49"
+                  alt="Clearwater Icon"
                 />{" "}
-                <Box ml={1} style={{ display: "flex" }}>
-                  Clearwater{" "}
-                </Box>
               </Brand>
             </Grid>
             <Grid item xs />

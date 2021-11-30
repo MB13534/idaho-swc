@@ -5,8 +5,8 @@
   "description": "LRE Water Unified Platform Monorepo",
   "license": "MIT",
   "author": {
-    "name": "Doug Kulak",
-    "email": "dougkulak@gmail.com"
+    "name": "Doug Kulak + Michael Barry",
+    "email": "dougkulak@gmail.com + michael.barry.email@gmail.com"
   },
   "workspaces": [
     "packages/*"

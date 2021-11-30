@@ -294,7 +294,7 @@ function Default() {
 
   return (
     <React.Fragment>
-      <Helmet title="Default Dashboard" />
+      <Helmet title="Dashboard" />
       <Grid justify="space-between" container spacing={6}>
         <Grid item>
           <Typography variant="h3" gutterBottom>
