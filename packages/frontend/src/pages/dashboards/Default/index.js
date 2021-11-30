@@ -253,6 +253,7 @@ function Default() {
         graphData = {
           labels: parameterFilteredData.map((item) => new Date(item.test_date)),
           units: parameterFilteredData[0].unit_desc,
+          parameter: parameterFilteredData[0].wq_parameter_name,
           datasets: [
             {
               label: parameterFilteredData[0].cuwcd_well_number,
@@ -350,7 +351,7 @@ function Default() {
               id="date-filters"
             >
               <Typography variant="h4" ml={2}>
-                Data Filters
+                Graph Options
               </Typography>
             </AccordionSummary>
             <Panel>
@@ -459,16 +460,16 @@ function Default() {
                         isLoading={isLoading}
                         yLLabel={
                           radioValue === "has_waterlevels"
-                            ? "Feet"
+                            ? "Water Level (Feet Below Ground Level)"
                             : radioValue === "has_production"
-                            ? "Acre-Feet"
-                            : filteredMutatedGraphData?.units
+                            ? "Groundwater Pumping (Acre-Feet)"
+                            : `${filteredMutatedGraphData?.parameter} (${filteredMutatedGraphData?.units})`
                         }
                         reverseLegend={false}
                         yLReverse={radioValue === "has_waterlevels"}
                         ref={saveRef}
                         filterValues={filterValues}
-                        type={radioValue === "has_wqdata" ? "scatter" : "bar"}
+                        type={radioValue === "has_wqdata" ? "bar" : "scatter"}
                       />
                     </TimeseriesWrapper>
                   </TimeseriesContainer>
@@ -509,12 +510,12 @@ function Default() {
               <AccordionDetails>
                 <TableWrapper>
                   <Table
-                    pageSize={5}
+                    pageSize={10}
                     isLoading={isLoading}
                     label="Streamflow Timeseries Table"
                     columns={tableColumns}
                     data={filteredData}
-                    height="415px"
+                    height="390px"
                     actions={[
                       (rowData) => ({
                         icon: "bar_chart",

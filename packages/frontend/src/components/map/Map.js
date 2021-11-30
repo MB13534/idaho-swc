@@ -161,13 +161,13 @@ const Map = ({
         // location of the feature, with description HTML from its properties.
         map.on("click", "locations", (e) => {
           setCurrentSelectedPoint(e.features[0].properties.cuwcd_well_number);
-          map.flyTo({
-            center: [
-              e.features[0].properties.longitude_dd,
-              e.features[0].properties.latitude_dd,
-            ],
-            zoom: 14,
-          });
+          // map.flyTo({
+          //   center: [
+          //     e.features[0].properties.longitude_dd,
+          //     e.features[0].properties.latitude_dd,
+          //   ],
+          //   zoom: 14,
+          // });
         });
 
         //for lat/long display
