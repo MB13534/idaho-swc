@@ -469,7 +469,9 @@ function Default() {
                         yLReverse={radioValue === "has_waterlevels"}
                         ref={saveRef}
                         filterValues={filterValues}
-                        type={radioValue === "has_wqdata" ? "bar" : "scatter"}
+                        type={
+                          radioValue === "has_production" ? "bar" : "scatter"
+                        }
                       />
                     </TimeseriesWrapper>
                   </TimeseriesContainer>
