@@ -45,7 +45,6 @@ export const AppProvider = ({ children }) => {
   useEffect(() => {
     async function loadModels() {
       const modelsToLoad = CRUD_LOOKUP_TABLES;
-      console.log(CRUD_LOOKUP_TABLES);
       const token = await getAccessTokenSilently();
       const myLookupTableCache = {};
 

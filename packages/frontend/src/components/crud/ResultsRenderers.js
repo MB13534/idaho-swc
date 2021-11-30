@@ -324,7 +324,7 @@ export function StatusDotRenderer(
 
 export const DropdownValueRenderer = (params) => {
   const { lookupTableCache } = useApp();
-  console.log(params.value);
+
   let returnValue = params.value;
 
   if (

@@ -30,9 +30,9 @@ function DatePicker({ label, name, selectedDate, setSelectedDate, checked }) {
           label={label}
           value={selectedDate}
           onChange={handleDateChange}
-          KeyboardButtonProps={{
-            "aria-label": "change date",
-          }}
+          // KeyboardButtonProps={{
+          //   "aria-label": "change date",
+          // }}
         />
       </FormControl>
     </MuiPickersUtilsProvider>

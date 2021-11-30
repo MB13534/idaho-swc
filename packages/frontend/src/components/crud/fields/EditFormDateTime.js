@@ -123,7 +123,7 @@ function EditFormDateTime({
           variant={config.variant ?? "inline"}
           format={config.format ?? THEME.DATE_FORMAT_SHORT}
           inputVariant={variant}
-          KeyboardButtonProps={config.keyboard ? { size: "small" } : undefined}
+          // KeyboardButtonProps={config.keyboard ? { size: "small" } : undefined}
           InputProps={{
             endAdornment: config.icon && (
               <InputAdornment position="end">
@@ -158,7 +158,7 @@ function EditFormDateTime({
           variant={config.variant ?? "inline"}
           format={config.format ?? THEME.TIME_FORMAT_SHORT}
           inputVariant={variant}
-          KeyboardButtonProps={config.keyboard ? { size: "small" } : undefined}
+          // KeyboardButtonProps={config.keyboard ? { size: "small" } : undefined}
           keyboardIcon={<AccessTime />}
           InputProps={{
             endAdornment: config.icon && (
@@ -194,7 +194,7 @@ function EditFormDateTime({
           variant={config.variant ?? "inline"}
           format={config.format ?? THEME.DATETIME_FORMAT_SHORT}
           inputVariant={variant}
-          KeyboardButtonProps={config.keyboard ? { size: "small" } : undefined}
+          // KeyboardButtonProps={config.keyboard ? { size: "small" } : undefined}
           InputProps={{
             endAdornment: config.icon && (
               <InputAdornment position="end">

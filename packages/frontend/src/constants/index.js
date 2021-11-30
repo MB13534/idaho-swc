@@ -5,10 +5,19 @@ export const STARTING_LOCATION = [-97.4718189239502, 31.050691282461912];
 
 // Configuration
 export const CRUD_MODELS = [
-  { name: "ListPermits", header: "Data Management", icon: <CheckSquare /> },
-  { name: "DmWells", icon: <Droplet /> },
-  { name: "DataWellProductions", icon: <List /> },
-  { name: "ListRolodexes", icon: <CreditCard /> },
+  {
+    name: "ListPermits",
+    sidebarName: "Permits",
+    header: "Data Management",
+    icon: <CheckSquare />,
+  },
+  { name: "DmWells", sidebarName: "Wells", icon: <Droplet /> },
+  {
+    name: "DataWellProductions",
+    sidebarName: "Well Production Data",
+    icon: <List />,
+  },
+  { name: "ListRolodexes", sidebarName: "Rolodex", icon: <CreditCard /> },
 ];
 
 export const CRUD_LOOKUP_TABLES = [

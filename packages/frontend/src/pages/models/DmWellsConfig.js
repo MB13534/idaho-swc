@@ -1,3 +1,4 @@
+// import React from "react";
 import { Renderers } from "../../components/crud/ResultsRenderers";
 import { CRUD_FIELD_TYPES } from "../../constants";
 
@@ -170,6 +171,11 @@ export function columns(modelName) {
   ];
 }
 export const fields = [
+  // {
+  //   type: CRUD_FIELD_TYPES.CUSTOM,
+  //   component: () => <Typography variant={"h4"}>test</Typography>,
+  //   cols: 4,
+  // },
   {
     type: CRUD_FIELD_TYPES.SECTION_HEADER,
     title: "Basic Well Information",
