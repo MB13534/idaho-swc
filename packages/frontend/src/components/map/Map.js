@@ -164,8 +164,18 @@ const Map = ({
                 "yellow",
                 "#74E0FF",
               ],
-              "circle-stroke-width": 1,
-              "circle-stroke-color": "black",
+              "circle-stroke-width": [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                2,
+                1,
+              ],
+              "circle-stroke-color": [
+                "case",
+                ["boolean", ["feature-state", "hover"], false],
+                "yellow",
+                "black",
+              ],
             },
           });
 
@@ -275,6 +285,53 @@ const Map = ({
           map.on("mouseleave", "locations", () => {
             map.getCanvas().style.cursor = "";
           });
+        });
+
+        let hoverID = null;
+
+        map.on("mousemove", "locations", (e) => {
+          if (e.features.length === 0) return;
+
+          if (hoverID) {
+            map.setFeatureState(
+              {
+                source: "locations",
+                id: hoverID,
+              },
+              {
+                hover: false,
+              }
+            );
+          }
+
+          hoverID = e.features[0].id;
+
+          map.setFeatureState(
+            {
+              source: "locations",
+              id: hoverID,
+            },
+            {
+              hover: true,
+            }
+          );
+        });
+
+        // When the mouse leaves the earthquakes-viz layer, update the
+        // feature state of the previously hovered feature
+        map.on("mouseleave", "locations", () => {
+          if (hoverID) {
+            map.setFeatureState(
+              {
+                source: "locations",
+                id: hoverID,
+              },
+              {
+                hover: false,
+              }
+            );
+          }
+          hoverID = null;
         });
 
         // Change it back to a pointer when it leaves.
