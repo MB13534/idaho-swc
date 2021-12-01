@@ -192,7 +192,7 @@ function Default() {
     map.flyTo({
       center: [pointFeatures.longitude_dd, pointFeatures.latitude_dd],
       zoom: 14,
-      padding: { bottom: 200 },
+      padding: { bottom: 250 },
     });
   };
 
@@ -356,6 +356,17 @@ function Default() {
     }
   }, [currentSelectedTimeseriesData, selectedWQParameter]); // eslint-disable-line
 
+  const statusChipColors = {
+    Active: lineColors.blue,
+    Inactive: lineColors.gray,
+    Abandoned: lineColors.gray,
+    "Never Drilled": lineColors.orange,
+    Capped: lineColors.red,
+    Plugged: lineColors.red,
+    Proposed: lineColors.green,
+    Unknown: lineColors.olive,
+  };
+
   const tableColumns = [
     {
       title: "CUWCD Well Name",
@@ -369,7 +380,7 @@ function Default() {
       title: "Well Status",
       field: "well_status",
       render: (rowData) => {
-        return renderStatusChip(rowData.well_status);
+        return renderStatusChip(rowData.well_status, statusChipColors);
       },
     },
   ];
@@ -383,7 +394,7 @@ function Default() {
             Dashboard
           </Typography>
           <Typography variant="subtitle1">
-            Welcome back, {user?.nickname}!
+            Welcome back, {user?.name}!
           </Typography>
         </Grid>
 
