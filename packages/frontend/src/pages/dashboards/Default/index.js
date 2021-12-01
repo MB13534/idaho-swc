@@ -84,13 +84,7 @@ function Default() {
   const { user, getAccessTokenSilently } = useAuth0();
   const service = useService({ toast: false });
   const { currentUser } = useApp();
-
-  const [currentlyPaintedPoint, _setCurrentlyPaintedPoint] = useState(4);
-  const currentlyPaintedPointRef = useRef(currentlyPaintedPoint);
-  const setCurrentlyPaintedPoint = (data) => {
-    currentlyPaintedPointRef.current = data;
-    _setCurrentlyPaintedPoint(data);
-  };
+  const currentlyPaintedPointRef = useRef(null);
 
   //date filter defaults
   const defaultFilterValues = {
@@ -342,8 +336,7 @@ function Default() {
                   error={error}
                   setCurrentSelectedPoint={setCurrentSelectedPoint}
                   radioValue={radioValue}
-                  currentlyPaintedPoint={currentlyPaintedPointRef}
-                  setCurrentlyPaintedPoint={setCurrentlyPaintedPoint}
+                  currentlyPaintedPointRef={currentlyPaintedPointRef}
                 />
               </MapContainer>
             </AccordionDetails>
@@ -604,7 +597,7 @@ function Default() {
                             },
                             { clicked: false }
                           );
-                          setCurrentlyPaintedPoint(rowData.well_ndx);
+                          currentlyPaintedPointRef.current = rowData.well_ndx;
                           map.setFeatureState(
                             { source: "locations", id: rowData.well_ndx },
                             { clicked: true }

@@ -59,8 +59,7 @@ const Map = ({
   radioValue,
   map,
   setMap,
-  currentlyPaintedPoint,
-  setCurrentlyPaintedPoint,
+  currentlyPaintedPointRef,
 }) => {
   const classes = useStyles();
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
@@ -191,13 +190,13 @@ const Map = ({
         //removes previously yellow colored point
         map.on("click", "locations", (e) => {
           if (e.features.length > 0) {
-            if (currentlyPaintedPoint.current) {
+            if (currentlyPaintedPointRef.current) {
               map.setFeatureState(
-                { source: "locations", id: currentlyPaintedPoint.current },
+                { source: "locations", id: currentlyPaintedPointRef.current },
                 { clicked: false }
               );
             }
-            setCurrentlyPaintedPoint(e.features[0].id);
+            currentlyPaintedPointRef.current = e.features[0].id;
             map.setFeatureState(
               { source: "locations", id: e.features[0].id },
               { clicked: true }
