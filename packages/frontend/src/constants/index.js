@@ -5,8 +5,14 @@ export const STARTING_LOCATION = [-97.4718189239502, 31.050691282461912];
 
 // Configuration
 export const CRUD_MODELS = [
+  // {
+  //   name: "ListPermits",
+  //   sidebarName: "Permits",
+  //   header: "Data Management",
+  //   icon: <CheckSquare />,
+  // },
   {
-    name: "ListPermits",
+    name: "DmPermits",
     sidebarName: "Permits",
     header: "Data Management",
     icon: <CheckSquare />,
