@@ -129,8 +129,6 @@ const reportsRoutes = {
       component: Blank,
     },
   ],
-  guard: AdminGuard,
-  visibilityFilter: AdminVisibilityFilter,
 };
 const mapRoutes = {
   id: "Map",
@@ -138,8 +136,6 @@ const mapRoutes = {
   path: "/data-access/map",
   name: "Map",
   component: Blank,
-  guard: AdminGuard,
-  visibilityFilter: AdminVisibilityFilter,
 };
 
 const timeseriesRoutes = {
