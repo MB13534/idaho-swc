@@ -141,6 +141,7 @@ const Map = ({
                   has_production: location.has_production,
                   has_waterlevels: location.has_waterlevels,
                   has_wqdata: location.has_wqdata,
+                  id: location.id,
                 },
                 geometry: {
                   type: location.location_geometry.type,
@@ -240,7 +241,7 @@ const Map = ({
 
           // Copy coordinates array.
           const coordinates = e.features[0].geometry.coordinates.slice();
-          // const description = data.cuwcd_well_number;
+
           // Ensure that if the map is zoomed out such that multiple
           // copies of the feature are visible, the popup appears
           // over the copy being pointed to.
@@ -248,30 +249,24 @@ const Map = ({
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
           }
 
-          popup
-            .setLngLat(coordinates)
-            .setHTML(
-              '<div class="' +
-                classes.popupWrap +
-                '"><h3>Properties</h3><table class="' +
-                classes.propTable +
-                '"><tbody>' +
-                Object.entries(data)
-                  .map(([k, v]) => {
-                    if (
-                      k === "hlink" ||
-                      k === "URL" ||
-                      k === "MoreInfo" ||
-                      k === "datacall"
-                    ) {
-                      return `<tr><td><strong>${k}</strong></td><td><a href="${v}" target="_blank">Link</a></td></tr>`;
-                    }
-                    return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
-                  })
-                  .join("") +
-                "</tbody></table></div>"
-            )
-            .addTo(map);
+          const html =
+            '<div class="' +
+            classes.popupWrap +
+            '"><h3>Properties</h3><table class="' +
+            classes.propTable +
+            '"><tbody>' +
+            `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${data.id}">Link</a></td></tr>` +
+            Object.entries(data)
+              .map(([k, v]) => {
+                if (k === "location_geometry") {
+                  return null;
+                }
+                return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
+              })
+              .join("") +
+            "</tbody></table></div>";
+
+          popup.setLngLat(coordinates).setHTML(html).addTo(map);
 
           map.on("closeAllPopups", () => {
             popup.remove();
