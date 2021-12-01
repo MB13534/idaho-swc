@@ -43,6 +43,8 @@ import ExportDataButton from "../../../components/graphs/ExportDataButton";
 import OptionsPicker from "../../../components/pickers/OptionsPicker";
 import Link from "@material-ui/core/Link";
 import { Edit } from "@material-ui/icons";
+import mapboxgl from "mapbox-gl";
+import { makeStyles } from "@material-ui/core/styles";
 
 const Divider = styled(MuiDivider)(spacing);
 
@@ -78,7 +80,30 @@ const FiltersContainer = styled.div`
 
 const Grid = styled(MuiGrid)(spacing);
 
+const useStyles = makeStyles(() => ({
+  propTable: {
+    borderRadius: "5px",
+    borderCollapse: "collapse",
+    border: "1px solid #ccc",
+    "& td": {
+      padding: "3px 6px",
+      margin: 0,
+    },
+    "& tr:nth-child(even)": {
+      backgroundColor: "#eee",
+    },
+    "& tr": {
+      borderRadius: "5px",
+    },
+  },
+  popupWrap: {
+    maxHeight: 300,
+    overflowY: "scroll",
+  },
+}));
+
 function Default() {
+  const classes = useStyles();
   const [map, setMap] = useState();
   const saveRef = useRef(null);
   const { user, getAccessTokenSilently } = useAuth0();
@@ -111,9 +136,67 @@ function Default() {
   const handleRadioChange = (event) => {
     setRadioValue(event.target.value);
     map.fire("closeAllPopups");
+    map.setFeatureState(
+      {
+        source: "locations",
+        id: currentlyPaintedPointRef.current,
+      },
+      { clicked: false }
+    );
     setCurrentSelectedTimeseriesData(null);
     setCurrentSelectedPoint(null);
     setSelectedWQParameter(2);
+  };
+
+  const handlePointInteractions = (pointFeatures) => {
+    map.fire("closeAllPopups");
+
+    map.setFeatureState(
+      {
+        source: "locations",
+        id: currentlyPaintedPointRef.current,
+      },
+      { clicked: false }
+    );
+    currentlyPaintedPointRef.current = pointFeatures.well_ndx;
+    map.setFeatureState(
+      { source: "locations", id: pointFeatures.well_ndx },
+      { clicked: true }
+    );
+
+    let popup = new mapboxgl.Popup({ maxWidth: "300px" });
+
+    // Copy coordinates array.
+    const coordinates = pointFeatures.location_geometry.coordinates.slice();
+
+    const html =
+      '<div class="' +
+      classes.popupWrap +
+      '"><h3>Properties</h3><table class="' +
+      classes.propTable +
+      '"><tbody>' +
+      `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${pointFeatures.id}">Link</a></td></tr>` +
+      Object.entries(pointFeatures)
+        .map(([k, v]) => {
+          if (k === "location_geometry") {
+            return null;
+          }
+          return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
+        })
+        .join("") +
+      "</tbody></table></div>";
+
+    popup.setLngLat(coordinates).setHTML(html).addTo(map);
+
+    map.on("closeAllPopups", () => {
+      popup.remove();
+    });
+
+    map.flyTo({
+      center: [pointFeatures.longitude_dd, pointFeatures.latitude_dd],
+      zoom: 16,
+      padding: { bottom: 340 },
+    });
   };
 
   const [filteredData, setFilteredData] = React.useState([]);
@@ -524,50 +607,38 @@ function Default() {
                       (rowData) => ({
                         icon: "bar_chart",
                         tooltip: "Production",
+                        disabled: !rowData.has_production,
                         onClick: (event, rowData) => {
                           setRadioValue("has_production");
                           setCurrentSelectedPoint(rowData.cuwcd_well_number);
                           setCurrentSelectedTimeseriesData(null);
                           setSelectedWQParameter(2);
-                          map.fire("closeAllPopups");
-                          map.flyTo({
-                            center: [rowData.longitude_dd, rowData.latitude_dd],
-                            zoom: 16,
-                          });
+                          handlePointInteractions(rowData);
                         },
-                        disabled: !rowData.has_production,
                       }),
                       (rowData) => ({
                         icon: "water",
                         tooltip: "Water Levels",
+                        disabled: !rowData.has_waterlevels,
                         onClick: (event, rowData) => {
                           setRadioValue("has_waterlevels");
                           setCurrentSelectedPoint(rowData.cuwcd_well_number);
                           setCurrentSelectedTimeseriesData(null);
                           setSelectedWQParameter(2);
-                          map.fire("closeAllPopups");
-                          map.flyTo({
-                            center: [rowData.longitude_dd, rowData.latitude_dd],
-                            zoom: 16,
-                          });
+                          handlePointInteractions(rowData);
                         },
-                        disabled: !rowData.has_waterlevels,
                       }),
                       (rowData) => ({
                         icon: "bloodtype",
                         tooltip: "Water Quality",
+                        disabled: !rowData.has_wqdata,
                         onClick: (event, rowData) => {
                           setRadioValue("has_wqdata");
                           setCurrentSelectedPoint(rowData.cuwcd_well_number);
                           setCurrentSelectedTimeseriesData(null);
                           // setSelectedWQParameter(2);
-                          map.fire("closeAllPopups");
-                          map.flyTo({
-                            center: [rowData.longitude_dd, rowData.latitude_dd],
-                            zoom: 16,
-                          });
+                          handlePointInteractions(rowData);
                         },
-                        disabled: !rowData.has_wqdata,
                       }),
                       (rowData) => ({
                         icon: () => {
@@ -576,8 +647,6 @@ function Default() {
                               component={NavLink}
                               exact
                               to={"/models/dm-wells/" + rowData.id}
-                              // target="_blank"
-                              // rel="noreferrer noopener"
                             >
                               <Edit />
                             </Link>
@@ -589,24 +658,7 @@ function Default() {
                         icon: "near_me",
                         tooltip: "Fly to on Map",
                         onClick: (event, rowData) => {
-                          map.fire("closeAllPopups");
-                          map.setFeatureState(
-                            {
-                              source: "locations",
-                              id: currentlyPaintedPointRef.current,
-                            },
-                            { clicked: false }
-                          );
-                          currentlyPaintedPointRef.current = rowData.well_ndx;
-                          map.setFeatureState(
-                            { source: "locations", id: rowData.well_ndx },
-                            { clicked: true }
-                          );
-                          map.flyTo({
-                            center: [rowData.longitude_dd, rowData.latitude_dd],
-                            zoom: 16,
-                            padding: { bottom: 0 },
-                          });
+                          handlePointInteractions(rowData);
                         },
                       }),
                     ]}
