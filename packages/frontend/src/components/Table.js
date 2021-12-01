@@ -12,7 +12,7 @@ const Table = ({
   pageSize = 10,
   isLoading = false,
   height,
-  actions,
+  actions = [],
 }) => {
   const { doToast } = useApp();
   return (

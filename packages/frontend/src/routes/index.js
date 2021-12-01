@@ -42,6 +42,7 @@ import CRUD from "../pages/docs/CRUD";
 import Deploy from "../pages/docs/Deploy";
 import UserVisibilityFilter from "../components/UserVisibilityFilter";
 import UserGuard from "../components/UserGuard";
+import UiPermitsExpiringsReport from "../pages/dataAccess/reports/UiPermitsExpiringsReport";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -107,6 +108,11 @@ const reportsRoutes = {
   header: "Data Access",
   icon: <FileText />,
   children: [
+    {
+      path: "/data-access/reports/expiring-permits",
+      name: "Expiring Permits",
+      component: UiPermitsExpiringsReport,
+    },
     {
       path: "/data-access/reports/production",
       name: "Production",
