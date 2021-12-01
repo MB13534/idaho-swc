@@ -85,6 +85,13 @@ function Default() {
   const service = useService({ toast: false });
   const { currentUser } = useApp();
 
+  const [currentlyPaintedPoint, _setCurrentlyPaintedPoint] = useState(4);
+  const currentlyPaintedPointRef = useRef(currentlyPaintedPoint);
+  const setCurrentlyPaintedPoint = (data) => {
+    currentlyPaintedPointRef.current = data;
+    _setCurrentlyPaintedPoint(data);
+  };
+
   //date filter defaults
   const defaultFilterValues = {
     startDate: null,
@@ -335,6 +342,8 @@ function Default() {
                   error={error}
                   setCurrentSelectedPoint={setCurrentSelectedPoint}
                   radioValue={radioValue}
+                  currentlyPaintedPoint={currentlyPaintedPointRef}
+                  setCurrentlyPaintedPoint={setCurrentlyPaintedPoint}
                 />
               </MapContainer>
             </AccordionDetails>
@@ -588,9 +597,22 @@ function Default() {
                         tooltip: "Fly to on Map",
                         onClick: (event, rowData) => {
                           map.fire("closeAllPopups");
+                          map.setFeatureState(
+                            {
+                              source: "locations",
+                              id: currentlyPaintedPointRef.current,
+                            },
+                            { clicked: false }
+                          );
+                          setCurrentlyPaintedPoint(rowData.well_ndx);
+                          map.setFeatureState(
+                            { source: "locations", id: rowData.well_ndx },
+                            { clicked: true }
+                          );
                           map.flyTo({
                             center: [rowData.longitude_dd, rowData.latitude_dd],
                             zoom: 16,
+                            padding: { bottom: 0 },
                           });
                         },
                       }),

@@ -59,6 +59,8 @@ const Map = ({
   radioValue,
   map,
   setMap,
+  currentlyPaintedPoint,
+  setCurrentlyPaintedPoint,
 }) => {
   const classes = useStyles();
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
@@ -71,10 +73,10 @@ const Map = ({
     { url: "satellite-streets-v11", icon: "satellite_alt" },
   ];
 
-  function onPointClick(e) {
-    coordinates.current.style.display = "block";
-    coordinates.current.innerHTML = `Longitude: ${e.features[0].geometry.coordinates[0]}<br />Latitude: ${e.features[0].geometry.coordinates[1]}`;
-  }
+  // function onPointClick(e) {
+  //   coordinates.current.style.display = "block";
+  //   coordinates.current.innerHTML = `Longitude: ${e.features[0].geometry.coordinates[0]}<br />Latitude: ${e.features[0].geometry.coordinates[1]}`;
+  // }
 
   useEffect(() => {
     const map = new mapboxgl.Map({
@@ -119,15 +121,13 @@ const Map = ({
     if (mapIsLoaded && data?.length > 0 && typeof map != "undefined") {
       if (!map.getSource("locations")) {
         map.addSource("locations", {
-          // This GeoJSON contains features that include an "icon"
-          // property. The value of the "icon" property corresponds
-          // to an image in the Mapbox Streets style's sprite.
           type: "geojson",
           data: {
             type: "FeatureCollection",
             features: data.map((location) => {
               return {
                 type: "Feature",
+                id: location.well_ndx,
                 properties: {
                   well_ndx: location.well_ndx,
                   cuwcd_well_number: location.cuwcd_well_number,
@@ -152,37 +152,61 @@ const Map = ({
           },
         });
         // Add a layer showing the places.
-        map.addLayer({
-          id: "locations",
-          type: "circle",
+        if (!map.getLayer("locations")) {
+          map.addLayer({
+            id: "locations",
+            type: "circle",
+            source: "locations",
+            paint: {
+              "circle-radius": 8,
+              "circle-color": [
+                "case",
+                ["boolean", ["feature-state", "clicked"], false],
+                "yellow",
+                "#74E0FF",
+              ],
+              "circle-stroke-width": 1,
+              "circle-stroke-color": "black",
+            },
+          });
 
-          source: "locations",
-          paint: {
-            "circle-radius": 8,
-            "circle-color": "#74E0FF",
-            "circle-stroke-width": 1,
-            "circle-stroke-color": "black",
-          },
+          map.addLayer({
+            id: "locations-labels",
+            type: "symbol",
+            source: "locations",
+            minzoom: 12,
+            layout: {
+              "text-field": ["get", "cuwcd_well_number"],
+              "text-offset": [0, -2],
+              "text-size": 14,
+            },
+            paint: {
+              "text-halo-color": "#ffffff",
+              "text-halo-width": 0.5,
+            },
+          });
+        }
+
+        //makes currently selected point yellow
+        //removes previously yellow colored point
+        map.on("click", "locations", (e) => {
+          if (e.features.length > 0) {
+            if (currentlyPaintedPoint.current) {
+              map.setFeatureState(
+                { source: "locations", id: currentlyPaintedPoint.current },
+                { clicked: false }
+              );
+            }
+            setCurrentlyPaintedPoint(e.features[0].id);
+            map.setFeatureState(
+              { source: "locations", id: e.features[0].id },
+              { clicked: true }
+            );
+          }
         });
 
-        map.addLayer({
-          id: "locations-labels",
-          type: "symbol",
-          source: "locations",
-          minzoom: 12,
-          layout: {
-            "text-field": ["get", "cuwcd_well_number"],
-            "text-offset": [0, -2],
-            "text-size": 14,
-          },
-          paint: {
-            "text-halo-color": "#ffffff",
-            "text-halo-width": 0.5,
-          },
-        });
-
-        // When a click event occurs on a feature in the places layer, open a popup at the
-        // location of the feature, with description HTML from its properties.
+        //set well number used to fetch data for graph
+        //fly to graph
         map.on("click", "locations", (e) => {
           setCurrentSelectedPoint(e.features[0].properties.cuwcd_well_number);
           map.flyTo({
@@ -196,8 +220,10 @@ const Map = ({
         });
 
         //for lat/long display
-        map.on("click", "locations", onPointClick);
+        // map.on("click", "locations", onPointClick);
 
+        // When a click event occurs on a feature in the places layer, open a popup at the
+        // location of the feature, with description HTML from its properties.
         map.on("click", "locations", (e) => {
           let popup = new mapboxgl.Popup({ maxWidth: "300px" });
 
