@@ -67,6 +67,7 @@ const UiPermitsExpiringsReport = () => {
         render: (rowData) => rowData.assoc_wells.join(", "),
         width: "100%",
       },
+      { title: "UUID", field: "id" },
     ],
   ];
 
@@ -117,14 +118,13 @@ const UiPermitsExpiringsReport = () => {
                 data={data}
                 height="600px"
                 actions={[
-                  () => ({
+                  (rowData) => ({
                     icon: () => {
                       return (
                         <Link
                           component={NavLink}
                           exact
-                          // to={"/models/dm-permits/" + rowData.id}
-                          to={"/models/dm-permits/"}
+                          to={"/models/dm-permits/" + rowData.id}
                         >
                           <Edit />
                         </Link>

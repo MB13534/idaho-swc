@@ -2,8 +2,8 @@ import React from "react";
 
 import AppBar from "./AppBar";
 import Introduction from "./Introduction";
-import Features from "./Features";
-import FAQ from "./FAQ";
+// import Features from "./Features";
+// import FAQ from "./FAQ";
 import JoinUs from "./JoinUs";
 
 function Presentation() {
@@ -11,8 +11,8 @@ function Presentation() {
     <React.Fragment>
       <AppBar />
       <Introduction />
-      <Features />
-      <FAQ />
+      {/*<Features />*/}
+      {/*<FAQ />*/}
       <JoinUs />
     </React.Fragment>
   );

@@ -38,7 +38,7 @@ function JoinUs() {
         <Grid container alignItems="center" justify="center">
           <Grid item xs={12} md={6} lg={6} xl={6}>
             <Typography variant="h2" gutterBottom>
-              Check It Out
+              Try it now
             </Typography>
             <Subtitle variant="h5" gutterBottom>
               LRE Water Unified Platform is fast, extendable and fully

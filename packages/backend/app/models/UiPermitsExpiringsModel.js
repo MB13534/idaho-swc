@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT, NUMBER, DATE} = DataTypes;
+  const {INTEGER, TEXT, NUMBER, DATE, UUID} = DataTypes;
   const UiPermitsExpirings = sequelize.define(
     'ui_permits_expirings',
     {
@@ -33,6 +33,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       assoc_wells: {
         type: TEXT,
+      },
+      id: {
+        type: UUID,
       },
     },
     {

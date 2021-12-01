@@ -42,7 +42,7 @@ const Title = styled(Typography)`
   }
 
   ${(props) => props.theme.breakpoints.up("md")} {
-    font-size: 4.5rem;
+    font-size: 4.2rem;
   }
 
   span {
@@ -85,15 +85,13 @@ function Introduction() {
             <BackgroundVideo mp4={"/static/video/1048072384-preview.mp4"} />
             <Content>
               <Title variant="h1" gutterBottom>
-                A water-centric <span>starter kit</span> for fast & modern web
-                applications
+                Your <span>Unified Platform</span> for data monitoring
               </Title>
               <Grid container justify="center" spacing={4}>
                 <Grid item xs={12} lg={10}>
                   <Subtitle color="textSecondary">
-                    This is a web application starter kit tailor-made for water
-                    engineering projects. It aims to be a fantastic starting
-                    point for projects of any size.
+                    Access and visualize all your data in one place. Built-with
+                    a modern, robust, and secure technology stack.
                   </Subtitle>
                 </Grid>
               </Grid>
