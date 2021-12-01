@@ -127,7 +127,7 @@ function UserDropdown({ children }) {
               }}
               variant="dot"
             >
-              <TinyAvatar alt={user.nickname} src={user.picture} />
+              <TinyAvatar alt={user.name} src={user.picture} />
             </TinyUserAvatarBadge>
           </IconButton>
         </Tooltip>
@@ -152,10 +152,10 @@ function UserDropdown({ children }) {
                 }}
                 variant="dot"
               >
-                <Avatar alt={user.nickname} src={user.picture} />
+                <Avatar alt={user.name} src={user.picture} />
               </UserAvatarBadge>
             }
-            title={user.nickname}
+            title={user.name}
             subheader={user.email}
             onClick={() => {
               history.push(ROUTES.USER_PROFILE);

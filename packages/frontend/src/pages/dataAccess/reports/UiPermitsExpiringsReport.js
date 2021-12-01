@@ -13,6 +13,7 @@ import Panel from "../../../components/panels/Panel";
 import Link from "@material-ui/core/Link";
 import { NavLink } from "react-router-dom";
 import { Add, Edit } from "@material-ui/icons";
+import { lineColors, renderStatusChip } from "../../../utils";
 
 const TableWrapper = styled.div`
   overflow-y: auto;
@@ -51,10 +52,22 @@ const UiPermitsExpiringsReport = () => {
 
   const tabInfo = [{ label: "Expiring Permits", data: data }];
 
+  const statusChipColors = {
+    EXPIRED: lineColors.red,
+    false: lineColors.blue,
+    true: lineColors.orange,
+  };
+
   const tabColumns = [
     [
       { title: "Permit Number", field: "permit_number" },
-      { title: "Expiration Status", field: "exp_status" },
+      {
+        title: "Expiration Status",
+        field: "exp_status",
+        render: (rowData) => {
+          return renderStatusChip(rowData.exp_status, statusChipColors);
+        },
+      },
       { title: "Permit Year", field: "permit_year" },
       { title: "Permitted Value", field: "permitted_value" },
       { title: "Agg System Name", field: "agg_system_name" },
@@ -70,8 +83,6 @@ const UiPermitsExpiringsReport = () => {
       { title: "UUID", field: "id" },
     ],
   ];
-
-  console.log(data);
 
   const handleTabChange = (event, newValue) => {
     setActiveTab(newValue);

@@ -231,7 +231,7 @@ const Map = ({
               e.features[0].properties.latitude_dd,
             ],
             zoom: 14,
-            padding: { bottom: 200 },
+            padding: { bottom: 250 },
           });
         });
 

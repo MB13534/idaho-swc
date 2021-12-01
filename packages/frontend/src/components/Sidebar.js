@@ -424,14 +424,12 @@ const Sidebar = ({
                   }}
                   variant="dot"
                 >
-                  <Avatar alt={user.nickname} src={user.picture} />
+                  <Avatar alt={user.name} src={user.picture} />
                 </SidebarFooterBadge>
               </UserDropdown>
             </Grid>
             <Grid item>
-              <SidebarFooterText variant="body2">
-                {user.nickname}
-              </SidebarFooterText>
+              <SidebarFooterText variant="body2">{user.name}</SidebarFooterText>
               <SidebarFooterSubText variant="caption">
                 {user.email}
               </SidebarFooterSubText>

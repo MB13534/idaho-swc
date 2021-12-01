@@ -32,7 +32,6 @@ export const copyToClipboard = (data, columns, callback) => {
 };
 
 export const downloadChartImage = (title, extension, ref) => {
-  // console.log(ref.current);
   const base64 = ref.current.toBase64Image();
   const downloadLink = document.createElement("a");
   downloadLink.href = base64;
@@ -74,7 +73,7 @@ export const dateFormatter = (date, format) => {
   return moment(date).format(format);
 };
 
-export const renderStatusChip = (status) => {
+export const renderStatusChip = (status, colors) => {
   const Chip = styled(MuiChip)`
     ${spacing}
     height: 20px;
@@ -86,19 +85,15 @@ export const renderStatusChip = (status) => {
     color: ${(props) => props.theme.palette.common.white};
   `;
 
-  const colors = {
-    Active: lineColors.blue,
-    Inactive: lineColors.gray,
-    Abandoned: lineColors.gray,
-    "Never Drilled": lineColors.orange,
-    Capped: lineColors.red,
-    Plugged: lineColors.red,
-    Proposed: lineColors.green,
-    Unknown: lineColors.olive,
-  };
   return typeof status === "string" ? (
-    status.split(",").map((word) => {
-      return <Chip label={word} rgbcolor={colors[word]} key={word} mr={1} />;
+    status.split(",").map((word, i) => {
+      let wordColor;
+      if (!isNaN(new Date(word.split(" ")[1]).getTime())) {
+        wordColor = new Date(word.split(" ")[1]) - new Date() < 2592000000;
+      } else {
+        wordColor = word.split(" ")[0];
+      }
+      return <Chip label={word} rgbcolor={colors[wordColor]} key={i} mr={1} />;
     })
   ) : (
     <Chip label="Unavailable" rgbcolor={lineColors.orange} />

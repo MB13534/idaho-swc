@@ -15,7 +15,7 @@ class ResetZoomControl {
     this._container.addEventListener("click", () => {
       map.flyTo({
         center: STARTING_LOCATION,
-        zoom: 11,
+        zoom: 12,
       });
     });
     return this._container;
