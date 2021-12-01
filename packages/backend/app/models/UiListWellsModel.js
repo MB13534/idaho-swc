@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT, NUMBER, GEOMETRY, BOOLEAN, UUID} = DataTypes;
+  const {INTEGER, TEXT, NUMBER, GEOMETRY, BOOLEAN, UUID, BIGINT} = DataTypes;
   const UiListWells = sequelize.define(
     'ui_list_wells',
     {
@@ -45,6 +45,27 @@ module.exports = (sequelize, DataTypes) => {
       },
       id: {
         type: UUID,
+      },
+      is_permitted: {
+        type: BOOLEAN,
+      },
+      is_exempt: {
+        type: BOOLEAN,
+      },
+      is_monitoring: {
+        type: BOOLEAN,
+      },
+      well_type: {
+        type: TEXT,
+      },
+      count_production: {
+        type: BIGINT,
+      },
+      count_waterlevels: {
+        type: BIGINT,
+      },
+      count_wqdata: {
+        type: BIGINT,
       },
     },
     {

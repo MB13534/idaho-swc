@@ -116,7 +116,8 @@ const overrides = {
         webkitBoxShadow: "inset 0 0 6px rgba(0,0,0,0.00)",
       },
       "*::-webkit-scrollbar-thumb": {
-        backgroundColor: "rgba(255,255,255,.2)",
+        // backgroundColor: "rgba(255,255,255,.2)",
+        backgroundColor: "rgb(178,178,178)",
         border: "none",
         borderRadius: "8px",
       },

@@ -25,7 +25,7 @@ const Coordinates = styled.pre`
   font-size: 11px;
   line-height: 18px;
   border-radius: 3px;
-  z-index: 100000;
+  z-index: 1000;
   display: none;
 `;
 
@@ -46,7 +46,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   popupWrap: {
-    maxHeight: 300,
+    maxHeight: 200,
     overflowY: "scroll",
   },
 }));
@@ -72,17 +72,17 @@ const Map = ({
     { url: "satellite-streets-v11", icon: "satellite_alt" },
   ];
 
-  // function onPointClick(e) {
-  //   coordinates.current.style.display = "block";
-  //   coordinates.current.innerHTML = `Longitude: ${e.features[0].geometry.coordinates[0]}<br />Latitude: ${e.features[0].geometry.coordinates[1]}`;
-  // }
+  function onPointClick(e) {
+    coordinates.current.style.display = "block";
+    coordinates.current.innerHTML = `Longitude: ${e.features[0].geometry.coordinates[0]}<br />Latitude: ${e.features[0].geometry.coordinates[1]}`;
+  }
 
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainer.current,
       style: "mapbox://styles/mapbox/" + DUMMY_BASEMAP_LAYERS[0].url,
       center: STARTING_LOCATION,
-      zoom: 11,
+      zoom: 12,
     });
 
     map.addControl(new mapboxgl.NavigationControl(), "top-left");
@@ -137,11 +137,17 @@ const Map = ({
                   primary_use: location.primary_use,
                   well_owner: location.well_owner,
                   well_status: location.well_status,
-                  location_geometry: location.location_geometry,
                   has_production: location.has_production,
                   has_waterlevels: location.has_waterlevels,
                   has_wqdata: location.has_wqdata,
                   id: location.id,
+                  is_permitted: location.is_permitted,
+                  is_exempt: location.is_exempt,
+                  is_monitoring: location.is_monitoring,
+                  well_type: location.well_type,
+                  count_production: location.count_production,
+                  count_waterlevels: location.count_waterlevels,
+                  count_wqdata: location.count_wqdata,
                 },
                 geometry: {
                   type: location.location_geometry.type,
@@ -224,13 +230,13 @@ const Map = ({
               e.features[0].properties.longitude_dd,
               e.features[0].properties.latitude_dd,
             ],
-            // zoom: 12,
-            padding: { bottom: 340 },
+            zoom: 14,
+            padding: { bottom: 200 },
           });
         });
 
         //for lat/long display
-        // map.on("click", "locations", onPointClick);
+        map.on("click", "locations", onPointClick);
 
         // When a click event occurs on a feature in the places layer, open a popup at the
         // location of the feature, with description HTML from its properties.
@@ -258,9 +264,6 @@ const Map = ({
             `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${data.id}">Link</a></td></tr>` +
             Object.entries(data)
               .map(([k, v]) => {
-                if (k === "location_geometry") {
-                  return null;
-                }
                 return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
               })
               .join("") +

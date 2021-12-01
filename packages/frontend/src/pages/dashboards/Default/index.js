@@ -97,7 +97,7 @@ const useStyles = makeStyles(() => ({
     },
   },
   popupWrap: {
-    maxHeight: 300,
+    maxHeight: 200,
     overflowY: "scroll",
   },
 }));
@@ -178,9 +178,6 @@ function Default() {
       `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${pointFeatures.id}">Link</a></td></tr>` +
       Object.entries(pointFeatures)
         .map(([k, v]) => {
-          if (k === "location_geometry") {
-            return null;
-          }
           return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
         })
         .join("") +
@@ -194,8 +191,8 @@ function Default() {
 
     map.flyTo({
       center: [pointFeatures.longitude_dd, pointFeatures.latitude_dd],
-      zoom: 16,
-      padding: { bottom: 340 },
+      zoom: 14,
+      padding: { bottom: 200 },
     });
   };
 
