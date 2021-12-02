@@ -134,6 +134,7 @@ function Default() {
   };
 
   const handleRadioChange = (event) => {
+    console.log(event.target);
     setRadioValue(event.target.value);
     map.fire("closeAllPopups");
     map.setFeatureState(
@@ -145,7 +146,6 @@ function Default() {
     );
     setCurrentSelectedTimeseriesData(null);
     setCurrentSelectedPoint(null);
-    setSelectedWQParameter(2);
   };
 
   const handlePointInteractions = (pointFeatures) => {
@@ -331,23 +331,31 @@ function Default() {
         const parameterFilteredData = currentSelectedTimeseriesData.filter(
           (item) => item.wq_parameter_ndx === selectedWQParameter
         );
-        graphData = {
-          labels: parameterFilteredData.map((item) => new Date(item.test_date)),
-          units: parameterFilteredData[0].unit_desc,
-          parameter: parameterFilteredData[0].wq_parameter_name,
-          datasets: [
-            {
-              label: parameterFilteredData[0].cuwcd_well_number,
-              backgroundColor: lighten(lineColors.blue, 0.5),
-              borderColor: lineColors.blue,
-              data: parameterFilteredData.map((item) => item.result_value),
-              pointStyle: "circle",
-              borderWidth: 2,
-              pointHoverRadius: 9,
-              pointRadius: 7,
-            },
-          ],
-        };
+
+        graphData =
+          parameterFilteredData.length === 0
+            ? []
+            : {
+                labels: parameterFilteredData.map(
+                  (item) => new Date(item.test_date)
+                ),
+                units: parameterFilteredData[0].unit_desc,
+                parameter: parameterFilteredData[0].wq_parameter_name,
+                datasets: [
+                  {
+                    label: parameterFilteredData[0].cuwcd_well_number,
+                    backgroundColor: lighten(lineColors.blue, 0.5),
+                    borderColor: lineColors.blue,
+                    data: parameterFilteredData.map(
+                      (item) => item.result_value
+                    ),
+                    pointStyle: "circle",
+                    borderWidth: 2,
+                    pointHoverRadius: 9,
+                    pointRadius: 7,
+                  },
+                ],
+              };
       }
 
       setFilteredMutatedGraphData(graphData);
@@ -620,7 +628,6 @@ function Default() {
                           setRadioValue("has_production");
                           setCurrentSelectedPoint(rowData.cuwcd_well_number);
                           setCurrentSelectedTimeseriesData(null);
-                          setSelectedWQParameter(2);
                           handlePointInteractions(rowData);
                         },
                       }),
@@ -632,7 +639,6 @@ function Default() {
                           setRadioValue("has_waterlevels");
                           setCurrentSelectedPoint(rowData.cuwcd_well_number);
                           setCurrentSelectedTimeseriesData(null);
-                          setSelectedWQParameter(2);
                           handlePointInteractions(rowData);
                         },
                       }),
@@ -644,7 +650,6 @@ function Default() {
                           setRadioValue("has_wqdata");
                           setCurrentSelectedPoint(rowData.cuwcd_well_number);
                           setCurrentSelectedTimeseriesData(null);
-                          // setSelectedWQParameter(2);
                           handlePointInteractions(rowData);
                         },
                       }),
