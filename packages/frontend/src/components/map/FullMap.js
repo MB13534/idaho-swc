@@ -4,19 +4,12 @@ import styled from "styled-components/macro";
 import { STARTING_LOCATION } from "../../constants";
 import ToggleBasemapControl from "./ToggleBasemapControl";
 import ResetZoomControl from "./ResetZoomControl";
-import {
-  Accordion,
-  AccordionDetails,
-  Tooltip,
-  Typography,
-} from "@material-ui/core";
-import AccordionSummary from "@material-ui/core/AccordionSummary";
-import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import { Tooltip } from "@material-ui/core";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
 const Container = styled.div`
-  height: 275px;
+  height: calc(100vh - 68px - 48px - 48px - 60px);
   width: 100%;
 `;
 
@@ -130,42 +123,28 @@ const Map = () => {
 
       marker.on("dragend", onDragEnd);
     }
-  }, [mapIsLoaded, map]);
+  });
 
   return (
     <>
-      <Accordion defaultExpanded>
-        <AccordionSummary
-          expandIcon={<ExpandMoreIcon />}
-          aria-controls="map"
-          id="map"
-          style={{ padding: "0" }}
-        >
-          <Typography variant="h4" ml={2}>
-            Map
-          </Typography>
-        </AccordionSummary>
-        <AccordionDetails style={{ padding: "0" }}>
-          <Container>
-            <MapContainer ref={mapContainerRef}>
-              <Coordinates ref={coordinatesRef}>
-                Longitude:
-                <Tooltip title="Copy Longitude to Clipboard">
-                  <Coord ref={longRef} />
-                </Tooltip>
-                <br />
-                Latitude:
-                <Tooltip
-                  title="Copy Latitude to Clipboard"
-                  placement="bottom-start"
-                >
-                  <Coord ref={latRef} />
-                </Tooltip>
-              </Coordinates>
-            </MapContainer>
-          </Container>
-        </AccordionDetails>
-      </Accordion>
+      <Container>
+        <MapContainer ref={mapContainerRef}>
+          <Coordinates ref={coordinatesRef}>
+            Longitude:
+            <Tooltip title="Copy Longitude to Clipboard">
+              <Coord ref={longRef} />
+            </Tooltip>
+            <br />
+            Latitude:
+            <Tooltip
+              title="Copy Latitude to Clipboard"
+              placement="bottom-start"
+            >
+              <Coord ref={latRef} />
+            </Tooltip>
+          </Coordinates>
+        </MapContainer>
+      </Container>
     </>
   );
 };

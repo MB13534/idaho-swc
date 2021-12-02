@@ -1,6 +1,8 @@
-// import React from "react";
+import React from "react";
 import { Renderers } from "../../components/crud/ResultsRenderers";
 import { CRUD_FIELD_TYPES } from "../../constants";
+import LatLongMap from "../../components/map/LatLongMap";
+import { Grid } from "@material-ui/core";
 
 export const displayName = (row) => {
   return `${row.cuwcd_well_number}`;
@@ -171,11 +173,6 @@ export function columns(modelName) {
   ];
 }
 export const fields = [
-  // {
-  //   type: CRUD_FIELD_TYPES.CUSTOM,
-  //   component: () => <Typography variant={"h4"}>test</Typography>,
-  //   cols: 4,
-  // },
   {
     type: CRUD_FIELD_TYPES.SECTION_HEADER,
     title: "Basic Well Information",
@@ -275,6 +272,14 @@ export const fields = [
     },
     cols: 4,
     isOpen: true,
+  },
+  {
+    type: CRUD_FIELD_TYPES.CUSTOM,
+    component: () => (
+      <Grid item xs={12} style={{ paddingTop: "0" }}>
+        <LatLongMap />
+      </Grid>
+    ),
   },
   {
     type: CRUD_FIELD_TYPES.SECTION_HEADER,

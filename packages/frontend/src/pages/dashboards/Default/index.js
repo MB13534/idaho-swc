@@ -111,6 +111,8 @@ function Default() {
   const { currentUser } = useApp();
   const currentlyPaintedPointRef = useRef(null);
   const coordinatesRef = useRef(null);
+  const longRef = useRef(null);
+  const latRef = useRef(null);
 
   //date filter defaults
   const defaultFilterValues = {
@@ -166,11 +168,11 @@ function Default() {
 
     let popup = new mapboxgl.Popup({ maxWidth: "300px" });
     coordinatesRef.current.style.display = "block";
-    coordinatesRef.current.innerHTML = `Longitude: ${pointFeatures.location_geometry.coordinates[0]}<br />Latitude: ${pointFeatures.location_geometry.coordinates[1]}`;
+    longRef.current.innerHTML = pointFeatures.location_geometry.coordinates[0];
+    latRef.current.innerHTML = pointFeatures.location_geometry.coordinates[1];
 
     // Copy coordinates array.
     const coordinates = pointFeatures.location_geometry.coordinates.slice();
-    console.log(coordinates);
     const html =
       '<div class="' +
       classes.popupWrap +
@@ -439,6 +441,8 @@ function Default() {
                   radioValue={radioValue}
                   currentlyPaintedPointRef={currentlyPaintedPointRef}
                   coordinatesRef={coordinatesRef}
+                  longRef={longRef}
+                  latRef={latRef}
                 />
               </MapContainer>
             </AccordionDetails>

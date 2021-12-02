@@ -100,11 +100,11 @@ export const renderStatusChip = (status, colors) => {
   );
 };
 
-export const filterDataByUser = (data, user) => {
-  return data
-    ? data.filter((item) => !item.exclude_auth0_user_id.includes(user?.sub))
-    : [];
-};
+// export const filterDataByUser = (data, user) => {
+//   return data
+//     ? data.filter((item) => !item.exclude_auth0_user_id.includes(user?.sub))
+//     : [];
+// };
 
 export const applyInflectorOverrides = (str) => {
   const myStr = str ? str : "";

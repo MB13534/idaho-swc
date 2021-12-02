@@ -5,6 +5,7 @@ import ResetZoomControl from "./ResetZoomControl";
 import { STARTING_LOCATION } from "../../constants";
 import ToggleBasemapControl from "./ToggleBasemapControl";
 import { makeStyles } from "@material-ui/core/styles";
+import { Tooltip } from "@material-ui/core";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -27,6 +28,10 @@ const Coordinates = styled.pre`
   border-radius: 3px;
   z-index: 1000;
   display: none;
+`;
+
+const Coord = styled.span`
+  cursor: copy;
 `;
 
 const useStyles = makeStyles(() => ({
@@ -61,11 +66,13 @@ const Map = ({
   setMap,
   currentlyPaintedPointRef,
   coordinatesRef,
+  longRef,
+  latRef,
 }) => {
   const classes = useStyles();
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
 
-  const mapContainer = useRef(null); // create a reference to the map container
+  const mapContainerRef = useRef(null); // create a reference to the map container
 
   const DUMMY_BASEMAP_LAYERS = [
     { url: "streets-v11", icon: "commute" },
@@ -73,14 +80,24 @@ const Map = ({
     { url: "satellite-streets-v11", icon: "satellite_alt" },
   ];
 
+  const handleCopyCoords = (value) => {
+    const dummy = document.createElement("input");
+    document.body.appendChild(dummy);
+    dummy.value = value;
+    dummy.select();
+    document.execCommand("copy");
+    document.body.removeChild(dummy);
+  };
+
   function onPointClick(e) {
     coordinatesRef.current.style.display = "block";
-    coordinatesRef.current.innerHTML = `Longitude: ${e.features[0].properties.longitude_dd}<br />Latitude: ${e.features[0].properties.latitude_dd}`;
+    longRef.current.innerHTML = e.features[0].properties.longitude_dd;
+    latRef.current.innerHTML = e.features[0].properties.latitude_dd;
   }
 
   useEffect(() => {
     const map = new mapboxgl.Map({
-      container: mapContainer.current,
+      container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/" + DUMMY_BASEMAP_LAYERS[0].url,
       center: STARTING_LOCATION,
       zoom: 12,
@@ -277,6 +294,13 @@ const Map = ({
           });
         });
 
+        longRef.current.addEventListener("click", (e) =>
+          handleCopyCoords(e.target.innerHTML)
+        );
+        latRef.current.addEventListener("click", (e) =>
+          handleCopyCoords(e.target.innerHTML)
+        );
+
         // Change the cursor to a pointer when the mouse is over the places layer.
         map.on("mouseenter", "locations", () => {
           map.getCanvas().style.cursor = "pointer";
@@ -354,8 +378,18 @@ const Map = ({
 
   return (
     <>
-      <MapContainer ref={mapContainer}>
-        <Coordinates ref={coordinatesRef} />
+      <MapContainer ref={mapContainerRef}>
+        <Coordinates ref={coordinatesRef}>
+          Longitude:
+          <Tooltip title="Copy Longitude to Clipboard">
+            <Coord ref={longRef} />
+          </Tooltip>
+          <br />
+          Latitude:
+          <Tooltip title="Copy Latitude to Clipboard" placement="bottom-start">
+            <Coord ref={latRef} />
+          </Tooltip>
+        </Coordinates>
       </MapContainer>
     </>
   );
