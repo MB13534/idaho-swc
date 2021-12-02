@@ -43,6 +43,7 @@ import Deploy from "../pages/docs/Deploy";
 import UserVisibilityFilter from "../components/UserVisibilityFilter";
 import UserGuard from "../components/UserGuard";
 import UiPermitsExpiringsReport from "../pages/dataAccess/reports/UiPermitsExpiringsReport";
+import LatLongMap from "../components/map/LatLongMap";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -135,7 +136,7 @@ const mapRoutes = {
   icon: <Map />,
   path: "/data-access/map",
   name: "Map",
-  component: Blank,
+  component: LatLongMap,
 };
 
 const timeseriesRoutes = {

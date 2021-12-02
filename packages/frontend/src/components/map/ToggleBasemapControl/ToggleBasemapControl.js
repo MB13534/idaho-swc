@@ -39,16 +39,6 @@ class ToggleBasemapControl {
       );
     }
 
-    // <button
-    //   className="mapboxgl-ctrl-geolocate"
-    //   type="button"
-    //   title="Find my location"
-    //   aria-label="Find my location"
-    //   aria-pressed="false"
-    // >
-    //   <span className="mapboxgl-ctrl-icon" aria-hidden="true"></span>
-    // </button>;
-
     this._map = map;
     this._container = document.createElement("div");
     this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
