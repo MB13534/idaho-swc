@@ -135,7 +135,6 @@ function Default() {
   };
 
   const handleRadioChange = (event) => {
-    console.log(event.target);
     setRadioValue(event.target.value);
     map.fire("closeAllPopups");
     map.setFeatureState(
@@ -166,13 +165,12 @@ function Default() {
     );
 
     let popup = new mapboxgl.Popup({ maxWidth: "300px" });
-    console.log(pointFeatures);
     coordinatesRef.current.style.display = "block";
     coordinatesRef.current.innerHTML = `Longitude: ${pointFeatures.location_geometry.coordinates[0]}<br />Latitude: ${pointFeatures.location_geometry.coordinates[1]}`;
 
     // Copy coordinates array.
     const coordinates = pointFeatures.location_geometry.coordinates.slice();
-
+    console.log(coordinates);
     const html =
       '<div class="' +
       classes.popupWrap +

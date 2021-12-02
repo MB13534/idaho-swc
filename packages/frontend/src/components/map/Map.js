@@ -75,7 +75,7 @@ const Map = ({
 
   function onPointClick(e) {
     coordinatesRef.current.style.display = "block";
-    coordinatesRef.current.innerHTML = `Longitude: ${e.features[0].geometry.coordinates[0]}<br />Latitude: ${e.features[0].geometry.coordinates[1]}`;
+    coordinatesRef.current.innerHTML = `Longitude: ${e.features[0].properties.longitude_dd}<br />Latitude: ${e.features[0].properties.latitude_dd}`;
   }
 
   useEffect(() => {
