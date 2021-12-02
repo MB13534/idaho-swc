@@ -60,12 +60,13 @@ const Map = ({
   map,
   setMap,
   currentlyPaintedPointRef,
+  coordinatesRef,
 }) => {
   const classes = useStyles();
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
 
   const mapContainer = useRef(null); // create a reference to the map container
-  const coordinates = useRef(null);
+
   const DUMMY_BASEMAP_LAYERS = [
     { url: "streets-v11", icon: "commute" },
     { url: "outdoors-v11", icon: "park" },
@@ -73,8 +74,8 @@ const Map = ({
   ];
 
   function onPointClick(e) {
-    coordinates.current.style.display = "block";
-    coordinates.current.innerHTML = `Longitude: ${e.features[0].geometry.coordinates[0]}<br />Latitude: ${e.features[0].geometry.coordinates[1]}`;
+    coordinatesRef.current.style.display = "block";
+    coordinatesRef.current.innerHTML = `Longitude: ${e.features[0].geometry.coordinates[0]}<br />Latitude: ${e.features[0].geometry.coordinates[1]}`;
   }
 
   useEffect(() => {
@@ -354,7 +355,7 @@ const Map = ({
   return (
     <>
       <MapContainer ref={mapContainer}>
-        <Coordinates ref={coordinates} />
+        <Coordinates ref={coordinatesRef} />
       </MapContainer>
     </>
   );

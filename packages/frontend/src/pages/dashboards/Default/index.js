@@ -110,6 +110,7 @@ function Default() {
   const service = useService({ toast: false });
   const { currentUser } = useApp();
   const currentlyPaintedPointRef = useRef(null);
+  const coordinatesRef = useRef(null);
 
   //date filter defaults
   const defaultFilterValues = {
@@ -165,6 +166,9 @@ function Default() {
     );
 
     let popup = new mapboxgl.Popup({ maxWidth: "300px" });
+    console.log(pointFeatures);
+    coordinatesRef.current.style.display = "block";
+    coordinatesRef.current.innerHTML = `Longitude: ${pointFeatures.location_geometry.coordinates[0]}<br />Latitude: ${pointFeatures.location_geometry.coordinates[1]}`;
 
     // Copy coordinates array.
     const coordinates = pointFeatures.location_geometry.coordinates.slice();
@@ -436,6 +440,7 @@ function Default() {
                   setCurrentSelectedPoint={setCurrentSelectedPoint}
                   radioValue={radioValue}
                   currentlyPaintedPointRef={currentlyPaintedPointRef}
+                  coordinatesRef={coordinatesRef}
                 />
               </MapContainer>
             </AccordionDetails>
@@ -615,7 +620,7 @@ function Default() {
                   <Table
                     pageSize={10}
                     isLoading={isLoading}
-                    label="Streamflow Timeseries Table"
+                    label="Search Well Table"
                     columns={tableColumns}
                     data={filteredData}
                     height="390px"
