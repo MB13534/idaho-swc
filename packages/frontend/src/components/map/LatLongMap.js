@@ -51,6 +51,7 @@ const Map = () => {
   const coordinatesRef = useRef(null);
   const longRef = useRef(null);
   const latRef = useRef(null);
+  const eleRef = useRef(null);
   const mapContainerRef = useRef(null); // create a reference to the map container
 
   const DUMMY_BASEMAP_LAYERS = [
@@ -58,6 +59,23 @@ const Map = () => {
     { url: "outdoors-v11", icon: "park" },
     { url: "satellite-streets-v11", icon: "satellite_alt" },
   ];
+
+  async function getElevation() {
+    // Construct the API request.
+
+    const query = await fetch(
+      `https://api.mapbox.com/v4/mapbox.mapbox-terrain-v2/tilequery/${longRef.current.innerHTML},${latRef.current.innerHTML}.json?layers=contour&limit=50&access_token=${mapboxgl.accessToken}`,
+      { method: "GET" }
+    );
+    if (query.status !== 200) return;
+    const data = await query.json();
+
+    const allFeatures = data.features;
+
+    const elevations = allFeatures.map((feature) => feature.properties.ele);
+
+    eleRef.current.innerHTML = Math.max(...elevations);
+  }
 
   useEffect(() => {
     const map = new mapboxgl.Map({
@@ -112,6 +130,8 @@ const Map = () => {
 
         longRef.current.innerHTML = lngLat.lng;
         latRef.current.innerHTML = lngLat.lat;
+
+        getElevation();
       };
       const handleCopyCoords = (value) => {
         const dummy = document.createElement("input");
@@ -157,9 +177,17 @@ const Map = () => {
                 Latitude:
                 <Tooltip
                   title="Copy Latitude to Clipboard"
-                  placement="bottom-start"
+                  // placement="bottom-start"
                 >
                   <Coord ref={latRef} />
+                </Tooltip>
+                <br />
+                Elevation:
+                <Tooltip
+                  title="Copy Elevation to Clipboard"
+                  placement="bottom-start"
+                >
+                  <Coord ref={eleRef} />
                 </Tooltip>
               </Coordinates>
             </MapContainer>
