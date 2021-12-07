@@ -72,6 +72,7 @@ export function columns(modelName) {
       field: "removed",
       headerName: "Removed",
       width: 150,
+      renderCell: Renderers.FormatBooleanTrueFalse,
     },
     {
       field: "id",

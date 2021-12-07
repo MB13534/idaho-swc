@@ -54,6 +54,7 @@ export function columns(modelName) {
       field: "exempt",
       headerName: "Exempt?",
       width: 135,
+      renderCell: Renderers.FormatBooleanTrueFalse,
     },
     {
       field: "well_name",
@@ -141,6 +142,7 @@ export function columns(modelName) {
       field: "drillers_log",
       headerName: "Driller's Log?",
       width: 165,
+      renderCell: Renderers.FormatBooleanTrueFalse,
     },
     // {
     //   field: "well_ndx",

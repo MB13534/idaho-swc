@@ -31,6 +31,16 @@ export const copyToClipboard = (data, columns, callback) => {
   callback();
 };
 
+export const formatBooleanTrueFalse = (value) => {
+  if (typeof value !== "boolean") {
+    return value;
+  }
+  if (value === true) {
+    return "yes";
+  }
+  return "no";
+};
+
 export const downloadChartImage = (title, extension, ref) => {
   const base64 = ref.current.toBase64Image();
   const downloadLink = document.createElement("a");

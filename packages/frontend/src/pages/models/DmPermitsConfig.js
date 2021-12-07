@@ -97,6 +97,7 @@ export function columns(modelName) {
       field: "exportable",
       headerName: "Exportable?",
       width: 150,
+      renderCell: Renderers.FormatBooleanTrueFalse,
     },
     {
       field: "exportable_amount",

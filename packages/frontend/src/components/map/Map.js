@@ -6,6 +6,7 @@ import { STARTING_LOCATION } from "../../constants";
 import ToggleBasemapControl from "./ToggleBasemapControl";
 import { makeStyles } from "@material-ui/core/styles";
 import { Tooltip } from "@material-ui/core";
+import { formatBooleanTrueFalse } from "../../utils";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -282,7 +283,9 @@ const Map = ({
             `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${data.id}">Link</a></td></tr>` +
             Object.entries(data)
               .map(([k, v]) => {
-                return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
+                return `<tr><td><strong>${k}</strong></td><td>${formatBooleanTrueFalse(
+                  v
+                )}</td></tr>`;
               })
               .join("") +
             "</tbody></table></div>";
