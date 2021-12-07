@@ -241,6 +241,10 @@ function CrudViewPage({ config, width, modelName }) {
         open={app.confirmDialogOpen}
         setOpen={app.setConfirmDialogOpen}
         config={config}
+        afterDelete={() => {
+          console.log("push");
+          history.push(`${crud.getModelBasePath()}`);
+        }}
       />
 
       <ConfirmEvolveDialog

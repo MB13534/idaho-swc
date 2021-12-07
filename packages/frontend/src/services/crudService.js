@@ -534,13 +534,9 @@ export function redoRecord(modelName, id, token) {
 
 export function deleteRecord(modelName, record, token) {
   return new Promise((resolve, reject) => {
-    const endpoint = pluralize(modelName).toLowerCase();
     const headers = { Authorization: `Bearer ${token}` };
     axios
-      .delete(
-        `${process.env.REACT_APP_ENDPOINT}/api/${endpoint}/${record.id}`,
-        { headers }
-      )
+      .delete(`${getUrl(modelName)}/${record.id}`, { headers })
       .then((response) => {
         if (response.status === 200) {
           resolve(response.data);
