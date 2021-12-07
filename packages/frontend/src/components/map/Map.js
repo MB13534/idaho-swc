@@ -101,7 +101,7 @@ const Map = ({
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/" + DUMMY_BASEMAP_LAYERS[0].url,
       center: STARTING_LOCATION,
-      zoom: 12,
+      zoom: 9,
     });
 
     map.addControl(new mapboxgl.NavigationControl(), "top-left");
@@ -137,6 +137,7 @@ const Map = ({
 
   useEffect(() => {
     if (mapIsLoaded && data?.length > 0 && typeof map != "undefined") {
+      console.log(map.getZoom());
       if (!map.getSource("locations")) {
         map.addSource("locations", {
           type: "geojson",
