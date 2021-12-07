@@ -18,6 +18,7 @@ export const CRUD_MODELS = [
     icon: <List />,
   },
   { name: "ListRolodexes", sidebarName: "Rolodex", icon: <CreditCard /> },
+  { name: "ListPermitTypes", sidebarName: "List Permit Types" },
 ];
 
 export const CRUD_LOOKUP_TABLES = [
