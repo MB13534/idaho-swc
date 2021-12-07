@@ -79,12 +79,12 @@ module.exports = (sequelize, DataTypes) => {
       well_name: {
         type: TEXT,
       },
-      agg_system_name: {
-        type: TEXT,
-      },
-      permit_number: {
-        type: TEXT,
-      },
+      // agg_system_name: {
+      //   type: TEXT,
+      // },
+      // permit_number: {
+      //   type: TEXT,
+      // },
     },
     {
       schema: 'client_clearwater',

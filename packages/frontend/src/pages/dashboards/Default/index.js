@@ -463,6 +463,7 @@ function Default() {
                 label={location.well_name ?? "NA"}
                 style={{ cursor: "pointer" }}
               />
+              Well:{" "}
               <Chip
                 size="small"
                 color="secondary"
@@ -503,6 +504,15 @@ function Default() {
               />
             </Box>
             <Box component="div" sx={{ display: "inline-block" }}>
+              Aggregated System:{" "}
+              <Chip
+                size="small"
+                variant="outlined"
+                label={location.agg_system_name ?? "NA"}
+                style={{ cursor: "pointer" }}
+              />
+            </Box>
+            <Box component="div" sx={{ display: "inline-block" }}>
               Permit Number:{" "}
               <Chip
                 size="small"
@@ -512,11 +522,15 @@ function Default() {
               />
             </Box>
             <Box component="div" sx={{ display: "inline-block" }}>
-              Aggregated System:{" "}
+              Permitted Amount:{" "}
               <Chip
                 size="small"
                 variant="outlined"
-                label={location.agg_system_name ?? "NA"}
+                label={
+                  location.permitted_value
+                    ? `${location.permitted_value} (ac-ft)`
+                    : "NA"
+                }
                 style={{ cursor: "pointer" }}
               />
             </Box>
@@ -535,6 +549,7 @@ function Default() {
                 label={location.well_name ?? "NA"}
                 style={{ cursor: "pointer" }}
               />
+              Well:{" "}
               <Chip
                 size="small"
                 color="secondary"
@@ -554,15 +569,6 @@ function Default() {
                 />
               </Box>
             )}
-            <Box component="div" sx={{ display: "inline-block" }}>
-              Aquifer:{" "}
-              <Chip
-                variant="outlined"
-                size="small"
-                label={location.source_aquifer ?? "NA"}
-                style={{ cursor: "pointer" }}
-              />
-            </Box>
           </Typography>
           <Typography variant="subtitle1" ml={8}>
             <Box component="div" sx={{ display: "inline-block" }}>
@@ -575,6 +581,15 @@ function Default() {
                     ? `${location.well_depth_ft} (ft)`
                     : "NA"
                 }
+                style={{ cursor: "pointer" }}
+              />
+            </Box>
+            <Box component="div" sx={{ display: "inline-block" }}>
+              Aquifer:{" "}
+              <Chip
+                variant="outlined"
+                size="small"
+                label={location.source_aquifer ?? "NA"}
                 style={{ cursor: "pointer" }}
               />
             </Box>
@@ -631,6 +646,7 @@ function Default() {
                 label={location.well_name ?? "NA"}
                 style={{ cursor: "pointer" }}
               />
+              Well:{" "}
               <Chip
                 size="small"
                 color="secondary"
