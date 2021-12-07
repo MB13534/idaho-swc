@@ -137,7 +137,6 @@ const Map = ({
 
   useEffect(() => {
     if (mapIsLoaded && data?.length > 0 && typeof map != "undefined") {
-      console.log(map.getZoom());
       if (!map.getSource("locations")) {
         map.addSource("locations", {
           type: "geojson",

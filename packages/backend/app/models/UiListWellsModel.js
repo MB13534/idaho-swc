@@ -67,11 +67,23 @@ module.exports = (sequelize, DataTypes) => {
       count_wqdata: {
         type: BIGINT,
       },
+      well_depth_ft: {
+        type: NUMBER,
+      },
+      screen_top_depth_ft: {
+        type: NUMBER,
+      },
+      screen_bottom_depth_ft: {
+        type: NUMBER,
+      },
       well_name: {
         type: TEXT,
       },
-      well_depth_ft: {
-        type: NUMBER,
+      agg_system_name: {
+        type: TEXT,
+      },
+      permit_number: {
+        type: TEXT,
       },
     },
     {
