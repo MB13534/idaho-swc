@@ -67,6 +67,12 @@ module.exports = (sequelize, DataTypes) => {
       count_wqdata: {
         type: BIGINT,
       },
+      well_name: {
+        type: TEXT,
+      },
+      well_depth_ft: {
+        type: NUMBER,
+      },
     },
     {
       schema: 'client_clearwater',

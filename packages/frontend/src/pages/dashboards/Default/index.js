@@ -381,11 +381,13 @@ function Default() {
 
   const tableColumns = [
     {
-      title: "CUWCD Well Name",
+      title: "CUWCD Well Number",
       field: "cuwcd_well_number",
     },
-    { title: "State Well Name", field: "state_well_number" },
+    { title: "State Well Number", field: "state_well_number" },
+    { title: "Well Name", field: "well_name" },
     { title: "Source Aquifer", field: "source_aquifer" },
+    { title: "Well Depth (ft)", field: "well_depth_ft" },
     { title: "Primary Well Use", field: "primary_use" },
     { title: "Current Owner", field: "well_owner" },
     {
