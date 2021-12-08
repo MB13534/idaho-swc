@@ -1,12 +1,16 @@
 import React from "react";
 
-const Map = React.forwardRef(function Map(props, ref) {
+const mapStyles = {
+  height: "calc(100vh - 64px)",
+  position: "relative",
+  width: "100%",
+};
+
+const Map = React.forwardRef(function Map({ children }, ref) {
   return (
-    <div
-      id="map"
-      style={{ width: "100%", height: "calc(100vh - 64px)" }}
-      ref={ref}
-    />
+    <section id="map" ref={ref} style={mapStyles}>
+      {children}
+    </section>
   );
 });
 

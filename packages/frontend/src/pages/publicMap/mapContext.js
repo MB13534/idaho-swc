@@ -19,7 +19,16 @@ const useMap = (ref, mapConfig) => {
     throw new Error(`useMap must be used within a MapProvider`);
   }
 
-  const { layers, map, mapStatus, setMap, setMapStatus, sources } = context;
+  const {
+    layers,
+    map,
+    mapStatus,
+    setLayers,
+    setMap,
+    setMapStatus,
+    setSources,
+    sources,
+  } = context;
 
   const initializeMap = useCallback(() => {
     if (ref?.current && !mapStatus.map.created) {
@@ -72,6 +81,27 @@ const useMap = (ref, mapConfig) => {
     }
   }, [layers, map, mapStatus.map.loaded, setMapStatus, sources]);
 
+  const updateLayerVisibility = ({ id, visible }) => {
+    if (!!map && !!map.getLayer(id)) {
+      const visibleValue = visible ? "visible" : "none";
+      map.setLayoutProperty(id, "visibility", visibleValue);
+      setLayers((prevState) => {
+        return prevState.map((layer) => {
+          if (layer.id === id) {
+            return {
+              ...layer,
+              layout: {
+                ...layer.layout,
+                visibility: visibleValue,
+              },
+            };
+          }
+          return layer;
+        });
+      });
+    }
+  };
+
   useEffect(() => {
     initializeMap();
   }, [initializeMap]);
@@ -85,6 +115,7 @@ const useMap = (ref, mapConfig) => {
     map,
     mapStatus,
     sources,
+    updateLayerVisibility,
   };
 };
 
@@ -105,7 +136,7 @@ const MapProvider = (props) => {
     },
   });
   const {
-    data: sources,
+    data: sourcesData,
     isLoading: sourcesLoading,
     error: sourcesError,
   } = useQuery(["Sources"], async () => {
@@ -118,7 +149,7 @@ const MapProvider = (props) => {
     }
   });
   const {
-    data: layers,
+    data: layersData,
     isLoading: layersLoading,
     error: layersError,
   } = useQuery(["Layers"], async () => {
@@ -130,15 +161,27 @@ const MapProvider = (props) => {
       console.error(err);
     }
   });
+  const [sources, setSources] = useState([]);
+  const [layers, setLayers] = useState([]);
+
+  useEffect(() => {
+    setSources(sourcesData?.data || []);
+  }, [sourcesData]);
+
+  useEffect(() => {
+    setLayers(layersData?.data || []);
+  }, [layersData]);
 
   const value = React.useMemo(
     () => ({
-      layers: layers?.data || [],
+      layers,
       map,
       mapStatus,
+      setLayers,
       setMap,
       setMapStatus,
-      sources: sources?.data || [],
+      setSources,
+      sources,
     }),
     [layers, map, mapStatus, setMap, setMapStatus, sources]
   );
