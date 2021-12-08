@@ -15,9 +15,10 @@ import LayersIcon from "@material-ui/icons/Layers";
 
 const Container = styled(Paper)(({ theme }) => ({
   boxShadow: "0px 1px 2px 0px rgba(0, 0, 0, 0.05)",
-  left: 16,
+  left: 15,
+  maxHeight: 400,
   position: "absolute",
-  top: 16,
+  top: 15,
   width: 400,
   zIndex: 1,
 }));

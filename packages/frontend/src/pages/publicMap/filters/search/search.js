@@ -17,7 +17,13 @@ import useDebounce from "../../../../hooks/useDebounce";
 
 const SearchResults = ({ anchorEl, open, onSelect, searchResults }) => {
   return (
-    <Popper open={open} anchorEl={anchorEl} placement="bottom-start" transition>
+    <Popper
+      open={open}
+      anchorEl={anchorEl}
+      placement="bottom-start"
+      style={{ zIndex: 2 }}
+      transition
+    >
       <Paper style={{ width: 400, height: 400, overflowY: "auto" }}>
         <List dense component="nav" aria-label="main mailbox folders">
           {searchResults?.slice(0, 49)?.map((result) => (
