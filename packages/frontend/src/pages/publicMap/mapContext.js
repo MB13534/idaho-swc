@@ -21,19 +21,12 @@ const useMap = (ref, mapConfig) => {
 
   const { layers, map, mapStatus, setMap, setMapStatus, sources } = context;
 
-  useEffect(() => {
+  const initializeMap = useCallback(() => {
     if (ref?.current && !mapStatus.map.created) {
       const newMap = new mapboxgl.Map({
         container: ref.current,
         ...mapConfig,
       });
-      // setMapStatus((s) => ({
-      //   ...s,
-      //   map: {
-      //     ...s.map,
-      //     created: true,
-      //   },
-      // }));
       newMap.on("load", () => {
         setMap(newMap);
         setMapStatus((s) => ({
@@ -46,43 +39,42 @@ const useMap = (ref, mapConfig) => {
         }));
       });
     }
-  }, [ref, mapConfig, mapStatus.map.created, setMap, setMapStatus]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ref, mapStatus.map.created]);
 
   const loadMapData = useCallback(() => {
-    if (mapStatus.map.loaded && !mapStatus.sources.added) {
+    const shouldAddData =
+      map && mapStatus.map.loaded && sources?.length > 0 && layers?.length > 0;
+
+    if (shouldAddData) {
       sources.forEach((source) => {
-        const cleanedSource = { ...source };
-        delete cleanedSource.id;
-        map.addSource(source.id, cleanedSource);
+        const { id, ...rest } = source;
+        const sourceExists = !!map.getSource(id);
+        if (!sourceExists) map.addSource(id, rest);
       });
 
-      if (mapStatus.sources.added && !mapStatus.layers.added) {
-        layers.forEach((layer) => {
-          map.addLayer(layer);
-        });
-      }
+      layers.forEach((layer) => {
+        const layerExists = map.getLayer(layer.id);
+        if (!layerExists) map.addLayer(layer);
+      });
 
       setMapStatus((prevState) => ({
         ...prevState,
-        sources: {
-          loaded: true,
-          added: true,
-        },
         layers: {
-          loaded: true,
           added: true,
+          loaded: true,
+        },
+        sources: {
+          added: true,
+          loaded: true,
         },
       }));
     }
-  }, [
-    layers,
-    map,
-    mapStatus.map.loaded,
-    mapStatus.sources.added,
-    mapStatus.layers.added,
-    setMapStatus,
-    sources,
-  ]);
+  }, [layers, map, mapStatus.map.loaded, setMapStatus, sources]);
+
+  useEffect(() => {
+    initializeMap();
+  }, [initializeMap]);
 
   useEffect(() => {
     loadMapData();

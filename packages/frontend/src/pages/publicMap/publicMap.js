@@ -9,12 +9,16 @@ import { INIT_MAP_CONFIG } from "./constants";
 
 const PublicMap = () => {
   const mapContainer = useRef(null);
-  const { layers, sources } = useMap(mapContainer, INIT_MAP_CONFIG);
+  const { layers, map, sources } = useMap(mapContainer, INIT_MAP_CONFIG);
+
+  const handleSearchSelect = (result) => {
+    map?.flyTo({ center: result?.location_geometry?.coordinates, zoom: 16 });
+  };
 
   return (
     <>
       <AppBar />
-      <FiltersBar />
+      <FiltersBar onSearchSelect={handleSearchSelect} />
       <Map ref={mapContainer} />
     </>
   );

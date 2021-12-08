@@ -8,11 +8,11 @@ const Container = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(3),
 }));
 
-const FiltersBar = ({ children }) => {
+const FiltersBar = ({ onSearchSelect }) => {
   return (
     <Container square elevation={0}>
       {/* {children} */}
-      <Search />
+      <Search onSelect={onSearchSelect} />
     </Container>
   );
 };

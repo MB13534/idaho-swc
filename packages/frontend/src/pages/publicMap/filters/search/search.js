@@ -1,10 +1,9 @@
-import React, { useMemo, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   Divider,
   InputAdornment,
   List,
   ListItem,
-  ListItemText,
   Paper,
   Popper,
   TextField,
@@ -14,6 +13,7 @@ import SearchIcon from "@material-ui/icons/Search";
 import Fuse from "fuse.js";
 import axios from "axios";
 import { useQuery } from "react-query";
+import useDebounce from "../../../../hooks/useDebounce";
 
 const SearchResults = ({ anchorEl, open, onSelect, searchResults }) => {
   return (
@@ -59,7 +59,7 @@ const SearchResults = ({ anchorEl, open, onSelect, searchResults }) => {
   );
 };
 
-const Search = () => {
+const Search = ({ onSelect }) => {
   const searchRef = useRef(null);
   const { data: options } = useQuery(["Search Options"], async () => {
     try {
@@ -71,6 +71,7 @@ const Search = () => {
     }
   });
   const [value, setValue] = useState("");
+  const debouncedSearchValue = useDebounce(value, 200);
   const [searchResults, setSearchResults] = useState([]);
 
   const fuzzySearcher = useMemo(() => {
@@ -89,9 +90,12 @@ const Search = () => {
 
   const handleChange = (event) => {
     setValue(event?.target?.value);
-    const results = fuzzySearcher && fuzzySearcher.search(event?.target?.value);
-    setSearchResults(results);
   };
+
+  useEffect(() => {
+    const results = fuzzySearcher && fuzzySearcher.search(debouncedSearchValue);
+    setSearchResults(results);
+  }, [debouncedSearchValue, fuzzySearcher]);
 
   return (
     <>
@@ -115,7 +119,8 @@ const Search = () => {
       />
       <SearchResults
         anchorEl={searchRef?.current}
-        open={!!value}
+        onSelect={onSelect}
+        open={!!searchResults?.length}
         searchResults={searchResults}
       />
     </>
