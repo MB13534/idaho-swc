@@ -7,20 +7,20 @@ import { Helmet } from "react-helmet-async";
 import {
   Accordion,
   AccordionDetails,
+  Box as MuiBox,
   Card,
   CardHeader,
+  Chip as MuiChip,
   Divider as MuiDivider,
   FormControl,
   FormControlLabel,
   FormLabel,
   Grid as MuiGrid,
   lighten,
+  Paper as MuiPaper,
   Radio,
   RadioGroup,
-  Chip as MuiChip,
   Typography as MuiTypography,
-  Box,
-  Paper as MuiPaper,
 } from "@material-ui/core";
 
 import { spacing } from "@material-ui/system";
@@ -41,25 +41,27 @@ import axios from "axios";
 import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart";
 import { lineColors, renderStatusChip } from "../../../utils";
 import TimeseriesDateFilters from "../../../components/filters/TimeseriesDateFilters";
-import SaveGraphButton from "../../../components/graphs/SaveGraphButton";
+import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
 import OptionsPicker from "../../../components/pickers/OptionsPicker";
 import Link from "@material-ui/core/Link";
 import { Edit } from "@material-ui/icons";
 import mapboxgl from "mapbox-gl";
 import { makeStyles } from "@material-ui/core/styles";
-import Button from "@material-ui/core/Button";
-
-import html2canvas from "html2canvas";
 
 const Divider = styled(MuiDivider)(spacing);
 
 const Typography = styled(MuiTypography)(spacing);
 
+const Box = styled(MuiBox)`
+  display: inline-block;
+`;
+
 const Paper = styled(MuiPaper)`
   ${spacing}
   padding: 8px;
 `;
+
 const TitleContainer = styled.span`
   width: 100%;
 `;
@@ -92,12 +94,22 @@ const FiltersContainer = styled.div`
   width: 100%;
 `;
 
-const Chip = styled(MuiChip)`
+const ChipTitle = styled(MuiChip)`
   ${spacing}
-  padding: 15px 0;
+  display: inline-block;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 8px 0 23px 0;
   margin: 4px 8px 4px 0px;
-  // background-color: ${(props) => props.rgbcolor};
-  // color: ${(props) => props.theme.palette.common.white};
+`;
+
+const ChipSubtitle = styled(MuiChip)`
+  ${spacing}
+  display: inline-block;
+  cursor: pointer;
+  font-weight: 600;
+  padding: 5px 0 26px 0;
+  margin: 4px 8px 4px 0px;
 `;
 
 const Grid = styled(MuiGrid)(spacing);
@@ -128,8 +140,8 @@ function Default() {
   const classes = useStyles();
   const [map, setMap] = useState();
   const [currentTableLabel, setCurrentTableLabel] = useState();
-  const newSaveRef = useRef(null);
-  const saveRef = useRef(null);
+  const divSaveRef = useRef(null);
+  const graphSaveRef = useRef(null);
   const { user, getAccessTokenSilently } = useAuth0();
   const service = useService({ toast: false });
   const { currentUser } = useApp();
@@ -456,82 +468,67 @@ function Default() {
         <>
           <Typography variant="h4" ml={2}>
             Reported Well Production for:{" "}
-            <Box component="div" sx={{ display: "inline-block" }}>
-              <Chip
+            <Box component="div">
+              <ChipTitle
+                variant="outlined"
                 size="small"
                 color="secondary"
                 label={location.well_name ?? "NA"}
-                style={{ cursor: "pointer" }}
               />
               Well:{" "}
-              <Chip
+              <ChipTitle
+                variant="outlined"
                 size="small"
                 color="secondary"
                 label={location.cuwcd_well_number ?? "NA"}
-                variant="outlined"
-                style={{ cursor: "pointer" }}
               />
             </Box>
             {location.state_well_number && (
-              <Box component="div" sx={{ display: "inline-block" }}>
+              <Box component="div">
                 State Well Number:{" "}
-                <Chip
-                  variant="outlined"
-                  size="small"
-                  label={location.state_well_number}
-                  style={{ cursor: "pointer" }}
-                />
+                <ChipTitle size="small" label={location.state_well_number} />
               </Box>
             )}
-            <Box component="div" sx={{ display: "inline-block" }}>
+            <Box component="div">
               Aquifer:{" "}
-              <Chip
-                variant="outlined"
-                size="small"
-                label={location.source_aquifer ?? "NA"}
-                style={{ cursor: "pointer" }}
-              />
+              <ChipTitle size="small" label={location.source_aquifer ?? "NA"} />
             </Box>
           </Typography>
           <Typography variant="subtitle1" ml={8}>
-            <Box component="div" sx={{ display: "inline-block" }}>
+            <Box component="div">
               Well Owner:{" "}
-              <Chip
-                size="small"
+              <ChipSubtitle
                 variant="outlined"
+                size="small"
                 label={location.well_owner ?? "NA"}
-                style={{ cursor: "pointer" }}
               />
             </Box>
-            <Box component="div" sx={{ display: "inline-block" }}>
+            <Box component="div">
               Aggregated System:{" "}
-              <Chip
-                size="small"
+              <ChipSubtitle
                 variant="outlined"
+                size="small"
                 label={location.agg_system_name ?? "NA"}
-                style={{ cursor: "pointer" }}
               />
             </Box>
-            <Box component="div" sx={{ display: "inline-block" }}>
+            <Box component="div">
               Permit Number:{" "}
-              <Chip
-                size="small"
+              <ChipSubtitle
                 variant="outlined"
+                size="small"
                 label={location.permit_number ?? "NA"}
-                style={{ cursor: "pointer" }}
               />
             </Box>
-            <Box component="div" sx={{ display: "inline-block" }}>
+            <Box component="div">
               Permitted Amount:{" "}
-              <Chip
-                size="small"
+              <ChipSubtitle
                 variant="outlined"
+                size="small"
                 label={
                   location.permitted_value
                     ? `${location.permitted_value} (ac-ft)`
                     : "NA"
                 }
-                style={{ cursor: "pointer" }}
               />
             </Box>
           </Typography>
@@ -542,81 +539,71 @@ function Default() {
         <>
           <Typography variant="h4" ml={2}>
             Water Levels for:{" "}
-            <Box component="div" sx={{ display: "inline-block" }}>
-              <Chip
+            <Box component="div">
+              <ChipTitle
+                variant="outlined"
                 size="small"
                 color="secondary"
                 label={location.well_name ?? "NA"}
-                style={{ cursor: "pointer" }}
               />
               Well:{" "}
-              <Chip
+              <ChipTitle
+                variant="outlined"
                 size="small"
                 color="secondary"
                 label={location.cuwcd_well_number ?? "NA"}
-                variant="outlined"
-                style={{ cursor: "pointer" }}
               />
             </Box>
             {location.state_well_number && (
-              <Box component="div" sx={{ display: "inline-block" }}>
+              <Box component="div">
                 State Well Number:{" "}
-                <Chip
-                  variant="outlined"
-                  size="small"
-                  label={location.state_well_number}
-                  style={{ cursor: "pointer" }}
-                />
+                <ChipTitle size="small" label={location.state_well_number} />
               </Box>
             )}
           </Typography>
           <Typography variant="subtitle1" ml={8}>
-            <Box component="div" sx={{ display: "inline-block" }}>
+            <Box component="div">
               Well Depth:{" "}
-              <Chip
-                size="small"
+              <ChipSubtitle
                 variant="outlined"
+                size="small"
                 label={
                   location.well_depth_ft
                     ? `${location.well_depth_ft} (ft)`
                     : "NA"
                 }
-                style={{ cursor: "pointer" }}
               />
             </Box>
-            <Box component="div" sx={{ display: "inline-block" }}>
+            <Box component="div">
               Aquifer:{" "}
-              <Chip
+              <ChipSubtitle
                 variant="outlined"
                 size="small"
                 label={location.source_aquifer ?? "NA"}
-                style={{ cursor: "pointer" }}
               />
             </Box>
-            <Box component="div" sx={{ display: "inline-block" }}>
+            <Box component="div">
               Top of Screen:{" "}
-              <Chip
-                size="small"
+              <ChipSubtitle
                 variant="outlined"
+                size="small"
                 label={
                   location.screen_top_depth_ft
                     ? `${location.screen_top_depth_ft} (ft)`
                     : "NA"
                 }
-                style={{ cursor: "pointer" }}
               />
             </Box>
-            <Box component="div" sx={{ display: "inline-block" }}>
+            <Box component="div">
               Bottom of Screen:{" "}
-              <Chip
-                size="small"
+              <ChipSubtitle
                 variant="outlined"
+                size="small"
                 label={
                   location.screen_bottom_depth_ft
                     ? `${location.screen_bottom_depth_ft} (ft)`
                     : "NA"
                 }
-                style={{ cursor: "pointer" }}
               />
             </Box>
           </Typography>
@@ -627,7 +614,7 @@ function Default() {
         <>
           <Typography variant="h4" ml={2}>
             <strong>
-              <Chip
+              <ChipTitle
                 size="small"
                 color="primary"
                 label={
@@ -635,24 +622,22 @@ function Default() {
                     (item) => item.value === selectedWQParameter
                   )[0].label
                 }
-                style={{ cursor: "pointer" }}
               />
             </strong>
             Data for:{" "}
-            <Box component="div" sx={{ display: "inline-block" }}>
-              <Chip
+            <Box component="div">
+              <ChipTitle
+                variant="outlined"
                 size="small"
                 color="secondary"
                 label={location.well_name ?? "NA"}
-                style={{ cursor: "pointer" }}
               />
               Well:{" "}
-              <Chip
+              <ChipTitle
+                variant="outlined"
                 size="small"
                 color="secondary"
                 label={location.cuwcd_well_number ?? "NA"}
-                variant="outlined"
-                style={{ cursor: "pointer" }}
               />
             </Box>
           </Typography>
@@ -666,14 +651,6 @@ function Default() {
     } else {
       return null;
     }
-    // if (graphType)
-    // return "test";
-  };
-
-  const handleDownloadDiv = () => {
-    html2canvas(document.getElementById("newSaveRef")).then((canvas) => {
-      document.body.appendChild(canvas);
-    });
   };
 
   return (
@@ -747,7 +724,7 @@ function Default() {
                   <Grid item xs={12} sm={12} md={6}>
                     <FiltersContainer>
                       <FormControl component="fieldset">
-                        <FormLabel component="legend">
+                        <FormLabel component="legend" focused={false}>
                           Filter Wells by Their Available Data Types
                         </FormLabel>
                         <RadioGroup
@@ -810,10 +787,10 @@ function Default() {
       {Boolean(filteredMutatedGraphData) ? (
         <Grid container spacing={6}>
           <Grid item xs={12}>
-            <div ref={newSaveRef} id="newSaveRef">
+            <div ref={divSaveRef}>
               <Accordion defaultExpanded>
                 <AccordionSummary
-                  expandIcon={<ExpandMoreIcon />}
+                  expandIcon={<ExpandMoreIcon data-html2canvas-ignore="true" />}
                   aria-controls="time-series"
                   id="time-series"
                 >
@@ -831,16 +808,15 @@ function Default() {
                         <Grid container pb={2}>
                           <Grid item style={{ flexGrow: 1 }} />
                           <Grid item>
-                            <Button onClick={handleDownloadDiv}>Click</Button>
                             <ExportDataButton
                               title="cuwcd_well_number"
                               data={currentSelectedTimeseriesData}
                               filterValues={filterValues}
                               parameter={selectedWQParameter}
                             />
-                            <SaveGraphButton
+                            <SaveRefButton
                               data-html2canvas-ignore
-                              ref={saveRef}
+                              ref={divSaveRef}
                               title={currentSelectedPoint}
                             />
                           </Grid>
@@ -861,7 +837,7 @@ function Default() {
                           }
                           reverseLegend={false}
                           yLReverse={radioValue === "has_waterlevels"}
-                          ref={saveRef}
+                          ref={graphSaveRef}
                           filterValues={filterValues}
                           type={
                             radioValue === "has_production" ? "bar" : "scatter"
