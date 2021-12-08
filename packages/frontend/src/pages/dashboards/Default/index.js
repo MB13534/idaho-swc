@@ -12,11 +12,13 @@ import {
   CardHeader,
   Chip as MuiChip,
   Divider as MuiDivider,
-  FormControl,
+  Drawer,
+  Fab as MuiFab,
   FormControlLabel,
-  FormLabel,
   Grid as MuiGrid,
   lighten,
+  List,
+  ListItem,
   Paper as MuiPaper,
   Radio,
   RadioGroup,
@@ -25,8 +27,7 @@ import {
 
 import { spacing } from "@material-ui/system";
 
-import Actions from "./Actions";
-
+import Tune from "@material-ui/icons/Tune";
 import { useAuth0 } from "@auth0/auth0-react";
 import Panel from "../../../components/panels/Panel";
 import Map from "../../../components/map/Map";
@@ -40,7 +41,6 @@ import Table from "../../../components/Table";
 import axios from "axios";
 import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart";
 import { lineColors, renderStatusChip } from "../../../utils";
-import TimeseriesDateFilters from "../../../components/filters/TimeseriesDateFilters";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
 import OptionsPicker from "../../../components/pickers/OptionsPicker";
@@ -48,6 +48,65 @@ import Link from "@material-ui/core/Link";
 import { Edit } from "@material-ui/icons";
 import mapboxgl from "mapbox-gl";
 import { makeStyles } from "@material-ui/core/styles";
+import DatePicker from "../../../components/pickers/DatePicker";
+import { customSecondary } from "../../../theme/variants";
+
+const Fab = styled(MuiFab)`
+  position: fixed;
+  top: calc(64px + 20px);
+  right: -200px;
+  z-index: 1000;
+  padding-right: 100px;
+  transition: right 0.5s ease-out 0.5s;
+
+  &:hover {
+    right: -90px;
+  }
+`;
+
+const TuneIcon = styled(Tune)`
+  margin-right: 10px;
+`;
+
+const Items = styled.div`
+  padding-top: ${(props) => props.theme.spacing(2.5)}px;
+  padding-bottom: ${(props) => props.theme.spacing(2.5)}px;
+`;
+
+const Brand = styled(ListItem)`
+  background-color: ${(props) => props.theme.sidebar.header.background};
+  min-height: 56px;
+  padding-left: ${(props) => props.theme.spacing(6)}px;
+  justify-content: start;
+  cursor: pointer;
+  font-size: ${(props) => props.theme.typography.h5.fontSize};
+  font-weight: ${(props) => props.theme.typography.fontWeightMedium};
+  color: ${(props) => props.theme.sidebar.header.color};
+  font-family: ${(props) => props.theme.typography.fontFamily};
+
+  ${(props) => props.theme.breakpoints.up("sm")} {
+    min-height: 64px;
+  }
+
+  &:hover {
+    background-color: ${(props) => props.theme.sidebar.header.background};
+  }
+`;
+
+const BrandIcon = styled.img`
+  border-radius: 50%;
+  margin-right: 16px;
+`;
+
+const SidebarSection = styled(MuiTypography)`
+  color: ${() => customSecondary[500]};
+  padding: ${(props) => props.theme.spacing(4)}px
+    ${(props) => props.theme.spacing(7)}px
+    ${(props) => props.theme.spacing(1)}px;
+  opacity: 0.9;
+  font-weight: ${(props) => props.theme.typography.fontWeightBold};
+  display: block;
+`;
 
 const Divider = styled(MuiDivider)(spacing);
 
@@ -74,7 +133,7 @@ const TableWrapper = styled.div`
 `;
 
 const MapContainer = styled.div`
-  height: calc(400px);
+  height: calc(441px);
   width: 100%;
 `;
 
@@ -86,11 +145,6 @@ const TimeseriesContainer = styled.div`
 
 const TimeseriesWrapper = styled.div`
   height: calc(100% - 54px);
-  width: 100%;
-`;
-
-const FiltersContainer = styled.div`
-  height: 100%;
   width: 100%;
 `;
 
@@ -653,6 +707,12 @@ function Default() {
     }
   };
 
+  const [open, setOpen] = React.useState(false);
+
+  const toggleDrawer = () => {
+    setOpen((state) => !state);
+  };
+
   return (
     <React.Fragment>
       <Helmet title="Dashboard" />
@@ -665,16 +725,12 @@ function Default() {
             Welcome back, {user?.name}!
           </Typography>
         </Grid>
-
-        <Grid item>
-          <Actions />
-        </Grid>
       </Grid>
 
       <Divider my={6} />
 
       <Grid container spacing={6}>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={7} md={8} lg={9}>
           <Accordion defaultExpanded>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
@@ -704,82 +760,88 @@ function Default() {
             </AccordionDetails>
           </Accordion>
         </Grid>
-      </Grid>
-
-      <Grid container spacing={6}>
-        <Grid item xs={12}>
+        <Grid item xs={12} sm={5} md={4} lg={3}>
           <Accordion defaultExpanded>
             <AccordionSummary
               expandIcon={<ExpandMoreIcon />}
-              aria-controls="date-filters"
-              id="date-filters"
+              aria-controls="map"
+              id="map"
             >
               <Typography variant="h4" ml={2}>
-                Graph Options
+                Filters
               </Typography>
             </AccordionSummary>
-            <Panel>
-              <AccordionDetails>
-                <Grid container alignItems="center">
-                  <Grid item xs={12} sm={12} md={6}>
-                    <FiltersContainer>
-                      <FormControl component="fieldset">
-                        <FormLabel component="legend" focused={false}>
-                          Filter Wells by Their Available Data Types
-                        </FormLabel>
-                        <RadioGroup
-                          row
-                          aria-label="data"
-                          name="data"
-                          value={radioValue}
-                          onChange={handleRadioChange}
-                        >
-                          <FormControlLabel
-                            value="all"
-                            control={<Radio />}
-                            label={radioLabels["all"]}
-                          />
-                          <FormControlLabel
-                            value="has_production"
-                            control={<Radio />}
-                            label={radioLabels["has_production"]}
-                          />
-                          <FormControlLabel
-                            value="has_waterlevels"
-                            control={<Radio />}
-                            label={radioLabels["has_waterlevels"]}
-                          />
-                          <FormControlLabel
-                            value="has_wqdata"
-                            control={<Radio />}
-                            label={radioLabels["has_wqdata"]}
-                          />
-                        </RadioGroup>
-                      </FormControl>
-                    </FiltersContainer>
+            <AccordionDetails style={{ display: "block" }}>
+              <List disablePadding>
+                <RadioGroup
+                  aria-label="data"
+                  name="data"
+                  value={radioValue}
+                  onChange={handleRadioChange}
+                >
+                  <SidebarSection>Data Selection</SidebarSection>
+                  <Grid container>
+                    <Grid item xs={6} sm={12}>
+                      <ListItem>
+                        <FormControlLabel
+                          value="all"
+                          control={<Radio />}
+                          label={radioLabels["all"]}
+                        />
+                      </ListItem>
+                    </Grid>
+                    <Grid item xs={6} sm={12}>
+                      <ListItem>
+                        <FormControlLabel
+                          value="has_production"
+                          control={<Radio />}
+                          label={radioLabels["has_production"]}
+                        />
+                      </ListItem>
+                    </Grid>
                   </Grid>
-                  <Grid item xs={12} sm={12} md={6} mt={2}>
-                    <TimeseriesDateFilters
-                      filterValues={filterValues}
-                      changeFilterValues={changeFilterValues}
-                    />
+                  <Grid container>
+                    <Grid item xs={6} sm={12}>
+                      <ListItem>
+                        <FormControlLabel
+                          value="has_waterlevels"
+                          control={<Radio />}
+                          label={radioLabels["has_waterlevels"]}
+                        />
+                      </ListItem>
+                    </Grid>
+                    <Grid item xs={6} sm={12}>
+                      <ListItem>
+                        <FormControlLabel
+                          value="has_wqdata"
+                          control={<Radio />}
+                          label={radioLabels["has_wqdata"]}
+                        />
+                      </ListItem>
+                    </Grid>
                   </Grid>
-                  {["has_wqdata", "all"].includes(radioValue) &&
-                    wQparameterOptions && (
-                      <Grid container spacing={6}>
-                        <Grid item xs={12} mt={6}>
-                          <OptionsPicker
-                            selectedOption={selectedWQParameter}
-                            setSelectedOption={setSelectedWQParameter}
-                            options={wQparameterOptions}
-                            label="Water Quality Parameters"
-                          />
-                        </Grid>
-                      </Grid>
-                    )}
-                </Grid>
-              </AccordionDetails>
-            </Panel>
+                </RadioGroup>
+                <SidebarSection>Date Range</SidebarSection>
+                <ListItem>
+                  <DatePicker
+                    label="Start Date"
+                    name="startDate"
+                    selectedDate={filterValues.startDate}
+                    setSelectedDate={changeFilterValues}
+                    checked={filterValues.checked}
+                  />
+                </ListItem>
+                <ListItem>
+                  <DatePicker
+                    label="End Date"
+                    name="endDate"
+                    selectedDate={filterValues.endDate}
+                    setSelectedDate={changeFilterValues}
+                    checked={filterValues.checked}
+                  />
+                </ListItem>
+              </List>
+            </AccordionDetails>
           </Accordion>
         </Grid>
       </Grid>
@@ -846,6 +908,20 @@ function Default() {
                       </TimeseriesWrapper>
                     </TimeseriesContainer>
                   </AccordionDetails>
+                  {["has_wqdata", "all"].includes(radioValue) &&
+                    wQparameterOptions && (
+                      <>
+                        <SidebarSection>Parameters</SidebarSection>
+                        <ListItem>
+                          <OptionsPicker
+                            selectedOption={selectedWQParameter}
+                            setSelectedOption={setSelectedWQParameter}
+                            options={wQparameterOptions}
+                            label="Water Quality Parameters"
+                          />
+                        </ListItem>
+                      </>
+                    )}
                 </Panel>
               </Accordion>
             </div>
@@ -862,6 +938,20 @@ function Default() {
                     : `Select a Point on the Map to View ${radioLabels[radioValue]} Summary`
                 }
               />
+              {["has_wqdata", "all"].includes(radioValue) &&
+                wQparameterOptions && (
+                  <>
+                    <SidebarSection>Parameters</SidebarSection>
+                    <ListItem>
+                      <OptionsPicker
+                        selectedOption={selectedWQParameter}
+                        setSelectedOption={setSelectedWQParameter}
+                        options={wQparameterOptions}
+                        label="Water Quality Parameters"
+                      />
+                    </ListItem>
+                  </>
+                )}
             </Card>
           </Grid>
         </Grid>
@@ -888,7 +978,7 @@ function Default() {
                     label="Search Well Table"
                     columns={tableColumns}
                     data={filteredData}
-                    height="390px"
+                    height="350px"
                     actions={[
                       (rowData) => ({
                         icon: "bar_chart",
@@ -952,6 +1042,102 @@ function Default() {
           </Accordion>
         </Grid>
       </Grid>
+      <Fab color="primary" variant="extended" onClick={toggleDrawer}>
+        <TuneIcon />
+        Graph Options
+      </Fab>
+      <Drawer anchor="right" open={open} onClose={toggleDrawer}>
+        <Brand
+          component={NavLink}
+          to="/"
+          button
+          style={{
+            pointerEvents: "all",
+          }}
+        >
+          <BrandIcon
+            src={`/static/img/clearwater-logo-square.png`}
+            width="40"
+            height="40"
+            alt="Clearwater Icon"
+          />
+          Graph Options
+        </Brand>
+        <List disablePadding>
+          <Items>
+            <RadioGroup
+              aria-label="data"
+              name="data"
+              value={radioValue}
+              onChange={handleRadioChange}
+            >
+              <SidebarSection>Data Selection</SidebarSection>
+
+              <ListItem>
+                <FormControlLabel
+                  value="all"
+                  control={<Radio />}
+                  label={radioLabels["all"]}
+                />
+              </ListItem>
+              <ListItem>
+                <FormControlLabel
+                  value="has_production"
+                  control={<Radio />}
+                  label={radioLabels["has_production"]}
+                />
+              </ListItem>
+              <ListItem>
+                <FormControlLabel
+                  value="has_waterlevels"
+                  control={<Radio />}
+                  label={radioLabels["has_waterlevels"]}
+                />
+              </ListItem>
+              <ListItem>
+                <FormControlLabel
+                  value="has_wqdata"
+                  control={<Radio />}
+                  label={radioLabels["has_wqdata"]}
+                />
+              </ListItem>
+            </RadioGroup>
+            <SidebarSection>Date Range</SidebarSection>
+            <ListItem>
+              <DatePicker
+                label="Select Start Date"
+                name="startDate"
+                selectedDate={filterValues.startDate}
+                setSelectedDate={changeFilterValues}
+                checked={filterValues.checked}
+              />
+            </ListItem>
+            <ListItem>
+              <DatePicker
+                label="Select End Date"
+                name="endDate"
+                selectedDate={filterValues.endDate}
+                setSelectedDate={changeFilterValues}
+                checked={filterValues.checked}
+              />
+            </ListItem>
+
+            {["has_wqdata", "all"].includes(radioValue) && wQparameterOptions && (
+              <>
+                <SidebarSection>Parameters</SidebarSection>
+                <ListItem>
+                  <OptionsPicker
+                    selectedOption={selectedWQParameter}
+                    setSelectedOption={setSelectedWQParameter}
+                    options={wQparameterOptions}
+                    label="Water Quality Parameters"
+                  />
+                </ListItem>
+              </>
+            )}
+          </Items>
+        </List>
+      </Drawer>
     </React.Fragment>
   );
 }
