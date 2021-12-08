@@ -1,6 +1,7 @@
 import { useRef } from "react";
 
 import AppBar from "../../components/AppBar";
+import FiltersBar from "./filters";
 import Map from "./map";
 
 import { useMap } from "./mapContext";
@@ -13,6 +14,7 @@ const PublicMap = () => {
   return (
     <>
       <AppBar />
+      <FiltersBar />
       <Map ref={mapContainer} />
     </>
   );

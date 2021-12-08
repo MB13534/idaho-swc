@@ -63,6 +63,15 @@ router.get('/sources', async (req, res, next) => {
   }
 });
 
+router.get('/sources/wells', async (req, res, next) => {
+  try {
+    const wellsData = await model.findAll();
+    res.json(wellsData);
+  } catch (err) {
+    next(err);
+  }
+});
+
 router.get('/layers', (req, res, next) => {
   res.json(layers);
 });

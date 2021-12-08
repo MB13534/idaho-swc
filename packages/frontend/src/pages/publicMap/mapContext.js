@@ -56,7 +56,7 @@ const useMap = (ref, mapConfig) => {
         map.addSource(source.id, cleanedSource);
       });
 
-      if (!mapStatus.layers.added) {
+      if (mapStatus.sources.added && !mapStatus.layers.added) {
         layers.forEach((layer) => {
           map.addLayer(layer);
         });
