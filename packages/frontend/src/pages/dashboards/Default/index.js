@@ -7,19 +7,15 @@ import { Helmet } from "react-helmet-async";
 import {
   Accordion,
   AccordionDetails,
-  Box as MuiBox,
+  Box,
   Card,
   CardHeader,
-  Chip as MuiChip,
   Divider as MuiDivider,
-  Drawer,
-  Fab as MuiFab,
   FormControlLabel,
   Grid as MuiGrid,
   lighten,
   List,
   ListItem,
-  Paper as MuiPaper,
   Radio,
   RadioGroup,
   Typography as MuiTypography,
@@ -27,7 +23,6 @@ import {
 
 import { spacing } from "@material-ui/system";
 
-import Tune from "@material-ui/icons/Tune";
 import { useAuth0 } from "@auth0/auth0-react";
 import Panel from "../../../components/panels/Panel";
 import Map from "../../../components/map/Map";
@@ -51,52 +46,9 @@ import { makeStyles } from "@material-ui/core/styles";
 import DatePicker from "../../../components/pickers/DatePicker";
 import { customSecondary } from "../../../theme/variants";
 
-const Fab = styled(MuiFab)`
-  position: fixed;
-  top: calc(64px + 20px);
-  right: -200px;
-  z-index: 1000;
-  padding-right: 100px;
-  transition: right 0.5s ease-out 0.5s;
+const Divider = styled(MuiDivider)(spacing);
 
-  &:hover {
-    right: -90px;
-  }
-`;
-
-const TuneIcon = styled(Tune)`
-  margin-right: 10px;
-`;
-
-const Items = styled.div`
-  padding-top: ${(props) => props.theme.spacing(2.5)}px;
-  padding-bottom: ${(props) => props.theme.spacing(2.5)}px;
-`;
-
-const Brand = styled(ListItem)`
-  background-color: ${(props) => props.theme.sidebar.header.background};
-  min-height: 56px;
-  padding-left: ${(props) => props.theme.spacing(6)}px;
-  justify-content: start;
-  cursor: pointer;
-  font-size: ${(props) => props.theme.typography.h5.fontSize};
-  font-weight: ${(props) => props.theme.typography.fontWeightMedium};
-  color: ${(props) => props.theme.sidebar.header.color};
-  font-family: ${(props) => props.theme.typography.fontFamily};
-
-  ${(props) => props.theme.breakpoints.up("sm")} {
-    min-height: 64px;
-  }
-
-  &:hover {
-    background-color: ${(props) => props.theme.sidebar.header.background};
-  }
-`;
-
-const BrandIcon = styled.img`
-  border-radius: 50%;
-  margin-right: 16px;
-`;
+const Typography = styled(MuiTypography)(spacing);
 
 const SidebarSection = styled(MuiTypography)`
   color: ${() => customSecondary[500]};
@@ -106,19 +58,6 @@ const SidebarSection = styled(MuiTypography)`
   opacity: 0.9;
   font-weight: ${(props) => props.theme.typography.fontWeightBold};
   display: block;
-`;
-
-const Divider = styled(MuiDivider)(spacing);
-
-const Typography = styled(MuiTypography)(spacing);
-
-const Box = styled(MuiBox)`
-  display: inline-block;
-`;
-
-const Paper = styled(MuiPaper)`
-  ${spacing}
-  padding: 8px;
 `;
 
 const TitleContainer = styled.span`
@@ -144,26 +83,8 @@ const TimeseriesContainer = styled.div`
 `;
 
 const TimeseriesWrapper = styled.div`
-  height: calc(100% - 54px);
+  height: calc(100% - 58px);
   width: 100%;
-`;
-
-const ChipTitle = styled(MuiChip)`
-  ${spacing}
-  display: inline-block;
-  cursor: pointer;
-  font-weight: 600;
-  padding: 8px 0 23px 0;
-  margin: 4px 8px 4px 0px;
-`;
-
-const ChipSubtitle = styled(MuiChip)`
-  ${spacing}
-  display: inline-block;
-  cursor: pointer;
-  font-weight: 600;
-  padding: 5px 0 26px 0;
-  margin: 4px 8px 4px 0px;
 `;
 
 const Grid = styled(MuiGrid)(spacing);
@@ -500,7 +421,7 @@ function Default() {
   }, [currentSelectedPoint, filteredData]);
 
   const waterQualityReport = {
-    2: "E coli?",
+    2: "E. coli?",
     1: "A family of bacteria common in soils, plants and animals. The presence/absence test only indicates if coliform bacteria are present. No distinction is made on the origin of the coliform bacteria. A positive result warrants further analysis, an inspection of the well integrity and well/water system disinfection. Coliform bacteria should not be present under the federal drinking water standard. Coliform Bacteria - A family of bacteria common in soils, plants and animals. The presence/absence test only indicates if coliform bacteria are present. No distinction is made on the origin of the coliform bacteria. A positive result warrants further analysis, an inspection of the well integrity and well/water system disinfection. Coliform bacteria should not be present under the federal drinking water standard.",
     6: "The pH of water is a measure of the concentration of hydrogen ions. pH is expressed on a scale from 1 to 14, with 1 being most acidic, 7 neutral and 14 being the most basic or alkaline. The pH of drinking water should be between 6.5 and 8.5 to meet the federal secondary drinking water standard.",
     3: "Conductivity measures the ability of water to conduct an electric current and is useful to quickly assess water quality. Conductivity increases with the number of dissolved ions in the water but is affected by temperature and the specific ions in solution. High conductivity or large changes may warrant further analysis. There is no EPA or TCEQ drinking water standard for conductivity.",
@@ -520,70 +441,33 @@ function Default() {
     if (graphType === "Well Production") {
       return (
         <>
-          <Typography variant="h4" ml={2}>
-            Reported Well Production for:{" "}
-            <Box component="div">
-              <ChipTitle
-                variant="outlined"
-                size="small"
-                color="secondary"
-                label={location.well_name ?? "NA"}
-              />
-              Well:{" "}
-              <ChipTitle
-                variant="outlined"
-                size="small"
-                color="secondary"
-                label={location.cuwcd_well_number ?? "NA"}
-              />
+          <Typography variant="h4" pl={2} style={{ lineHeight: 1.3 }}>
+            <strong>Reported Well Production for Well: </strong>
+            {location.well_name ?? "NA"} {location.cuwcd_well_number ?? "NA"}
+            <Box>
+              <strong>Aquifer: </strong>
+              {location.source_aquifer ?? "NA"}
             </Box>
             {location.state_well_number && (
-              <Box component="div">
-                State Well Number:{" "}
-                <ChipTitle size="small" label={location.state_well_number} />
+              <Box>
+                <strong>State Well Number: </strong>
+                {location.state_well_number}
               </Box>
             )}
-            <Box component="div">
-              Aquifer:{" "}
-              <ChipTitle size="small" label={location.source_aquifer ?? "NA"} />
-            </Box>
           </Typography>
-          <Typography variant="subtitle1" ml={8}>
-            <Box component="div">
-              Well Owner:{" "}
-              <ChipSubtitle
-                variant="outlined"
-                size="small"
-                label={location.well_owner ?? "NA"}
-              />
+          <br />
+          <Typography variant="subtitle1" pl={2} style={{ lineHeight: 1.3 }}>
+            <Box>
+              <strong>Owner: </strong>
+              {location.well_owner ?? "NA"}
             </Box>
-            <Box component="div">
-              Aggregated System:{" "}
-              <ChipSubtitle
-                variant="outlined"
-                size="small"
-                label={location.agg_system_name ?? "NA"}
-              />
+            <Box>
+              <strong>Permit Info: </strong>
+              {location.permit_number ?? "NA"}
             </Box>
-            <Box component="div">
-              Permit Number:{" "}
-              <ChipSubtitle
-                variant="outlined"
-                size="small"
-                label={location.permit_number ?? "NA"}
-              />
-            </Box>
-            <Box component="div">
-              Permitted Amount:{" "}
-              <ChipSubtitle
-                variant="outlined"
-                size="small"
-                label={
-                  location.permitted_value
-                    ? `${location.permitted_value} (ac-ft)`
-                    : "NA"
-                }
-              />
+            <Box>
+              <strong>Aggregated System: </strong>
+              {location.agg_system_name ?? "NA"}
             </Box>
           </Typography>
         </>
@@ -591,74 +475,37 @@ function Default() {
     } else if (graphType === "Water Levels") {
       return (
         <>
-          <Typography variant="h4" ml={2}>
-            Water Levels for:{" "}
-            <Box component="div">
-              <ChipTitle
-                variant="outlined"
-                size="small"
-                color="secondary"
-                label={location.well_name ?? "NA"}
-              />
-              Well:{" "}
-              <ChipTitle
-                variant="outlined"
-                size="small"
-                color="secondary"
-                label={location.cuwcd_well_number ?? "NA"}
-              />
+          <Typography variant="h4" pl={2} style={{ lineHeight: 1.3 }}>
+            <strong>Reported Water Levels for Well: </strong>
+            {location.well_name ?? "NA"} {location.cuwcd_well_number ?? "NA"}
+            <Box>
+              <strong>Aquifer: </strong>
+              {location.source_aquifer ?? "NA"}
             </Box>
             {location.state_well_number && (
-              <Box component="div">
-                State Well Number:{" "}
-                <ChipTitle size="small" label={location.state_well_number} />
+              <Box>
+                <strong>State Well Number: </strong>
+                {location.state_well_number}
               </Box>
             )}
           </Typography>
-          <Typography variant="subtitle1" ml={8}>
-            <Box component="div">
-              Well Depth:{" "}
-              <ChipSubtitle
-                variant="outlined"
-                size="small"
-                label={
-                  location.well_depth_ft
-                    ? `${location.well_depth_ft} (ft)`
-                    : "NA"
-                }
-              />
+          <br />
+          <Typography variant="subtitle1" pl={2} style={{ lineHeight: 1.3 }}>
+            <Box component="span" mr={6}>
+              <strong>Well Depth: </strong>
+              {location.well_depth_ft ? `${location.well_depth_ft} ft` : "NA"}
             </Box>
-            <Box component="div">
-              Aquifer:{" "}
-              <ChipSubtitle
-                variant="outlined"
-                size="small"
-                label={location.source_aquifer ?? "NA"}
-              />
+            <Box component="span" mr={6}>
+              <strong>Top of Screen: </strong>
+              {location.screen_top_depth_ft
+                ? `${location.screen_top_depth_ft} ft`
+                : "NA"}
             </Box>
-            <Box component="div">
-              Top of Screen:{" "}
-              <ChipSubtitle
-                variant="outlined"
-                size="small"
-                label={
-                  location.screen_top_depth_ft
-                    ? `${location.screen_top_depth_ft} (ft)`
-                    : "NA"
-                }
-              />
-            </Box>
-            <Box component="div">
-              Bottom of Screen:{" "}
-              <ChipSubtitle
-                variant="outlined"
-                size="small"
-                label={
-                  location.screen_bottom_depth_ft
-                    ? `${location.screen_bottom_depth_ft} (ft)`
-                    : "NA"
-                }
-              />
+            <Box component="span" mr={6}>
+              <strong>Bottom of Screen: </strong>
+              {location.screen_bottom_depth_ft
+                ? `${location.screen_bottom_depth_ft} ft`
+                : "NA"}
             </Box>
           </Typography>
         </>
@@ -666,51 +513,47 @@ function Default() {
     } else if (graphType === "Water Quality") {
       return (
         <>
-          <Typography variant="h4" ml={2}>
+          <Typography variant="h4" pl={2} style={{ lineHeight: 1.3 }}>
             <strong>
-              <ChipTitle
-                size="small"
-                color="primary"
-                label={
-                  wQparameterOptions.filter(
-                    (item) => item.value === selectedWQParameter
-                  )[0].label
-                }
-              />
+              Reported{" "}
+              {
+                wQparameterOptions.filter(
+                  (item) => item.value === selectedWQParameter
+                )[0].label
+              }{" "}
+              Measurements for Well:{" "}
             </strong>
-            Data for:{" "}
-            <Box component="div">
-              <ChipTitle
-                variant="outlined"
-                size="small"
-                color="secondary"
-                label={location.well_name ?? "NA"}
-              />
-              Well:{" "}
-              <ChipTitle
-                variant="outlined"
-                size="small"
-                color="secondary"
-                label={location.cuwcd_well_number ?? "NA"}
-              />
+            {location.well_name ?? "NA"} {location.cuwcd_well_number ?? "NA"}
+            <Box>
+              <strong>Aquifer: </strong>
+              {location.source_aquifer ?? "NA"}
             </Box>
+            {location.state_well_number && (
+              <Box>
+                <strong>State Well Number: </strong>
+                {location.state_well_number}
+              </Box>
+            )}
           </Typography>
-          <Paper variant="outlined" ml={8} mr={8} mt={2}>
-            <Typography variant="caption">
-              {waterQualityReport[selectedWQParameter]}
-            </Typography>
-          </Paper>
+          <br />
+          <Typography variant="subtitle1" pl={2} style={{ lineHeight: 1.3 }}>
+            <Box>
+              About{" "}
+              {
+                wQparameterOptions.filter(
+                  (item) => item.value === selectedWQParameter
+                )[0].label
+              }
+              :{" "}
+            </Box>
+
+            <Box>{waterQualityReport[selectedWQParameter]}</Box>
+          </Typography>
         </>
       );
     } else {
       return null;
     }
-  };
-
-  const [open, setOpen] = React.useState(false);
-
-  const toggleDrawer = () => {
-    setOpen((state) => !state);
   };
 
   return (
@@ -868,8 +711,32 @@ function Default() {
                     <TimeseriesContainer>
                       <span data-html2canvas-ignore="true">
                         <Grid container pb={2}>
-                          <Grid item style={{ flexGrow: 1 }} />
-                          <Grid item>
+                          <Grid
+                            item
+                            style={{
+                              flexGrow: 1,
+                              maxWidth: "calc(100% - 110px)",
+                            }}
+                          >
+                            {radioValue === "has_wqdata" && wQparameterOptions && (
+                              <>
+                                <SidebarSection>Parameters</SidebarSection>
+
+                                <OptionsPicker
+                                  selectedOption={selectedWQParameter}
+                                  setSelectedOption={setSelectedWQParameter}
+                                  options={wQparameterOptions}
+                                  label="Water Quality Parameters"
+                                />
+                              </>
+                            )}
+                          </Grid>
+                          <Grid
+                            item
+                            style={{ display: "flex" }}
+                            alignItems="flex-end"
+                            mb={1}
+                          >
                             <ExportDataButton
                               title="cuwcd_well_number"
                               data={currentSelectedTimeseriesData}
@@ -884,8 +751,13 @@ function Default() {
                           </Grid>
                         </Grid>
                       </span>
-
-                      <TimeseriesWrapper>
+                      <TimeseriesWrapper
+                        style={
+                          radioValue === "has_wqdata"
+                            ? { height: "calc(100% - 100px)" }
+                            : null
+                        }
+                      >
                         <TimeseriesLineChart
                           data={filteredMutatedGraphData}
                           error={error}
@@ -908,20 +780,6 @@ function Default() {
                       </TimeseriesWrapper>
                     </TimeseriesContainer>
                   </AccordionDetails>
-                  {["has_wqdata", "all"].includes(radioValue) &&
-                    wQparameterOptions && (
-                      <>
-                        <SidebarSection>Parameters</SidebarSection>
-                        <ListItem>
-                          <OptionsPicker
-                            selectedOption={selectedWQParameter}
-                            setSelectedOption={setSelectedWQParameter}
-                            options={wQparameterOptions}
-                            label="Water Quality Parameters"
-                          />
-                        </ListItem>
-                      </>
-                    )}
                 </Panel>
               </Accordion>
             </div>
@@ -938,20 +796,19 @@ function Default() {
                     : `Select a Point on the Map to View ${radioLabels[radioValue]} Summary`
                 }
               />
-              {["has_wqdata", "all"].includes(radioValue) &&
-                wQparameterOptions && (
-                  <>
-                    <SidebarSection>Parameters</SidebarSection>
-                    <ListItem>
-                      <OptionsPicker
-                        selectedOption={selectedWQParameter}
-                        setSelectedOption={setSelectedWQParameter}
-                        options={wQparameterOptions}
-                        label="Water Quality Parameters"
-                      />
-                    </ListItem>
-                  </>
-                )}
+              {radioValue === "has_wqdata" && wQparameterOptions && (
+                <Box mr={2} ml={2}>
+                  <SidebarSection>Parameters</SidebarSection>
+                  <ListItem>
+                    <OptionsPicker
+                      selectedOption={selectedWQParameter}
+                      setSelectedOption={setSelectedWQParameter}
+                      options={wQparameterOptions}
+                      label="Water Quality Parameters"
+                    />
+                  </ListItem>
+                </Box>
+              )}
             </Card>
           </Grid>
         </Grid>
@@ -1042,102 +899,6 @@ function Default() {
           </Accordion>
         </Grid>
       </Grid>
-      <Fab color="primary" variant="extended" onClick={toggleDrawer}>
-        <TuneIcon />
-        Graph Options
-      </Fab>
-      <Drawer anchor="right" open={open} onClose={toggleDrawer}>
-        <Brand
-          component={NavLink}
-          to="/"
-          button
-          style={{
-            pointerEvents: "all",
-          }}
-        >
-          <BrandIcon
-            src={`/static/img/clearwater-logo-square.png`}
-            width="40"
-            height="40"
-            alt="Clearwater Icon"
-          />
-          Graph Options
-        </Brand>
-        <List disablePadding>
-          <Items>
-            <RadioGroup
-              aria-label="data"
-              name="data"
-              value={radioValue}
-              onChange={handleRadioChange}
-            >
-              <SidebarSection>Data Selection</SidebarSection>
-
-              <ListItem>
-                <FormControlLabel
-                  value="all"
-                  control={<Radio />}
-                  label={radioLabels["all"]}
-                />
-              </ListItem>
-              <ListItem>
-                <FormControlLabel
-                  value="has_production"
-                  control={<Radio />}
-                  label={radioLabels["has_production"]}
-                />
-              </ListItem>
-              <ListItem>
-                <FormControlLabel
-                  value="has_waterlevels"
-                  control={<Radio />}
-                  label={radioLabels["has_waterlevels"]}
-                />
-              </ListItem>
-              <ListItem>
-                <FormControlLabel
-                  value="has_wqdata"
-                  control={<Radio />}
-                  label={radioLabels["has_wqdata"]}
-                />
-              </ListItem>
-            </RadioGroup>
-            <SidebarSection>Date Range</SidebarSection>
-            <ListItem>
-              <DatePicker
-                label="Select Start Date"
-                name="startDate"
-                selectedDate={filterValues.startDate}
-                setSelectedDate={changeFilterValues}
-                checked={filterValues.checked}
-              />
-            </ListItem>
-            <ListItem>
-              <DatePicker
-                label="Select End Date"
-                name="endDate"
-                selectedDate={filterValues.endDate}
-                setSelectedDate={changeFilterValues}
-                checked={filterValues.checked}
-              />
-            </ListItem>
-
-            {["has_wqdata", "all"].includes(radioValue) && wQparameterOptions && (
-              <>
-                <SidebarSection>Parameters</SidebarSection>
-                <ListItem>
-                  <OptionsPicker
-                    selectedOption={selectedWQParameter}
-                    setSelectedOption={setSelectedWQParameter}
-                    options={wQparameterOptions}
-                    label="Water Quality Parameters"
-                  />
-                </ListItem>
-              </>
-            )}
-          </Items>
-        </List>
-      </Drawer>
     </React.Fragment>
   );
 }
