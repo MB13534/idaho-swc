@@ -733,8 +733,7 @@ function Default() {
                           </Grid>
                           <Grid
                             item
-                            style={{ display: "flex" }}
-                            alignItems="flex-end"
+                            style={{ display: "flex", alignItems: "flex-end" }}
                             mb={1}
                           >
                             <ExportDataButton

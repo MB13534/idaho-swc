@@ -92,8 +92,8 @@ const Map = ({
 
   function onPointClick(e) {
     coordinatesRef.current.style.display = "block";
-    longRef.current.innerHTML = e.features[0].properties.longitude_dd;
-    latRef.current.innerHTML = e.features[0].properties.latitude_dd;
+    longRef.current.innerHTML = e.features[0].properties["Longitude (dd)"];
+    latRef.current.innerHTML = e.features[0].properties["Latitude (dd)"];
   }
 
   useEffect(() => {
@@ -147,26 +147,47 @@ const Map = ({
                 type: "Feature",
                 id: location.well_ndx,
                 properties: {
-                  well_ndx: location.well_ndx,
-                  cuwcd_well_number: location.cuwcd_well_number,
-                  state_well_number: location.state_well_number,
-                  longitude_dd: location.longitude_dd,
-                  latitude_dd: location.latitude_dd,
-                  source_aquifer: location.source_aquifer,
-                  primary_use: location.primary_use,
-                  well_owner: location.well_owner,
-                  well_status: location.well_status,
+                  "CUWCD Well #": location.cuwcd_well_number,
+                  "Exempt?": location.exempt,
+                  "Well Name": location.well_name,
+                  "State Well #": location.state_well_number,
+                  "Well Status": location.well_status,
+                  "Source Aquifer": location.source_aquifer,
+                  "Well Depth (ft)": location.well_depth_ft,
+                  "Elevation (ft msl)": location.elevation_ftabmsl,
+                  "Screen Top Depth (ft)": location.screen_top_depth_ft,
+                  "Screen Bottom Depth (ft)": location.screen_bottom_depth_ft,
+                  "Primary Use": location.primary_use,
+                  "Secondary Use": location.secondary_use,
+                  "Aggregation System": location.agg_system_name,
+                  "Permit #": location.permit_number,
+                  "Well Owner": location.well_owner,
+                  "Well Owner Address": location.well_owner_address,
+                  "Well Owner Phone": location.well_owner_phone,
+                  "Well Owner Email": location.well_owner_email,
+                  "Well Contact": location.well_contact,
+                  "Well Contact Address": location.well_contact_address,
+                  "Well Contact Phone": location.well_contact_phone,
+                  "Well Contact Email": location.well_contact_email,
+                  Driller: location.driller,
+                  "Date Drilled": location.date_drilled,
+                  "Drillers Log?": location.drillers_log,
+                  "General Notes": location.general_notes,
+                  "Well Remarks": location.well_remarks,
+                  "Count of Production Entries": location.count_production,
+                  "Count of Water Levels Entries": location.count_waterlevels,
+                  "Count of WQ Data Entries": location.count_wqdata,
+                  "Longitude (dd)": location.longitude_dd,
+                  "Latitude (dd)": location.latitude_dd,
+                  "Registration Notes": location.registration_notes,
+                  "Registration Date": location.registration_date,
+                  Editor: location.editor_name,
+                  "Last Edited Date": location.last_edited_date,
+                  "List of Attachments": location.list_of_attachments,
+                  id: location.id,
                   has_production: location.has_production,
                   has_waterlevels: location.has_waterlevels,
                   has_wqdata: location.has_wqdata,
-                  id: location.id,
-                  is_permitted: location.is_permitted,
-                  is_exempt: location.is_exempt,
-                  is_monitoring: location.is_monitoring,
-                  well_type: location.well_type,
-                  count_production: location.count_production,
-                  count_waterlevels: location.count_waterlevels,
-                  count_wqdata: location.count_wqdata,
                 },
                 geometry: {
                   type: location.location_geometry.type,
@@ -211,7 +232,7 @@ const Map = ({
             source: "locations",
             minzoom: 12,
             layout: {
-              "text-field": ["get", "cuwcd_well_number"],
+              "text-field": ["get", "CUWCD Well #"],
               "text-offset": [0, -2],
               "text-size": 14,
             },
@@ -243,11 +264,11 @@ const Map = ({
         //set well number used to fetch data for graph
         //fly to graph
         map.on("click", "locations", (e) => {
-          setCurrentSelectedPoint(e.features[0].properties.cuwcd_well_number);
+          setCurrentSelectedPoint(e.features[0].properties["CUWCD Well #"]);
           map.flyTo({
             center: [
-              e.features[0].properties.longitude_dd,
-              e.features[0].properties.latitude_dd,
+              e.features[0].properties["Longitude (dd)"],
+              e.features[0].properties["Latitude (dd)"],
             ],
             zoom: 14,
             padding: { bottom: 250 },
@@ -283,6 +304,15 @@ const Map = ({
             `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${data.id}">Link</a></td></tr>` +
             Object.entries(data)
               .map(([k, v]) => {
+                if (
+                  [
+                    "id",
+                    "has_production",
+                    "has_waterlevels",
+                    "has_wqdata",
+                  ].includes(k)
+                )
+                  return null;
                 return `<tr><td><strong>${k}</strong></td><td>${formatBooleanTrueFalse(
                   v
                 )}</td></tr>`;
