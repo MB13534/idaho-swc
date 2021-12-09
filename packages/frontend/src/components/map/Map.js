@@ -188,6 +188,8 @@ const Map = ({
                   has_production: location.has_production,
                   has_waterlevels: location.has_waterlevels,
                   has_wqdata: location.has_wqdata,
+                  well_ndx: location.well_ndx,
+                  location_geometry: location.location_geometry,
                 },
                 geometry: {
                   type: location.location_geometry.type,
@@ -310,6 +312,8 @@ const Map = ({
                     "has_production",
                     "has_waterlevels",
                     "has_wqdata",
+                    "well_ndx",
+                    "location_geometry",
                   ].includes(k)
                 )
                   return null;

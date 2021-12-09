@@ -1,4 +1,4 @@
-import React, { forwardRef } from "react";
+import React, { forwardRef, useEffect } from "react";
 import { withTheme } from "styled-components/macro";
 
 import { Chart, Bar, Scatter } from "react-chartjs-2";
@@ -27,9 +27,17 @@ const TimeseriesLineChart = forwardRef(
       tooltipFormat = "MM-DD-YYYY",
       yRLLabel = null,
       theme,
+      displayLegend = true,
+      setIsGraphRefCurrent,
     },
     ref
   ) => {
+    useEffect(() => {
+      if (ref.current) {
+        setIsGraphRefCurrent(true);
+      }
+    }, [ref, setIsGraphRefCurrent]);
+
     const plugins = [
       {
         id: "chartFillBackground",
@@ -107,7 +115,7 @@ const TimeseriesLineChart = forwardRef(
           // footerColor: ctx =>
         },
         legend: {
-          display: true,
+          display: displayLegend,
           reverse: reverseLegend,
           labels: {
             usePointStyle: true,

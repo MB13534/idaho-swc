@@ -35,7 +35,11 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Table from "../../../components/Table";
 import axios from "axios";
 import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart";
-import { lineColors, renderStatusChip } from "../../../utils";
+import {
+  formatBooleanTrueFalse,
+  lineColors,
+  renderStatusChip,
+} from "../../../utils";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
 import OptionsPicker from "../../../components/pickers/OptionsPicker";
@@ -45,12 +49,14 @@ import mapboxgl from "mapbox-gl";
 import { makeStyles } from "@material-ui/core/styles";
 import DatePicker from "../../../components/pickers/DatePicker";
 import { customSecondary } from "../../../theme/variants";
+import Button from "@material-ui/core/Button";
 
 const Divider = styled(MuiDivider)(spacing);
 
 const Typography = styled(MuiTypography)(spacing);
 
 const SidebarSection = styled(MuiTypography)`
+  ${spacing}
   color: ${() => customSecondary[500]};
   padding: ${(props) => props.theme.spacing(4)}px
     ${(props) => props.theme.spacing(7)}px
@@ -184,6 +190,58 @@ function Default() {
 
     // Copy coordinates array.
     const coordinates = pointFeatures.location_geometry.coordinates.slice();
+
+    map.on("closeAllPopups", () => {
+      popup.remove();
+    });
+
+    console.log(pointFeatures);
+
+    map.flyTo({
+      center: [pointFeatures.longitude_dd, pointFeatures.latitude_dd],
+      zoom: 14,
+      padding: { bottom: 250 },
+    });
+    const titleLookup = {
+      cuwcd_well_number: "CUWCD Well #",
+      exempt: "Exempt?",
+      well_name: "Well Name",
+      state_well_number: "State Well #",
+      well_status: "Well Status",
+      source_aquifer: "Source Aquifer",
+      well_depth_ft: "Well Depth (ft)",
+      elevation_ftabmsl: "Elevation (ft msl)",
+      screen_top_depth_ft: "Screen Top Depth (ft)",
+      screen_bottom_depth_ft: "Screen Bottom Depth (ft)",
+      primary_use: "Primary Use",
+      secondary_use: "Secondary Use",
+      agg_system_name: "Aggregation System",
+      permit_number: "Permit #",
+      well_owner: "Well Owner",
+      well_owner_address: "Well Owner Address",
+      well_owner_phone: "Well Owner Phone",
+      well_owner_email: "Well Owner Email",
+      well_contact: "Well Contact",
+      well_contact_address: "Well Contact Address",
+      well_contact_phone: "Well Contact Phone",
+      well_contact_email: "Well Contact Email",
+      driller: "Driller",
+      date_drilled: "Date Drilled",
+      drillers_log: "Drillers Log?",
+      general_notes: "General Notes",
+      well_remarks: "Well Remarks",
+      count_production: "Count of Production Entries",
+      count_waterlevels: "Count of Water Levels Entries",
+      count_wqdata: "Count of WQ Data Entries",
+      longitude_dd: "Longitude (dd)",
+      latitude_dd: "Latitude (dd)",
+      registration_notes: "Registration Notes",
+      registration_date: "Registration Date",
+      editor_name: "Editor",
+      last_edited_date: "Last Edited Date",
+      list_of_attachments: "List of Attachments",
+    };
+
     const html =
       '<div class="' +
       classes.popupWrap +
@@ -193,22 +251,32 @@ function Default() {
       `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${pointFeatures.id}">Link</a></td></tr>` +
       Object.entries(pointFeatures)
         .map(([k, v]) => {
-          return `<tr><td><strong>${k}</strong></td><td>${v}</td></tr>`;
+          if (
+            [
+              "id",
+              "has_production",
+              "has_waterlevels",
+              "has_wqdata",
+              "well_ndx",
+              "location_geometry",
+              "tableData",
+              "is_permitted",
+              "is_exempt",
+              "is_monitoring",
+              "well_type",
+            ].includes(k)
+          )
+            return null;
+          if (v === null) return null;
+          console.log(k, v, formatBooleanTrueFalse(v));
+          return `<tr><td><strong>${
+            titleLookup[k]
+          }</strong></td><td>${formatBooleanTrueFalse(v)}</td></tr>`;
         })
         .join("") +
       "</tbody></table></div>";
 
     popup.setLngLat(coordinates).setHTML(html).addTo(map);
-
-    map.on("closeAllPopups", () => {
-      popup.remove();
-    });
-
-    map.flyTo({
-      center: [pointFeatures.longitude_dd, pointFeatures.latitude_dd],
-      zoom: 14,
-      padding: { bottom: 250 },
-    });
   };
 
   const [filteredData, setFilteredData] = React.useState([]);
@@ -231,7 +299,7 @@ function Default() {
   );
 
   //paramaters in picker that are selected by user
-  const [selectedWQParameter, setSelectedWQParameter] = useState(2);
+  const [selectedWQParameter, setSelectedWQParameter] = useState(6);
   const { data: wQparameterOptions } = useQuery(
     ["ListWQParameters", currentUser],
     async () => {
@@ -302,7 +370,6 @@ function Default() {
   }, [currentSelectedPoint]); // eslint-disable-line
 
   const [filteredMutatedGraphData, setFilteredMutatedGraphData] = useState({});
-
   useEffect(() => {
     if (currentSelectedTimeseriesData?.length) {
       //mutate data for chartJS to use
@@ -314,7 +381,7 @@ function Default() {
           ),
           datasets: [
             {
-              label: currentSelectedTimeseriesData[0].cuwcd_well_number,
+              label: "Gallons",
               backgroundColor: lighten(lineColors.blue, 0.5),
               borderColor: lineColors.blue,
               data: currentSelectedTimeseriesData.map(
@@ -322,6 +389,18 @@ function Default() {
               ),
               borderWidth: 2,
               spanGaps: true,
+              hidden: false,
+            },
+            {
+              label: "Acre-feet",
+              backgroundColor: lighten(lineColors.red, 0.5),
+              borderColor: lineColors.red,
+              data: currentSelectedTimeseriesData.map(
+                (item) => item.production_af
+              ),
+              borderWidth: 2,
+              spanGaps: true,
+              hidden: true,
             },
           ],
         };
@@ -556,6 +635,35 @@ function Default() {
     }
   };
 
+  const [productionUnits, setProductionUnits] = useState([
+    "Groundwater Pumping (Gallons)",
+  ]);
+
+  const [isGraphRefCurrent, setIsGraphRefCurrent] = useState(false);
+
+  const handleToggleProductionUnitsChange = () => {
+    graphSaveRef.current.setDatasetVisibility(
+      0,
+      !graphSaveRef.current.isDatasetVisible(0)
+    );
+    graphSaveRef.current.setDatasetVisibility(
+      1,
+      !graphSaveRef.current.isDatasetVisible(1)
+    );
+    graphSaveRef.current.config._config.options.scales.yL.title.text =
+      productionUnits[
+        productionUnits === "Groundwater Pumping (Gallons)"
+          ? "Groundwater Pumping (Acre-Feet)"
+          : "Groundwater Pumping (Gallons)"
+      ];
+    setProductionUnits((state) =>
+      state === "Groundwater Pumping (Gallons)"
+        ? "Groundwater Pumping (Acre-Feet)"
+        : "Groundwater Pumping (Gallons)"
+    );
+    graphSaveRef.current.update();
+  };
+
   return (
     <React.Fragment>
       <Helmet title="Dashboard" />
@@ -720,7 +828,9 @@ function Default() {
                           >
                             {radioValue === "has_wqdata" && wQparameterOptions && (
                               <>
-                                <SidebarSection>Parameters</SidebarSection>
+                                <SidebarSection ml={-3}>
+                                  Parameters
+                                </SidebarSection>
 
                                 <OptionsPicker
                                   selectedOption={selectedWQParameter}
@@ -730,6 +840,26 @@ function Default() {
                                 />
                               </>
                             )}
+                            {radioValue === "has_production" &&
+                              wQparameterOptions &&
+                              isGraphRefCurrent && (
+                                <>
+                                  <SidebarSection ml={-3}>
+                                    Toggle Units
+                                  </SidebarSection>
+                                  <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleToggleProductionUnitsChange}
+                                  >
+                                    Switch to{" "}
+                                    {productionUnits ===
+                                    "Groundwater Pumping (Gallons)"
+                                      ? "Acre-Feet"
+                                      : "Gallons"}
+                                  </Button>
+                                </>
+                              )}
                           </Grid>
                           <Grid
                             item
@@ -754,6 +884,8 @@ function Default() {
                         style={
                           radioValue === "has_wqdata"
                             ? { height: "calc(100% - 100px)" }
+                            : radioValue === "has_production"
+                            ? { height: "calc(100% - 82px)" }
                             : null
                         }
                       >
@@ -765,7 +897,7 @@ function Default() {
                             radioValue === "has_waterlevels"
                               ? "Water Level (Feet Below Ground Level)"
                               : radioValue === "has_production"
-                              ? "Groundwater Pumping (Acre-Feet)"
+                              ? productionUnits
                               : `${filteredMutatedGraphData?.parameter} (${filteredMutatedGraphData?.units})`
                           }
                           reverseLegend={false}
@@ -775,6 +907,8 @@ function Default() {
                           type={
                             radioValue === "has_production" ? "bar" : "scatter"
                           }
+                          displayLegend={false}
+                          setIsGraphRefCurrent={setIsGraphRefCurrent}
                         />
                       </TimeseriesWrapper>
                     </TimeseriesContainer>
