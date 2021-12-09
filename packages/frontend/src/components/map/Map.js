@@ -283,7 +283,7 @@ const Map = ({
         // When a click event occurs on a feature in the places layer, open a popup at the
         // location of the feature, with description HTML from its properties.
         map.on("click", "locations", (e) => {
-          let popup = new mapboxgl.Popup({ maxWidth: "300px" });
+          let popup = new mapboxgl.Popup({ maxWidth: "310px" });
 
           let data = e.features[0].properties;
 

@@ -33,10 +33,8 @@ const TimeseriesLineChart = forwardRef(
     ref
   ) => {
     useEffect(() => {
-      if (ref.current) {
-        setIsGraphRefCurrent(true);
-      }
-    }, [ref, setIsGraphRefCurrent]);
+      setIsGraphRefCurrent(true);
+    }, []); //eslint-disable-line
 
     const plugins = [
       {

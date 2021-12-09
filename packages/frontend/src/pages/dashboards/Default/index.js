@@ -195,8 +195,6 @@ function Default() {
       popup.remove();
     });
 
-    console.log(pointFeatures);
-
     map.flyTo({
       center: [pointFeatures.longitude_dd, pointFeatures.latitude_dd],
       zoom: 14,
@@ -268,7 +266,6 @@ function Default() {
           )
             return null;
           if (v === null) return null;
-          console.log(k, v, formatBooleanTrueFalse(v));
           return `<tr><td><strong>${
             titleLookup[k]
           }</strong></td><td>${formatBooleanTrueFalse(v)}</td></tr>`;
@@ -635,10 +632,9 @@ function Default() {
     }
   };
 
-  const [productionUnits, setProductionUnits] = useState([
-    "Groundwater Pumping (Gallons)",
-  ]);
-
+  const [productionUnits, setProductionUnits] = useState(
+    "Groundwater Pumping (Gallons)"
+  );
   const [isGraphRefCurrent, setIsGraphRefCurrent] = useState(false);
 
   const handleToggleProductionUnitsChange = () => {
@@ -841,13 +837,14 @@ function Default() {
                               </>
                             )}
                             {radioValue === "has_production" &&
-                              wQparameterOptions &&
                               isGraphRefCurrent && (
                                 <>
                                   <SidebarSection ml={-3}>
                                     Toggle Units
                                   </SidebarSection>
                                   <Button
+                                    size="small"
+                                    style={{ width: "170px" }}
                                     variant="contained"
                                     color="primary"
                                     onClick={handleToggleProductionUnitsChange}
@@ -885,7 +882,7 @@ function Default() {
                           radioValue === "has_wqdata"
                             ? { height: "calc(100% - 100px)" }
                             : radioValue === "has_production"
-                            ? { height: "calc(100% - 82px)" }
+                            ? { height: "calc(100% - 78px)" }
                             : null
                         }
                       >

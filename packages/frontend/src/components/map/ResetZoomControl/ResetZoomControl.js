@@ -16,6 +16,7 @@ class ResetZoomControl {
       map.flyTo({
         center: STARTING_LOCATION,
         zoom: 9,
+        padding: { bottom: 0 },
       });
     });
     return this._container;
