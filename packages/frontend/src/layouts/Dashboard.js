@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import styled, { createGlobalStyle } from "styled-components/macro";
 import Sidebar from "../components/Sidebar";
 import Header from "../components/AppBar";
@@ -146,7 +146,7 @@ const AppContent = styled.div`
   flex: 1;
   display: flex;
   flex-direction: column;
-  max-width: 100%;
+  // max-width: 100%;
 `;
 
 const Paper = styled(MuiPaper)(spacing);
@@ -226,13 +226,37 @@ const ComponentBody = ({ children, routes, width, contentWidth }) => {
     JSON.parse(localStorage.getItem("isMainSidebarOpen")) ?? true
   );
 
+  const [appContentWidth, setAppContentWidth] = useState(null);
+
   const handleDrawerToggle = () => {
     setMobileOpen(!mobileOpen);
   };
 
+  useEffect(() => {
+    if (!appContentWidth) {
+      setAppContentWidth(
+        drawerOpen && !mobileOpen ? "calc(100% - 258px)" : "100%"
+      );
+    } else if (!drawerOpen) {
+      setAppContentWidth("100%");
+    } else if (width === "sm" || width === "xs") {
+      setAppContentWidth("100%");
+    } else {
+      setAppContentWidth("calc(100% - 258px)");
+    }
+  }, [width]); // eslint-disable-line
+  //
+  // useEffect(() => {
+  //   console.log(appContentWidth);
+  // }, [appContentWidth]);
+
   const toggleOpen = () => {
     localStorage.setItem("isMainSidebarOpen", (!drawerOpen).toString());
     setDrawerOpen(!drawerOpen);
+
+    setAppContentWidth((state) =>
+      state === "calc(100% - 258px)" ? "100%" : "calc(100% - 258px)"
+    );
   };
 
   return (
@@ -274,7 +298,7 @@ const ComponentBody = ({ children, routes, width, contentWidth }) => {
           />
         </Hidden>
       </Drawer>
-      <AppContent>
+      <AppContent style={{ maxWidth: appContentWidth }}>
         <Header onDrawerToggle={handleDrawerToggle} />
         <MainContent p={contentWidth}>{children}</MainContent>
         <Footer />

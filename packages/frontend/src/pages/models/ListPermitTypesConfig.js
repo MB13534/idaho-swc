@@ -35,7 +35,28 @@ export function columns(modelName) {
     },
     {
       field: "permit_type_ndx",
-      headerName: "Name",
+      headerName: "Permit Type Index",
+      width: 150,
+    },
+    {
+      field: "permit_type_desc",
+      headerName: "Permit Type Description",
+      width: 150,
+    },
+    {
+      field: "permit_type_notes",
+      headerName: "Permit Type Notes",
+      width: 150,
+    },
+    {
+      field: "removed",
+      headerName: "Removed?",
+      width: 150,
+      renderCell: Renderers.FormatBooleanTrueFalse,
+    },
+    {
+      field: "display_order",
+      headerName: "Display Order",
       width: 150,
     },
     {
@@ -44,7 +65,6 @@ export function columns(modelName) {
       width: 100,
       renderCell: Renderers.IdRenderer,
     },
-
     {
       field: "created_at",
       headerName: "Created At",
@@ -62,8 +82,46 @@ export function columns(modelName) {
 
 export const fields = [
   {
-    name: "Name",
+    name: "Permit Type Index",
     key: "permit_type_ndx",
+    required: false,
+    type: CRUD_FIELD_TYPES.TEXT,
+    cols: 12,
+    isOpen: true,
+  },
+  {
+    name: "Permit Type Description",
+    key: "permit_type_desc",
+    required: true,
+    type: CRUD_FIELD_TYPES.TEXT,
+    cols: 12,
+    isOpen: true,
+  },
+  {
+    name: "Notes",
+    key: "permit_type_notes",
+    required: true,
+    type: CRUD_FIELD_TYPES.TEXT,
+    cols: 12,
+    isOpen: true,
+  },
+  {
+    name: "Removed?",
+    key: "removed",
+    required: true,
+    type: CRUD_FIELD_TYPES.DROPDOWN,
+    typeConfig: {
+      table: "list_booleans",
+      key: "boolean_value",
+      value: "boolean_label",
+      crud: false,
+    },
+    cols: 12,
+    isOpen: true,
+  },
+  {
+    name: "Display Order",
+    key: "display_order",
     required: true,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,

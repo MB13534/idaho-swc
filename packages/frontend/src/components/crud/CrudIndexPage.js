@@ -28,10 +28,11 @@ function CrudIndexPage({ config, width, modelName }) {
 
       <ConfirmDeleteDialog
         modelName={modelName}
-        displayName={config.displayName}
+        config={config}
         open={app.confirmDialogOpen}
         setOpen={app.setConfirmDialogOpen}
         afterDelete={() => {
+          console.log("push");
           history.push(`${crud.getModelBasePath()}`);
         }}
       />

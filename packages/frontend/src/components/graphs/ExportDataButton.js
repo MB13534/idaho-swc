@@ -12,7 +12,13 @@ import { dateFormatter } from "../../utils";
 
 const Tooltip = styled(MuiTooltip)(spacing);
 
-const ExportDataButton = ({ theme, title, data, filterValues, parameter }) => {
+const ExportDataButton = ({
+  theme,
+  title,
+  data,
+  filterValues,
+  parameter = null,
+}) => {
   const downloadCsvString = (data) => {
     // new Date(item.report_year, item.report_month)
     const header = Object.keys(data[0]).join(",");

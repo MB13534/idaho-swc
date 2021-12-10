@@ -57,7 +57,7 @@ const Map = () => {
       container: mapContainerRef.current,
       style: "mapbox://styles/mapbox/" + DUMMY_BASEMAP_LAYERS[0].url,
       center: STARTING_LOCATION,
-      zoom: 12,
+      zoom: 9,
     });
 
     map.addControl(new mapboxgl.NavigationControl(), "top-left");

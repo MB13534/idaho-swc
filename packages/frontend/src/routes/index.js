@@ -19,6 +19,7 @@ import {
   Monitor,
   Users,
   Map,
+  Share2,
 } from "react-feather";
 
 import AuthGuard from "../components/AuthGuard";
@@ -44,8 +45,10 @@ import UserVisibilityFilter from "../components/UserVisibilityFilter";
 import UserGuard from "../components/UserGuard";
 import UiPermitsExpiringsReport from "../pages/dataAccess/reports/UiPermitsExpiringsReport";
 import FullMap from "../components/map/FullMap";
+
 // TODO MAYBE LAZY IMPORT
 import PublicMap from "../pages/publicMap";
+import Production from "../pages/dashboards/data entry/Production";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -130,6 +133,18 @@ const reportsRoutes = {
       path: "/data-access/reports/ect",
       name: "Ect...",
       component: Blank,
+    },
+  ],
+};
+
+const dataEntryRoutes = {
+  id: "Data Entry",
+  icon: <Share2 />,
+  children: [
+    {
+      path: "/data-access/well-production-data-entry",
+      name: "Well Production",
+      component: Production,
     },
   ],
 };
@@ -403,6 +418,7 @@ export const dashboardLayoutRoutes = [
   mainRoutes,
   changelogRoutes,
   reportsRoutes,
+  dataEntryRoutes,
   mapRoutes,
   timeseriesRoutes,
   publicFilesRoutes,
@@ -436,6 +452,7 @@ export const sidebarRoutes = [
   mainRoutes,
   ...crudSidebarMenu,
   reportsRoutes,
+  dataEntryRoutes,
   mapRoutes,
   timeseriesRoutes,
   publicFilesRoutes,

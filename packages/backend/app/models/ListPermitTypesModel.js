@@ -1,8 +1,23 @@
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT, UUID} = DataTypes;
+  const {INTEGER, TEXT, UUID, BOOLEAN} = DataTypes;
   const ListPermitTypes = sequelize.define(
     'list_permit_types',
     {
+      permit_type_ndx: {
+        type: INTEGER,
+      },
+      permit_type_desc: {
+        type: TEXT,
+      },
+      permit_type_notes: {
+        type: TEXT,
+      },
+      removed: {
+        type: BOOLEAN,
+      },
+      display_order: {
+        type: INTEGER,
+      },
       id: {
         type: UUID,
         primaryKey: true,
@@ -15,9 +30,6 @@ module.exports = (sequelize, DataTypes) => {
       },
       status_id: {
         type: INTEGER,
-      },
-      permit_type_ndx: {
-        type: TEXT,
       },
       created_by: {
         type: UUID,

@@ -5,6 +5,7 @@ import React from "react";
 import styled from "styled-components/macro";
 import { Chip as MuiChip } from "@material-ui/core";
 import { spacing } from "@material-ui/system";
+import html2canvas from "html2canvas";
 
 export const scrollWindowToTop = (smooth = true) => {
   window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
@@ -51,6 +52,57 @@ export const downloadChartImage = (title, extension, ref) => {
   )}.${extension}`;
   downloadLink.click();
 };
+
+export const downloadRef = (title, extension, ref) => {
+  html2canvas(ref.current).then(function (canvas) {
+    let link = document.createElement("a");
+
+    if (typeof link.download === "string") {
+      link.href = canvas.toDataURL();
+      link.download = `${title} ${dateFormatter(
+        new Date(),
+        "MM/DD/YYYY, h:mm A"
+      )}.${extension}`;
+
+      //Firefox requires the link to be in the body
+      document.body.appendChild(link);
+
+      //simulate click
+      link.click();
+
+      //remove the link when done
+      document.body.removeChild(link);
+    } else {
+      window.open(link.href);
+    }
+  });
+};
+
+// const saveAs = (uri, filename) => {
+//   let link = document.createElement("a");
+//
+//   if (typeof link.download === "string") {
+//     link.href = uri;
+//     link.download = filename;
+//
+//     //Firefox requires the link to be in the body
+//     document.body.appendChild(link);
+//
+//     //simulate click
+//     link.click();
+//
+//     //remove the link when done
+//     document.body.removeChild(link);
+//   } else {
+//     window.open(uri);
+//   }
+// };
+//
+// export const handleDownloadDiv = (newSaveRef) => {
+//   html2canvas(newSaveRef.current).then((canvas) => {
+//     saveAs(canvas.toDataURL(), "file-name.png");
+//   });
+// };
 
 export const lineColors = {
   red: "#e6194b",

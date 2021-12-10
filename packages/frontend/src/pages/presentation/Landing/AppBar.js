@@ -38,7 +38,7 @@ function AppBarComponent({ width }) {
                 <BrandIcon
                   src={`/static/img/clearwater-logo-simple.png`}
                   width="150"
-                  height="49"
+                  height="48"
                   alt="Clearwater Icon"
                 />{" "}
               </Brand>
