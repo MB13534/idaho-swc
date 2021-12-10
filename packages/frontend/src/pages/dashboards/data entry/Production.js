@@ -434,13 +434,32 @@ function Production() {
     },
   ];
 
+  const lookupMonths = {
+    1: "January",
+    2: "February",
+    3: "March",
+    4: "April",
+    5: "May",
+    6: "June",
+    7: "July",
+    8: "August",
+    9: "September",
+    10: "October",
+    11: "November",
+    12: "December",
+  };
+
   const editTableColumns = [
-    { title: "Well Index", field: "well_ndx" },
+    {
+      title: "Well Index",
+      field: "well_ndx",
+      // editable: "never"
+    },
     {
       title: "CUWCD Well Number",
       field: "cuwcd_well_number",
     },
-    { title: "Report Month", field: "report_month" },
+    { title: "Report Month", field: "report_month", lookup: lookupMonths },
     { title: "Report Year", field: "report_year" },
     { title: "Permit Index", field: "permit_ndx" },
     { title: "Production Gallons", field: "production_gallons" },
@@ -640,11 +659,68 @@ function Production() {
         </Grid>
       </Grid>
 
+      {Boolean(currentSelectedEditTableData) ? (
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <Accordion defaultExpanded>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="table-content"
+                id="table-header"
+              >
+                <Typography variant="h4" ml={2}>
+                  Well Production Data
+                </Typography>
+              </AccordionSummary>
+              <Panel>
+                <AccordionDetails>
+                  <TableWrapper>
+                    <DataAdminTable
+                      pageSize={10}
+                      // isLoading={isLoading}
+                      label="Search Well Table"
+                      columns={editTableColumns}
+                      data={currentSelectedEditTableData}
+                      height="350px"
+                      // actions={[
+                      //   (rowData) => ({
+                      //     icon: () => {
+                      //       return <Edit />;
+                      //     },
+                      //     tooltip: "Edit Well",
+                      //   }),
+                      // ]}
+                      updateHandler={setCurrentSelectedEditTableData}
+                      endpoint="dm-well-productions"
+                      ndxField="STRING_NDX_FIELD"
+                    />
+                  </TableWrapper>
+                </AccordionDetails>
+              </Panel>
+            </Accordion>
+          </Grid>
+        </Grid>
+      ) : (
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader
+                title={
+                  radioValue === "all"
+                    ? "Filter Data and Click a Point on the Map to View Corresponding Well Production Data"
+                    : `Select a Point on the Map to View Corresponding Well Production Data`
+                }
+              />
+            </Card>
+          </Grid>
+        </Grid>
+      )}
+
       {Boolean(filteredMutatedGraphData) ? (
         <Grid container spacing={6}>
           <Grid item xs={12}>
             <div ref={divSaveRef}>
-              <Accordion defaultExpanded>
+              <Accordion>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon data-html2canvas-ignore="true" />}
                   aria-controls="time-series"
@@ -745,59 +821,6 @@ function Production() {
                   radioValue === "all"
                     ? "Filter Data and Click a Point on the Map to View Corresponding Summary"
                     : `Select a Point on the Map to View ${radioLabels[radioValue]} Summary`
-                }
-              />
-            </Card>
-          </Grid>
-        </Grid>
-      )}
-      {Boolean(currentSelectedEditTableData) ? (
-        <Grid container spacing={6}>
-          <Grid item xs={12}>
-            <Accordion defaultExpanded>
-              <AccordionSummary
-                expandIcon={<ExpandMoreIcon />}
-                aria-controls="table-content"
-                id="table-header"
-              >
-                <Typography variant="h4" ml={2}>
-                  Well Production Data
-                </Typography>
-              </AccordionSummary>
-              <Panel>
-                <AccordionDetails>
-                  <TableWrapper>
-                    <DataAdminTable
-                      pageSize={10}
-                      // isLoading={isLoading}
-                      label="Search Well Table"
-                      columns={editTableColumns}
-                      data={currentSelectedEditTableData}
-                      height="350px"
-                      actions={[
-                        (rowData) => ({
-                          icon: () => {
-                            return <Edit />;
-                          },
-                          tooltip: "Edit Well",
-                        }),
-                      ]}
-                    />
-                  </TableWrapper>
-                </AccordionDetails>
-              </Panel>
-            </Accordion>
-          </Grid>
-        </Grid>
-      ) : (
-        <Grid container spacing={6}>
-          <Grid item xs={12}>
-            <Card>
-              <CardHeader
-                title={
-                  radioValue === "all"
-                    ? "Filter Data and Click a Point on the Map to View Corresponding Well Production Data"
-                    : `Select a Point on the Map to View Corresponding Well Production Data`
                 }
               />
             </Card>
