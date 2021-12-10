@@ -3,7 +3,7 @@ module.exports = (sequelize, DataTypes) => {
   const DmWellProductions = sequelize.define(
     'dm_well_productions',
     {
-      aquifer_ndx: {
+      well_ndx: {
         type: INTEGER,
         primaryKey: true,
       },
@@ -27,6 +27,12 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
+      defaultScope: {
+        order: [
+          ['report_year', 'asc'],
+          ['report_month', 'asc'],
+        ],
+      },
       schema: 'client_clearwater',
       timestamps: false,
       paranoid: true,

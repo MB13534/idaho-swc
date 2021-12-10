@@ -69,6 +69,7 @@ const ProductionMap = ({
   coordinatesRef,
   longRef,
   latRef,
+  setRadioValue,
 }) => {
   const classes = useStyles();
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
@@ -393,7 +394,7 @@ const ProductionMap = ({
           }
           hoverID = null;
         });
-
+        setRadioValue("has_production");
         // Change it back to a pointer when it leaves.
       }
     }

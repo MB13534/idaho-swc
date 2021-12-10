@@ -34,6 +34,7 @@ import { useApp } from "../../../AppProvider";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Table from "../../../components/Table";
+import DataAdminTable from "../../../components/DataAdminTable";
 import axios from "axios";
 import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart";
 import {
@@ -147,7 +148,7 @@ function Production() {
     });
   };
 
-  const [radioValue, setRadioValue] = React.useState("has_production");
+  const [radioValue, setRadioValue] = React.useState("all");
   const radioLabels = {
     all: "All",
     has_production: "Well Production",
@@ -164,6 +165,7 @@ function Production() {
       { clicked: false }
     );
     setCurrentSelectedTimeseriesData(null);
+    setCurrentSelectedEditTableData(null);
     setCurrentSelectedPoint(null);
   };
 
@@ -308,6 +310,8 @@ function Production() {
   const [currentSelectedPoint, setCurrentSelectedPoint] = useState(null);
   const [currentSelectedTimeseriesData, setCurrentSelectedTimeseriesData] =
     useState(null);
+  const [currentSelectedEditTableData, setCurrentSelectedEditTableData] =
+    useState(null);
 
   useEffect(() => {
     if (currentSelectedPoint && radioValue !== "all") {
@@ -316,22 +320,32 @@ function Production() {
           const token = await getAccessTokenSilently();
           const headers = { Authorization: `Bearer ${token}` };
 
-          const endpoint = {
-            has_production: "graph-wellproductions",
-          };
-
-          const { data: results } = await axios.post(
-            `${process.env.REACT_APP_ENDPOINT}/api/${endpoint[radioValue]}/${currentSelectedPoint}`,
+          const { data: graphResults } = await axios.post(
+            `${process.env.REACT_APP_ENDPOINT}/api/graph-wellproductions/${currentSelectedPoint}`,
             {
               cuwcd_well_number: currentSelectedPoint,
             },
             { headers }
           );
 
-          if (results.length) {
-            setCurrentSelectedTimeseriesData(results);
+          if (graphResults.length) {
+            setCurrentSelectedTimeseriesData(graphResults);
           } else {
             setCurrentSelectedTimeseriesData(null);
+          }
+
+          const { data: editTableResults } = await axios.post(
+            `${process.env.REACT_APP_ENDPOINT}/api/dm-well-productions/${currentSelectedPoint}`,
+            {
+              cuwcd_well_number: currentSelectedPoint,
+            },
+            { headers }
+          );
+
+          if (editTableResults.length) {
+            setCurrentSelectedEditTableData(editTableResults);
+          } else {
+            setCurrentSelectedEditTableData(null);
           }
         } catch (err) {
           // Is this error because we cancelled it ourselves?
@@ -400,7 +414,7 @@ function Production() {
     Unknown: lineColors.olive,
   };
 
-  const tableColumns = [
+  const searchTableColumns = [
     {
       title: "CUWCD Well Number",
       field: "cuwcd_well_number",
@@ -418,6 +432,19 @@ function Production() {
         return renderStatusChip(rowData.well_status, statusChipColors);
       },
     },
+  ];
+
+  const editTableColumns = [
+    { title: "Well Index", field: "well_ndx" },
+    {
+      title: "CUWCD Well Number",
+      field: "cuwcd_well_number",
+    },
+    { title: "Report Month", field: "report_month" },
+    { title: "Report Year", field: "report_year" },
+    { title: "Permit Index", field: "permit_ndx" },
+    { title: "Production Gallons", field: "production_gallons" },
+    { title: "Production Notes", field: "production_notes" },
   ];
 
   useEffect(() => {
@@ -541,6 +568,7 @@ function Production() {
                   coordinatesRef={coordinatesRef}
                   longRef={longRef}
                   latRef={latRef}
+                  setRadioValue={setRadioValue}
                 />
               </MapContainer>
             </AccordionDetails>
@@ -723,6 +751,59 @@ function Production() {
           </Grid>
         </Grid>
       )}
+      {Boolean(currentSelectedEditTableData) ? (
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <Accordion defaultExpanded>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="table-content"
+                id="table-header"
+              >
+                <Typography variant="h4" ml={2}>
+                  Well Production Data
+                </Typography>
+              </AccordionSummary>
+              <Panel>
+                <AccordionDetails>
+                  <TableWrapper>
+                    <DataAdminTable
+                      pageSize={10}
+                      // isLoading={isLoading}
+                      label="Search Well Table"
+                      columns={editTableColumns}
+                      data={currentSelectedEditTableData}
+                      height="350px"
+                      actions={[
+                        (rowData) => ({
+                          icon: () => {
+                            return <Edit />;
+                          },
+                          tooltip: "Edit Well",
+                        }),
+                      ]}
+                    />
+                  </TableWrapper>
+                </AccordionDetails>
+              </Panel>
+            </Accordion>
+          </Grid>
+        </Grid>
+      ) : (
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <Card>
+              <CardHeader
+                title={
+                  radioValue === "all"
+                    ? "Filter Data and Click a Point on the Map to View Corresponding Well Production Data"
+                    : `Select a Point on the Map to View Corresponding Well Production Data`
+                }
+              />
+            </Card>
+          </Grid>
+        </Grid>
+      )}
 
       <Grid container spacing={6}>
         <Grid item xs={12}>
@@ -743,7 +824,7 @@ function Production() {
                     pageSize={10}
                     isLoading={isLoading}
                     label="Search Well Table"
-                    columns={tableColumns}
+                    columns={searchTableColumns}
                     data={filteredData}
                     height="350px"
                     actions={[
@@ -755,6 +836,7 @@ function Production() {
                           setRadioValue("has_production");
                           setCurrentSelectedPoint(rowData.cuwcd_well_number);
                           setCurrentSelectedTimeseriesData(null);
+                          setCurrentSelectedEditTableData(null);
                           handlePointInteractions(rowData);
                         },
                       }),
