@@ -31,8 +31,8 @@ const DataAdminTable = ({
   endpoint,
   handleRefresh = () => {},
   ndxField,
-  options = {},
-  components = {},
+  // options = {},
+  // components = {},
 }) => {
   const { doToast } = useApp();
   const { getAccessTokenSilently } = useAuth0();
@@ -106,7 +106,7 @@ const DataAdminTable = ({
         }}
         editable={{
           onRowAdd: handleAdd,
-          onRowUpdate: () => console.log("update"),
+          onRowUpdate: handleUpdate,
         }}
         components={{
           Container: (props) => <div {...props} />,
