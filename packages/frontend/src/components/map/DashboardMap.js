@@ -57,7 +57,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-const Map = ({
+const DashboardMap = ({
   data,
   isLoading,
   error,
@@ -432,4 +432,4 @@ const Map = ({
   );
 };
 
-export default Map;
+export default DashboardMap;

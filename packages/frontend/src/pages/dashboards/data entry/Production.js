@@ -117,7 +117,7 @@ const useStyles = makeStyles(() => ({
   },
 }));
 
-function Default() {
+function Production() {
   const classes = useStyles();
   const [map, setMap] = useState();
   const [currentTableLabel, setCurrentTableLabel] = useState();
@@ -1033,4 +1033,4 @@ function Default() {
   );
 }
 
-export default Default;
+export default Production;
