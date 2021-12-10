@@ -9,9 +9,47 @@ const sources = [
     type: 'geojson',
     data: [],
   },
+  {
+    id: 'major-aquifers',
+    type: 'vector',
+    url: 'mapbox://txclearwater.1zpxkpma',
+  },
 ];
 
 const layers = [
+  {
+    id: 'major-aquifers-fill',
+    name: 'Major Aquifers',
+    type: 'fill',
+    source: 'major-aquifers',
+    'source-layer': 'Aquifers_major_dd-1n355v',
+    paint: {
+      'fill-opacity': 0.5,
+      'fill-color': '#9AC0F9',
+    },
+    layout: {
+      visibility: 'visible',
+    },
+    lreProperties: {
+      layerGroup: 'major-aquifers',
+    },
+  },
+  {
+    id: 'major-aquifers-line',
+    name: 'Major Aquifers',
+    type: 'line',
+    source: 'major-aquifers',
+    'source-layer': 'Aquifers_major_dd-1n355v',
+    paint: {
+      'line-color': '#444',
+    },
+    layout: {
+      visibility: 'visible',
+    },
+    lreProperties: {
+      layerGroup: 'major-aquifers',
+    },
+  },
   {
     id: 'clearwater-wells-circle',
     name: 'Clearwater Wells',

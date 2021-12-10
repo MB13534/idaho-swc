@@ -30,6 +30,11 @@ const useMap = (ref, mapConfig) => {
     sources,
   } = context;
 
+  /**
+   * Function responsible for initializing the map
+   * Once the map is loaded, store a reference to the map in
+   * our application state and update the map status
+   */
   const initializeMap = useCallback(() => {
     if (ref?.current && !mapStatus.map.created) {
       const newMap = new mapboxgl.Map({
@@ -51,6 +56,13 @@ const useMap = (ref, mapConfig) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [ref, mapStatus.map.created]);
 
+  /**
+   * Function responsible for adding sources and layers to the map
+   * There are a number of checks in place to ensure that sources
+   * only get added to the map once the map and sources are loaded and
+   * to ensure that layers are only added to the map once the layers are
+   * loaded and the associated sources are added to the map
+   */
   const loadMapData = useCallback(() => {
     const shouldAddData =
       map && mapStatus.map.loaded && sources?.length > 0 && layers?.length > 0;
@@ -63,8 +75,9 @@ const useMap = (ref, mapConfig) => {
       });
 
       layers.forEach((layer) => {
+        const { lreProperties, ...rest } = layer;
         const layerExists = map.getLayer(layer.id);
-        if (!layerExists) map.addLayer(layer);
+        if (!layerExists) map.addLayer(rest);
       });
 
       setMapStatus((prevState) => ({
@@ -81,31 +94,64 @@ const useMap = (ref, mapConfig) => {
     }
   }, [layers, map, mapStatus.map.loaded, setMapStatus, sources]);
 
+  /**
+   * Handler used to update the visibility property on a layer
+   * We employ special logic in this handler to allow for toggling
+   * the visibility of grouped layers on and off
+   * This allows us to display a single item in the layers list
+   * but to control the visibility of multiple map layers at once
+   * A common use case would be for something like parcels where
+   * you want to display a layer for the parcel outlines and a layer
+   * for the parcel fill.
+   * This approach allows us to only show one layer in
+   * the layer control list but to turn both layers on/off
+   * @param {string | number} options.id ID associated with the layer or layer group
+   * @param {boolean} options.boolean whether the layer is on/off
+   */
   const updateLayerVisibility = ({ id, visible }) => {
-    if (!!map && !!map.getLayer(id)) {
-      const visibleValue = visible ? "visible" : "none";
-      map.setLayoutProperty(id, "visibility", visibleValue);
-      setLayers((prevState) => {
-        return prevState.map((layer) => {
-          if (layer.id === id) {
-            return {
-              ...layer,
-              layout: {
-                ...layer.layout,
-                visibility: visibleValue,
-              },
-            };
-          }
-          return layer;
-        });
+    /**
+     * Get a list of the IDs for the layers that need to have their
+     * visibility updated
+     * The ID that is passed to the handler will either be the ID for
+     * the layer or an ID for a layer group
+     */
+    const groupedLayerIds = layers
+      ?.filter((layer) => {
+        const key = layer?.lreProperties?.layerGroup || layer.id;
+        return key === id;
+      })
+      .map(({ id }) => id);
+
+    if (!!map) {
+      /**
+       * Loop through all of the layers and update the visibility
+       * for all of the layers associated with the layer toggled
+       * in the layer control
+       */
+      const updatedLayers = layers.map((layer) => {
+        if (!!map.getLayer(layer.id) && groupedLayerIds.includes(layer.id)) {
+          const visibleValue = visible ? "visible" : "none";
+          map.setLayoutProperty(layer.id, "visibility", visibleValue);
+          return {
+            ...layer,
+            layout: {
+              ...layer?.layout,
+              visibility: visibleValue,
+            },
+          };
+        }
+        return layer;
       });
+      setLayers(updatedLayers);
     }
   };
 
+  // initialize and load the map
   useEffect(() => {
     initializeMap();
   }, [initializeMap]);
 
+  // add all the sources and layers to the map
   useEffect(() => {
     loadMapData();
   }, [loadMapData]);
