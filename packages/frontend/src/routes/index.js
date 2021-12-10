@@ -45,6 +45,9 @@ import UserVisibilityFilter from "../components/UserVisibilityFilter";
 import UserGuard from "../components/UserGuard";
 import UiPermitsExpiringsReport from "../pages/dataAccess/reports/UiPermitsExpiringsReport";
 import FullMap from "../components/map/FullMap";
+
+// TODO MAYBE LAZY IMPORT
+import PublicMap from "../pages/publicMap";
 import Production from "../pages/dashboards/data entry/Production";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
@@ -152,6 +155,13 @@ const mapRoutes = {
   path: "/data-access/map",
   name: "Map",
   component: FullMap,
+};
+
+const publicMapRoutes = {
+  id: "Public Map",
+  path: ROUTES.PUBLIC_MAP,
+  name: "Public Map",
+  component: PublicMap,
 };
 
 const timeseriesRoutes = {
@@ -430,6 +440,9 @@ export const authLayoutRoutes = [accountRoutes];
 
 // Routes using the Presentation layout
 export const presentationLayoutRoutes = [landingRoutes];
+
+// Routes using the full screen map layout
+export const fullscreenMapRoutes = [publicMapRoutes];
 
 // Routes that are protected
 export const protectedRoutes = [protectedPageRoutes];

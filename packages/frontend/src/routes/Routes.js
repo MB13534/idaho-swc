@@ -4,6 +4,7 @@ import {
   authLayoutRoutes,
   dashboardLayoutRoutes,
   dashboardMaxContentLayoutRoutes,
+  fullscreenMapRoutes,
   presentationLayoutRoutes,
   protectedRoutes,
 } from "./index";
@@ -15,6 +16,7 @@ import {
 } from "../layouts/Dashboard";
 import AuthLayout from "../layouts/Auth";
 import PresentationLayout from "../layouts/Presentation";
+import FullscreenMapLayout from "../layouts/FullscreenMap";
 import Page404 from "../pages/auth/Page404";
 import ProtectedRoute from "../auth/ProtectedRoute";
 import ProtectedPage from "../pages/protected/ProtectedPage";
@@ -122,6 +124,7 @@ const Routes = () => {
               {ChildRoutes(DashboardLayout, protectedRoutes)}
               {ChildRoutes(AuthLayout, authLayoutRoutes)}
               {ChildRoutes(PresentationLayout, presentationLayoutRoutes)}
+              {ChildRoutes(FullscreenMapLayout, fullscreenMapRoutes)}
               <ProtectedRoute path="/secret" component={ProtectedPage} />
               <Route
                 render={() => (
