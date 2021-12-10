@@ -94,6 +94,16 @@ const useMap = (ref, mapConfig) => {
     }
   }, [layers, map, mapStatus.map.loaded, setMapStatus, sources]);
 
+  const updateLayerFilters = ({ layerId, filterName, filterValue }) => {
+    if (!!map) {
+      console.log(layerId, filterName, filterValue);
+      map.setFilter(layerId, [
+        "all",
+        ["in", ["get", filterName], ["literal", filterValue]],
+      ]);
+    }
+  };
+
   /**
    * Handler used to update the visibility property on a layer
    * We employ special logic in this handler to allow for toggling
@@ -161,6 +171,7 @@ const useMap = (ref, mapConfig) => {
     map,
     mapStatus,
     sources,
+    updateLayerFilters,
     updateLayerVisibility,
   };
 };

@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
+  ClickAwayListener,
   Divider,
   InputAdornment,
   List,
@@ -15,7 +16,13 @@ import axios from "axios";
 import { useQuery } from "react-query";
 import useDebounce from "../../../../hooks/useDebounce";
 
-const SearchResults = ({ anchorEl, open, onSelect, searchResults }) => {
+const SearchResults = ({
+  anchorEl,
+  open,
+  onClose,
+  onSelect,
+  searchResults,
+}) => {
   return (
     <Popper
       open={open}
@@ -24,43 +31,47 @@ const SearchResults = ({ anchorEl, open, onSelect, searchResults }) => {
       style={{ zIndex: 2 }}
       transition
     >
-      <Paper style={{ width: 400, height: 400, overflowY: "auto" }}>
-        <List dense component="nav" aria-label="main mailbox folders">
-          {searchResults?.slice(0, 49)?.map((result) => (
-            <React.Fragment key={result?.item?.well_ndx}>
-              <ListItem
-                style={{
-                  flexDirection: "column",
-                  alignItems: "flex-start",
-                }}
-                button
-                onClick={() => onSelect(result?.item)}
-              >
-                {/* <Typography variant="caption">CUWCD Well Number</Typography> */}
-                <Typography variant="subtitle1">
-                  {result?.item?.cuwcd_well_number}
-                </Typography>
-                <div style={{ display: "flex", gap: 16 }}>
-                  <div>
-                    <Typography variant="caption">State Well Number</Typography>
-                    <Typography variant="body1">
-                      {result?.item?.state_well_number || "N/A"}
-                    </Typography>
+      <ClickAwayListener onClickAway={onClose}>
+        <Paper style={{ width: 400, height: 400, overflowY: "auto" }}>
+          <List dense component="nav" aria-label="main mailbox folders">
+            {searchResults?.slice(0, 49)?.map((result) => (
+              <React.Fragment key={result?.item?.well_ndx}>
+                <ListItem
+                  style={{
+                    flexDirection: "column",
+                    alignItems: "flex-start",
+                  }}
+                  button
+                  onClick={() => onSelect(result?.item)}
+                >
+                  {/* <Typography variant="caption">CUWCD Well Number</Typography> */}
+                  <Typography variant="subtitle1">
+                    {result?.item?.cuwcd_well_number}
+                  </Typography>
+                  <div style={{ display: "flex", gap: 16 }}>
+                    <div>
+                      <Typography variant="caption">
+                        State Well Number
+                      </Typography>
+                      <Typography variant="body1">
+                        {result?.item?.state_well_number || "N/A"}
+                      </Typography>
+                    </div>
+                    <div>
+                      <Typography variant="caption">Well Owner</Typography>
+                      <Typography variant="body1">
+                        {result?.item?.well_owner || "N/A"}
+                      </Typography>
+                    </div>
                   </div>
-                  <div>
-                    <Typography variant="caption">Well Owner</Typography>
-                    <Typography variant="body1">
-                      {result?.item?.well_owner || "N/A"}
-                    </Typography>
-                  </div>
-                </div>
-                {/* <ListItemText primary={result?.item?.cuwcd_well_number} /> */}
-              </ListItem>
-              <Divider />
-            </React.Fragment>
-          ))}
-        </List>
-      </Paper>
+                  {/* <ListItemText primary={result?.item?.cuwcd_well_number} /> */}
+                </ListItem>
+                <Divider />
+              </React.Fragment>
+            ))}
+          </List>
+        </Paper>
+      </ClickAwayListener>
     </Popper>
   );
 };
@@ -79,6 +90,11 @@ const Search = ({ onSelect }) => {
   const [value, setValue] = useState("");
   const debouncedSearchValue = useDebounce(value, 200);
   const [searchResults, setSearchResults] = useState([]);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    setOpen(!!searchResults?.length);
+  }, [searchResults]);
 
   const fuzzySearcher = useMemo(() => {
     if (options?.data) {
@@ -93,6 +109,14 @@ const Search = ({ onSelect }) => {
       });
     }
   }, [options]);
+
+  const handleClose = (event) => {
+    if (searchRef.current && searchRef.current.contains(event.target)) {
+      return;
+    }
+
+    setOpen(false);
+  };
 
   const handleChange = (event) => {
     setValue(event?.target?.value);
@@ -116,6 +140,7 @@ const Search = ({ onSelect }) => {
           ),
         }}
         onChange={handleChange}
+        onFocus={() => !!value && setOpen(true)}
         placeholder="Search by well attributes"
         ref={searchRef}
         style={{ width: 400 }}
@@ -125,8 +150,9 @@ const Search = ({ onSelect }) => {
       />
       <SearchResults
         anchorEl={searchRef?.current}
+        onClose={handleClose}
         onSelect={onSelect}
-        open={!!searchResults?.length}
+        open={open}
         searchResults={searchResults}
       />
     </>

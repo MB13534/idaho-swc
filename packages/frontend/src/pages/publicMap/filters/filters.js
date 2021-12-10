@@ -2,7 +2,8 @@ import { styled } from "@material-ui/core/styles";
 import { Box, Paper } from "@material-ui/core";
 
 import Search from "./search";
-import Filter from "./filter/filter";
+import AquiferFilter from "./aquiferFilter";
+import useFilters from "../useFilters";
 
 const Container = styled(Paper)(({ theme }) => ({
   alignItems: "center",
@@ -13,7 +14,15 @@ const Container = styled(Paper)(({ theme }) => ({
 
 const AquiferOptions = [{ display: "Placeholder", value: "placeholder" }];
 
-const FiltersBar = ({ onSearchSelect }) => {
+const FiltersBar = ({ onFilterChange, onSearchSelect }) => {
+  const {
+    aquifers,
+    filterValues,
+    handleFilterValues,
+    handleSelectAll,
+    handleSelectNone,
+  } = useFilters({ onFilterChange });
+
   return (
     <Container square elevation={0}>
       {/* {children} */}
@@ -21,8 +30,14 @@ const FiltersBar = ({ onSearchSelect }) => {
         <Search onSelect={onSearchSelect} />
       </Box>
       <Box display="flex" gridColumnGap={8}>
-        <Filter active label="Aquifers" options={AquiferOptions} />
-        <Filter label="Primary Use" options={AquiferOptions} />
+        <AquiferFilter
+          label="Aquifers"
+          onChange={handleFilterValues}
+          onSelectAll={handleSelectAll}
+          onSelectNone={handleSelectNone}
+          options={aquifers}
+          value={filterValues.aquifers}
+        />
       </Box>
     </Container>
   );

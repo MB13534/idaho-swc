@@ -1,5 +1,5 @@
 const express = require('express');
-const {ui_list_wells: model} = require('../../core/models');
+const {ui_list_wells: model, list_aquifers} = require('../../core/models');
 
 const router = express.Router();
 
@@ -28,7 +28,7 @@ const layers = [
       'fill-color': '#9AC0F9',
     },
     layout: {
-      visibility: 'visible',
+      visibility: 'none',
     },
     lreProperties: {
       layerGroup: 'major-aquifers',
@@ -44,7 +44,7 @@ const layers = [
       'line-color': '#444',
     },
     layout: {
-      visibility: 'visible',
+      visibility: 'none',
     },
     lreProperties: {
       layerGroup: 'major-aquifers',
@@ -112,6 +112,17 @@ router.get('/sources/wells', async (req, res, next) => {
 
 router.get('/layers', (req, res, next) => {
   res.json(layers);
+});
+
+router.get('/aquifers', async (req, res, next) => {
+  try {
+    const data = await list_aquifers.findAll({
+      order: [['aquifer_name', 'ASC']],
+    });
+    res.json(data);
+  } catch (err) {
+    next(err);
+  }
 });
 
 module.exports = router;
