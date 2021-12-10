@@ -1,12 +1,18 @@
+import { useRef, useState } from "react";
 import {
-  Avatar,
-  FormControl as MuiFormControl,
-  InputLabel,
-  Select,
-  MenuItem,
+  Box,
+  FormControl,
+  ClickAwayListener,
+  FormControlLabel,
+  Checkbox,
   Button,
+  Paper,
+  Popper,
+  Typography,
 } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
+import PlusIcon from "@material-ui/icons/Add";
+import MinusIcon from "@material-ui/icons/Remove";
 
 const FilterAvatar = styled("span")(({ theme }) => ({
   alignItems: "center",
@@ -20,45 +26,109 @@ const FilterAvatar = styled("span")(({ theme }) => ({
   width: theme.spacing(4.5),
 }));
 
-const FormControl = styled(MuiFormControl)(({ theme }) => ({
-  margin: theme.spacing(1),
-  width: "100%",
+const FilterContainer = styled(Paper)(({ theme }) => ({
+  padding: theme.spacing(4),
+  width: 400,
 }));
 
 const Filter = ({
-  active,
   label,
-  multi,
   name,
   onChange = () => {},
+  onSelectAll,
+  onSelectNone,
   options = [],
-  value = "",
+  value = [],
 }) => {
+  const [open, setOpen] = useState(false);
+  const buttonRef = useRef(null);
+  const [hasFilterBeenOpened, setHasFilterBeenOpened] = useState(false);
+
+  const active = value?.length > 0;
+
+  const handleClose = (event) => {
+    if (buttonRef.current && buttonRef.current.contains(event.target)) {
+      return;
+    }
+
+    setOpen(false);
+  };
+
   return (
-    <Button
-      color={active ? "primary" : "inherit"}
-      size="large"
-      variant={active ? "contained" : "outlined"}
-      startIcon={active ? <FilterAvatar>1</FilterAvatar> : undefined}
-    >
-      {label}
-    </Button>
-    // <FormControl variant="outlined">
-    //   <InputLabel id="demo-simple-select-label">{label}</InputLabel>
-    //   <Select
-    //     id="demo-simple-select"
-    //     labelId="demo-simple-select-label"
-    //     name={name}
-    //     onChange={onChange}
-    //     value={value}
-    //   >
-    //     {options.map(({ display, value }) => (
-    //       <MenuItem key={value} value={value}>
-    //         {display}
-    //       </MenuItem>
-    //     ))}
-    //   </Select>
-    // </FormControl>
+    <div>
+      <Button
+        color={active ? "primary" : "inherit"}
+        size="large"
+        variant={active ? "contained" : "outlined"}
+        startIcon={
+          active && hasFilterBeenOpened ? (
+            <FilterAvatar>{value.length}</FilterAvatar>
+          ) : undefined
+        }
+        onClick={() => {
+          setOpen((s) => !s);
+          setHasFilterBeenOpened(true);
+        }}
+        ref={buttonRef}
+      >
+        {label}
+      </Button>
+      <Popper
+        open={open}
+        anchorEl={buttonRef?.current}
+        placement="bottom-start"
+        style={{ zIndex: 2, border: "1px solid #ddd" }}
+        transition
+      >
+        <ClickAwayListener onClickAway={handleClose}>
+          <FilterContainer>
+            <Typography variant="subtitle1">{label}</Typography>
+            <Box display="flex" gridColumnGap={8} mt={2}>
+              <Button
+                size="small"
+                startIcon={<PlusIcon />}
+                onClick={() => onSelectAll(name)}
+                variant="outlined"
+              >
+                Select All
+              </Button>
+              <Button
+                size="small"
+                startIcon={<MinusIcon />}
+                onClick={() => onSelectNone(name)}
+                variant="outlined"
+              >
+                Select None
+              </Button>
+            </Box>
+            <Box>
+              <FormControl component="fieldset">
+                <ul
+                  style={{ paddingLeft: 0, listStyle: "none", columnCount: 2 }}
+                >
+                  {options.map((option) => (
+                    <li key={option.value}>
+                      <FormControlLabel
+                        control={
+                          <Checkbox
+                            color="primary"
+                            checked={value.includes(option.value)}
+                            onChange={onChange}
+                            name={name}
+                            value={option.value}
+                          />
+                        }
+                        label={option.display}
+                      />
+                    </li>
+                  ))}
+                </ul>
+              </FormControl>
+            </Box>
+          </FilterContainer>
+        </ClickAwayListener>
+      </Popper>
+    </div>
   );
 };
 

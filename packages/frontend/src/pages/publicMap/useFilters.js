@@ -1,18 +1,35 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
 
 const initFilterValues = {
-  aquifers: ["Alluvium"],
+  aquifers: {
+    layerId: "clearwater-wells-circle",
+    layerFieldName: "source_aquifer",
+    options: [],
+    value: [],
+  },
+  primaryUses: {
+    layerId: "clearwater-wells-circle",
+    layerFieldName: "primary_use",
+    options: [],
+    value: [],
+  },
+  wellStatus: {
+    layerId: "clearwater-wells-circle",
+    layerFieldName: "well_status",
+    options: [],
+    value: [],
+  },
 };
 
 const useFilters = ({ onFilterChange }) => {
   const [filterValues, setFilterValues] = useState(initFilterValues);
 
-  const { data: aquifers } = useQuery(["aquifers"], async () => {
+  const { data } = useQuery(["filterData"], async () => {
     try {
       const response = await axios.get(
-        `${process.env.REACT_APP_ENDPOINT}/api/public-map/aquifers`
+        `${process.env.REACT_APP_ENDPOINT}/api/public-map/filters`
       );
       return response;
     } catch (err) {
@@ -20,17 +37,36 @@ const useFilters = ({ onFilterChange }) => {
     }
   });
 
+  useEffect(() => {
+    setFilterValues((prevState) => ({
+      aquifers: {
+        ...prevState.aquifers,
+        options: data?.data?.aquifers || [],
+        value: data?.data?.aquifers.map(({ value }) => value) || [],
+      },
+      primaryUses: {
+        ...prevState.primaryUses,
+        options: data?.data?.primaryUses || [],
+        value: data?.data?.primaryUses.map(({ value }) => value) || [],
+      },
+      wellStatus: {
+        ...prevState.wellStatus,
+        options: data?.data?.wellStatus || [],
+        value: data?.data?.wellStatus.map(({ value }) => value) || [],
+      },
+    }));
+  }, [data?.data]);
+
   const handleSelectAll = (name) => {
     setFilterValues((prevState) => {
       const newState = {
         ...prevState,
-        [name]: aquifers?.data.map(({ aquifer_name }) => aquifer_name),
+        [name]: {
+          ...prevState[name],
+          value: data?.data?.[name]?.map(({ value }) => value),
+        },
       };
-      onFilterChange({
-        layerId: "clearwater-wells-circle",
-        filterName: "source_aquifer",
-        filterValue: newState[name],
-      });
+      onFilterChange(newState);
       return newState;
     });
   };
@@ -39,13 +75,12 @@ const useFilters = ({ onFilterChange }) => {
     setFilterValues((prevState) => {
       const newState = {
         ...prevState,
-        [name]: [],
+        [name]: {
+          ...prevState[name],
+          value: [],
+        },
       };
-      onFilterChange({
-        layerId: "clearwater-wells-circle",
-        filterName: "source_aquifer",
-        filterValue: newState[name],
-      });
+      onFilterChange(newState);
       return newState;
     });
   };
@@ -53,7 +88,7 @@ const useFilters = ({ onFilterChange }) => {
   const handleFilterValues = (event) => {
     const { name, value } = event.target;
     setFilterValues((prevState) => {
-      const newValue = [...prevState[name]];
+      const newValue = [...prevState[name].value];
       const existingIndex = newValue.indexOf(value);
       if (existingIndex > -1) {
         newValue.splice(existingIndex, 1);
@@ -62,19 +97,17 @@ const useFilters = ({ onFilterChange }) => {
       }
       const newState = {
         ...prevState,
-        [name]: newValue,
+        [name]: {
+          ...prevState[name],
+          value: newValue,
+        },
       };
-      onFilterChange({
-        layerId: "clearwater-wells-circle",
-        filterName: "source_aquifer",
-        filterValue: newState[name],
-      });
+      onFilterChange(newState);
       return newState;
     });
   };
 
   return {
-    aquifers: aquifers?.data,
     filterValues,
     handleFilterValues,
     handleSelectAll,

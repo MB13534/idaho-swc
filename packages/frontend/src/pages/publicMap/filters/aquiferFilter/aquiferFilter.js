@@ -71,7 +71,7 @@ const AquiferFilter = ({
         startIcon={
           active ? <FilterAvatar>{value.length}</FilterAvatar> : undefined
         }
-        onClick={() => setOpen(true)}
+        onClick={() => setOpen((s) => !s)}
         ref={buttonRef}
       >
         {label}

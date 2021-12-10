@@ -14,6 +14,16 @@ const sources = [
     type: 'vector',
     url: 'mapbox://txclearwater.1zpxkpma',
   },
+  {
+    id: 'fema-flood-hazard',
+    type: 'vector',
+    url: 'mapbox://txclearwater.0tvqpsja',
+  },
+  {
+    id: 'ccn-water-gcs',
+    type: 'vector',
+    url: 'mapbox://txclearwater.8v5dou5d',
+  },
 ];
 
 const layers = [
@@ -51,6 +61,53 @@ const layers = [
     },
   },
   {
+    id: 'ccn-water-gcs-fill',
+    name: 'CCN Water GCS',
+    type: 'fill',
+    source: 'ccn-water-gcs',
+    'source-layer': 'CCN_WATER_GCS_PUC-7ukl7v',
+    paint: {
+      'fill-opacity': 0.5,
+      'fill-color': '#ffff00',
+    },
+    layout: {
+      visibility: 'none',
+    },
+    lreProperties: {
+      layerGroup: 'ccn-water-gcs',
+    },
+  },
+  {
+    id: 'ccn-water-gcs-line',
+    name: 'CCN Water GCS',
+    type: 'line',
+    source: 'ccn-water-gcs',
+    'source-layer': 'CCN_WATER_GCS_PUC-7ukl7v',
+    paint: {
+      'line-color': '#444',
+    },
+    layout: {
+      visibility: 'none',
+    },
+    lreProperties: {
+      layerGroup: 'ccn-water-gcs',
+    },
+  },
+  // {
+  //   id: 'fema-flood-hazard-line',
+  //   name: 'FEMA Flood Hazard',
+  //   type: 'line',
+  //   source: 'fema-flood-hazard',
+  //   'source-layer': 'FEMA_Milam_S_FLD_HAZ_AR-ckbcnb',
+  //   paint: {
+  //     'line-color': '#444',
+  //     'line-width': 12,
+  //   },
+  //   layout: {
+  //     visibility: 'none',
+  //   },
+  // },
+  {
     id: 'clearwater-wells-circle',
     name: 'Clearwater Wells',
     type: 'circle',
@@ -63,6 +120,29 @@ const layers = [
       visibility: 'visible',
     },
   },
+];
+
+const wellUsesData = [
+  'Ag/Irrigation',
+  'Domestic',
+  'Industrial',
+  'Livestock/Poultry',
+  'Monitoring',
+  'Not Used',
+  'Other',
+  'Public Supply',
+  'Testing',
+];
+
+const wellStatusesData = [
+  'Abandoned',
+  'Active',
+  'Capped',
+  'Inactive',
+  'Never Drilled',
+  'Plugged',
+  'Proposed',
+  'Unknown',
 ];
 
 const toGeoJSON = ({data, geometryField}) => {
@@ -114,12 +194,23 @@ router.get('/layers', (req, res, next) => {
   res.json(layers);
 });
 
-router.get('/aquifers', async (req, res, next) => {
+router.get('/filters', async (req, res, next) => {
   try {
-    const data = await list_aquifers.findAll({
-      order: [['aquifer_name', 'ASC']],
+    const aquifers = await list_aquifers
+      .findAll({
+        order: [['aquifer_name', 'ASC']],
+      })
+      .map(({aquifer_name}) => ({display: aquifer_name, value: aquifer_name}));
+    const primaryUses = wellUsesData.map((use) => ({display: use, value: use}));
+    const wellStatus = wellStatusesData.map((use) => ({
+      display: use,
+      value: use,
+    }));
+    res.json({
+      aquifers: aquifers || [],
+      primaryUses,
+      wellStatus,
     });
-    res.json(data);
   } catch (err) {
     next(err);
   }

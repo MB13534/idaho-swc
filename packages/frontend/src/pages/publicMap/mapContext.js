@@ -94,13 +94,17 @@ const useMap = (ref, mapConfig) => {
     }
   }, [layers, map, mapStatus.map.loaded, setMapStatus, sources]);
 
-  const updateLayerFilters = ({ layerId, filterName, filterValue }) => {
+  const updateLayerFilters = (filterValues) => {
     if (!!map) {
-      console.log(layerId, filterName, filterValue);
-      map.setFilter(layerId, [
-        "all",
-        ["in", ["get", filterName], ["literal", filterValue]],
-      ]);
+      const mapFilterExpression = ["all"];
+      Object.values(filterValues).forEach((filter) => {
+        mapFilterExpression.push([
+          "in",
+          ["get", filter.layerFieldName],
+          ["literal", filter.value],
+        ]);
+      });
+      map.setFilter("clearwater-wells-circle", mapFilterExpression);
     }
   };
 
