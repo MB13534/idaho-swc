@@ -1,10 +1,4 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useMemo,
-  useState,
-} from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
@@ -19,16 +13,8 @@ const useMap = (ref, mapConfig) => {
     throw new Error(`useMap must be used within a MapProvider`);
   }
 
-  const {
-    layers,
-    map,
-    mapStatus,
-    setLayers,
-    setMap,
-    setMapStatus,
-    setSources,
-    sources,
-  } = context;
+  const { layers, map, mapStatus, setLayers, setMap, setMapStatus, sources } =
+    context;
 
   /**
    * Function responsible for initializing the map
@@ -196,11 +182,7 @@ const MapProvider = (props) => {
       added: false,
     },
   });
-  const {
-    data: sourcesData,
-    isLoading: sourcesLoading,
-    error: sourcesError,
-  } = useQuery(["Sources"], async () => {
+  const { data: sourcesData } = useQuery(["Sources"], async () => {
     try {
       return await axios.get(
         `${process.env.REACT_APP_ENDPOINT}/api/public-map/sources`
@@ -209,11 +191,7 @@ const MapProvider = (props) => {
       console.error(err);
     }
   });
-  const {
-    data: layersData,
-    isLoading: layersLoading,
-    error: layersError,
-  } = useQuery(["Layers"], async () => {
+  const { data: layersData } = useQuery(["Layers"], async () => {
     try {
       return await axios.get(
         `${process.env.REACT_APP_ENDPOINT}/api/public-map/layers`

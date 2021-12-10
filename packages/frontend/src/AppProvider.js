@@ -58,8 +58,11 @@ export const AppProvider = ({ children }) => {
 
       setLookupTableCache(myLookupTableCache);
     }
-    loadModels();
-  }, []); // eslint-disable-line
+
+    if (user) {
+      loadModels();
+    }
+  }, [user]); // eslint-disable-line
 
   // Toast
   const [toastOpen, setToastOpen] = useState(false);

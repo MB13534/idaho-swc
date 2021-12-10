@@ -3,7 +3,6 @@ import styled from "styled-components/macro";
 import { Paper, Typography } from "@material-ui/core";
 
 import AppBar from "../../components/AppBar";
-// import FiltersBar from "./filters";
 import Map from "./map";
 import LayersControl from "./controls/layers";
 import Search from "./filters/search";
@@ -34,8 +33,10 @@ const FiltersContainer = styled.div`
 
 const PublicMap = () => {
   const mapContainer = useRef(null);
-  const { layers, map, sources, updateLayerFilters, updateLayerVisibility } =
-    useMap(mapContainer, INIT_MAP_CONFIG);
+  const { layers, map, updateLayerFilters, updateLayerVisibility } = useMap(
+    mapContainer,
+    INIT_MAP_CONFIG
+  );
   const {
     filterValues,
     handleFilterValues,

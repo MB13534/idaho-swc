@@ -1,16 +1,14 @@
 import {
   Box,
   Checkbox,
-  InputAdornment,
   List,
   ListItem,
   ListItemText,
   Paper,
-  TextField,
   Typography,
 } from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
-import SearchIcon from "@material-ui/icons/Search";
+// import SearchIcon from "@material-ui/icons/Search";
 import LayersIcon from "@material-ui/icons/Layers";
 import { useMemo } from "react";
 
