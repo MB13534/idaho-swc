@@ -2,7 +2,14 @@ import React, { useState } from "react";
 import useService from "../../../hooks/useService";
 import { useQuery } from "react-query";
 
-import { Grid as MuiGrid, Tab, Tabs as MuiTabs } from "@material-ui/core";
+import {
+  Breadcrumbs as MuiBreadcrumbs,
+  Divider as MuiDivider,
+  Grid as MuiGrid,
+  Tab,
+  Tabs as MuiTabs,
+  Typography,
+} from "@material-ui/core";
 
 import styled from "styled-components/macro";
 
@@ -14,6 +21,7 @@ import Link from "@material-ui/core/Link";
 import { NavLink } from "react-router-dom";
 import { Add, Edit } from "@material-ui/icons";
 import { lineColors, renderStatusChip } from "../../../utils";
+import { Helmet } from "react-helmet-async";
 
 const TableWrapper = styled.div`
   overflow-y: auto;
@@ -23,6 +31,8 @@ const TableWrapper = styled.div`
 
 const Tabs = styled(MuiTabs)(spacing);
 const Grid = styled(MuiGrid)(spacing);
+const Divider = styled(MuiDivider)(spacing);
+const Breadcrumbs = styled(MuiBreadcrumbs)(spacing);
 
 function a11yProps(index) {
   return {
@@ -104,6 +114,19 @@ const UiPermitsExpiringsReport = () => {
 
   return (
     <>
+      <Helmet title="Expiring Permits" />
+      <Typography variant="h3" gutterBottom display="inline">
+        Expiring Permits Report
+      </Typography>
+
+      <Breadcrumbs aria-label="Breadcrumb" mt={2}>
+        <Link component={NavLink} exact to="/dashboard">
+          Dashboard
+        </Link>
+        <Typography>Expiring Permits</Typography>
+      </Breadcrumbs>
+
+      <Divider my={6} />
       <Panel>
         <Grid container>
           <Tabs

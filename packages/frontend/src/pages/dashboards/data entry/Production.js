@@ -8,6 +8,7 @@ import {
   Accordion,
   AccordionDetails,
   Box,
+  Breadcrumbs as MuiBreadcrumbs,
   Card,
   CardHeader,
   Divider as MuiDivider,
@@ -25,7 +26,7 @@ import { spacing } from "@material-ui/system";
 
 import { useAuth0 } from "@auth0/auth0-react";
 import Panel from "../../../components/panels/Panel";
-import DashboardMap from "../../../components/map/DashboardMap";
+import ProductionMap from "../../../components/map/ProductionMap";
 import { useQuery } from "react-query";
 import { findRawRecords } from "../../../services/crudService";
 import useService from "../../../hooks/useService";
@@ -42,7 +43,6 @@ import {
 } from "../../../utils";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
-import OptionsPicker from "../../../components/pickers/OptionsPicker";
 import Link from "@material-ui/core/Link";
 import { Edit } from "@material-ui/icons";
 import mapboxgl from "mapbox-gl";
@@ -52,6 +52,8 @@ import { customSecondary } from "../../../theme/variants";
 import Button from "@material-ui/core/Button";
 
 const Divider = styled(MuiDivider)(spacing);
+
+const Breadcrumbs = styled(MuiBreadcrumbs)(spacing);
 
 const Typography = styled(MuiTypography)(spacing);
 
@@ -123,7 +125,7 @@ function Production() {
   const [currentTableLabel, setCurrentTableLabel] = useState();
   const divSaveRef = useRef(null);
   const graphSaveRef = useRef(null);
-  const { user, getAccessTokenSilently } = useAuth0();
+  const { getAccessTokenSilently } = useAuth0();
   const service = useService({ toast: false });
   const { currentUser } = useApp();
   const currentlyPaintedPointRef = useRef(null);
@@ -145,12 +147,10 @@ function Production() {
     });
   };
 
-  const [radioValue, setRadioValue] = React.useState("all");
+  const [radioValue, setRadioValue] = React.useState("has_production");
   const radioLabels = {
     all: "All",
     has_production: "Well Production",
-    has_waterlevels: "Water Levels",
-    has_wqdata: "Water Quality",
   };
 
   const handleRadioChange = (event) => {
@@ -295,24 +295,6 @@ function Production() {
     { keepPreviousData: true }
   );
 
-  //paramaters in picker that are selected by user
-  const [selectedWQParameter, setSelectedWQParameter] = useState(6);
-  const { data: wQparameterOptions } = useQuery(
-    ["ListWQParameters", currentUser],
-    async () => {
-      try {
-        const response = await service([findRawRecords, ["ListWQParameters"]]);
-        return response.map((parameter) => ({
-          label: parameter.wq_parameter_name,
-          value: parameter.wq_parameter_ndx,
-        }));
-      } catch (err) {
-        console.error(err);
-      }
-    },
-    { keepPreviousData: true }
-  );
-
   useEffect(() => {
     if (data?.length > 0) {
       if (radioValue === "all") {
@@ -336,8 +318,6 @@ function Production() {
 
           const endpoint = {
             has_production: "graph-wellproductions",
-            has_waterlevels: "graph-depthtowater",
-            has_wqdata: "graph-waterquality",
           };
 
           const { data: results } = await axios.post(
@@ -401,59 +381,13 @@ function Production() {
             },
           ],
         };
-      } else if (radioValue === "has_waterlevels") {
-        graphData = {
-          labels: currentSelectedTimeseriesData.map(
-            (item) => new Date(item.collected_date)
-          ),
-          datasets: [
-            {
-              label: currentSelectedTimeseriesData[0].cuwcd_well_number,
-              backgroundColor: lighten(lineColors.blue, 0.5),
-              borderColor: lineColors.blue,
-              data: currentSelectedTimeseriesData.map((item) => item.dtw_ft),
-              borderWidth: 2,
-              fill: true,
-              maxBarThickness: 25,
-            },
-          ],
-        };
-      } else if (radioValue === "has_wqdata") {
-        const parameterFilteredData = currentSelectedTimeseriesData.filter(
-          (item) => item.wq_parameter_ndx === selectedWQParameter
-        );
-
-        graphData =
-          parameterFilteredData.length === 0
-            ? []
-            : {
-                labels: parameterFilteredData.map(
-                  (item) => new Date(item.test_date)
-                ),
-                units: parameterFilteredData[0].unit_desc,
-                parameter: parameterFilteredData[0].wq_parameter_name,
-                datasets: [
-                  {
-                    label: parameterFilteredData[0].cuwcd_well_number,
-                    backgroundColor: lighten(lineColors.blue, 0.5),
-                    borderColor: lineColors.blue,
-                    data: parameterFilteredData.map(
-                      (item) => item.result_value
-                    ),
-                    pointStyle: "circle",
-                    borderWidth: 2,
-                    pointHoverRadius: 9,
-                    pointRadius: 7,
-                  },
-                ],
-              };
       }
 
       setFilteredMutatedGraphData(graphData);
     } else {
       setFilteredMutatedGraphData(null);
     }
-  }, [currentSelectedTimeseriesData, selectedWQParameter]); // eslint-disable-line
+  }, [currentSelectedTimeseriesData]); // eslint-disable-line
 
   const statusChipColors = {
     Active: lineColors.blue,
@@ -496,22 +430,6 @@ function Production() {
     }
   }, [currentSelectedPoint, filteredData]);
 
-  const waterQualityReport = {
-    2: "E. coli?",
-    1: "A family of bacteria common in soils, plants and animals. The presence/absence test only indicates if coliform bacteria are present. No distinction is made on the origin of the coliform bacteria. A positive result warrants further analysis, an inspection of the well integrity and well/water system disinfection. Coliform bacteria should not be present under the federal drinking water standard. Coliform Bacteria - A family of bacteria common in soils, plants and animals. The presence/absence test only indicates if coliform bacteria are present. No distinction is made on the origin of the coliform bacteria. A positive result warrants further analysis, an inspection of the well integrity and well/water system disinfection. Coliform bacteria should not be present under the federal drinking water standard.",
-    6: "The pH of water is a measure of the concentration of hydrogen ions. pH is expressed on a scale from 1 to 14, with 1 being most acidic, 7 neutral and 14 being the most basic or alkaline. The pH of drinking water should be between 6.5 and 8.5 to meet the federal secondary drinking water standard.",
-    3: "Conductivity measures the ability of water to conduct an electric current and is useful to quickly assess water quality. Conductivity increases with the number of dissolved ions in the water but is affected by temperature and the specific ions in solution. High conductivity or large changes may warrant further analysis. There is no EPA or TCEQ drinking water standard for conductivity.",
-    4: "Total Dissolved Solids refers to dissolved minerals (ions) and is a good general indicator of water quality. The value reported for this parameter is calculated by the conductivity meter as a function of the conductivity value and may not account for all the factors affecting the Conductivity-TDS relationship. TDS values reported by CUWCD should be considered as “apparent”. The accuracy may range approximately +/- 25 percent from values reported by certified laboratories. The TCEQ secondary drinking water standard for TDS is 1000 mg/L. Water is considered fresh if TDS is 1000 mg/L or less.",
-    5: "Salinity?",
-    7: "Alkalinity does not refer to pH, but instead refers to the ability of water to resist change in pH and may be due to dissolved bicarbonates. Low water alkalinity may cause corrosion; high alkalinity may cause scale formation. There is no EPA or TCEQ drinking water standard for alkalinity.",
-    8: '“Hard" water may be indicated by large amounts of soap required to form suds and scale deposits in pipes and water heaters. Hardness is caused by calcium, magnesium, manganese or iron in the form of bicarbonates, carbonates, sulfates or chlorides.',
-    9: "Nitrate/Nitrite - Nitrate and Nitrite are of special concern to infants and can cause “blue baby” syndrome. The federal drinking water standard for nitrate is 10 mg/L. The federal drinking water standard for nitrite is 1 mg/L. Nitrate or nitrite may indicate an impact from sewage, fertilizer or animal waste.",
-    10: "Nitrate/Nitrite - Nitrate and Nitrite are of special concern to infants and can cause “blue baby” syndrome. The federal drinking water standard for nitrate is 10 mg/L. The federal drinking water standard for nitrite is 1 mg/L. Nitrate or nitrite may indicate an impact from sewage, fertilizer or animal waste.",
-    11: "Phosphates may indicate impact from laundering agents. Testing for phosphates provides a general indicator of water quality. There is no EPA or TCEQ drinking water standard for phosphate.",
-    12: "Sulfate compounds are many of the dissolved salts found in groundwater. Sulfate can produce laxative effects, bad taste or smell. The TCEQ secondary drinking water standard for sulfate is 300 mg/L.",
-    13: "Fluoride may occur naturally and is sometimes added to drinking water to promote strong teeth. Fluoride may stain children’s teeth. The federal drinking water standard for fluoride is 4.0 mg/L. Water Quality Assessment What are the parameters being assessed?",
-  };
-
   const formatTableTitle = (location, graphType) => {
     if (!location) return null;
     if (graphType === "Well Production") {
@@ -545,85 +463,6 @@ function Production() {
               <strong>Aggregated System: </strong>
               {location.agg_system_name ?? "NA"}
             </Box>
-          </Typography>
-        </>
-      );
-    } else if (graphType === "Water Levels") {
-      return (
-        <>
-          <Typography variant="h4" pl={2} style={{ lineHeight: 1.3 }}>
-            <strong>Reported Water Levels for Well: </strong>
-            {location.well_name ?? "NA"} {location.cuwcd_well_number ?? "NA"}
-            <Box>
-              <strong>Aquifer: </strong>
-              {location.source_aquifer ?? "NA"}
-            </Box>
-            {location.state_well_number && (
-              <Box>
-                <strong>State Well Number: </strong>
-                {location.state_well_number}
-              </Box>
-            )}
-          </Typography>
-          <br />
-          <Typography variant="subtitle1" pl={2} style={{ lineHeight: 1.3 }}>
-            <Box component="span" mr={6}>
-              <strong>Well Depth: </strong>
-              {location.well_depth_ft ? `${location.well_depth_ft} ft` : "NA"}
-            </Box>
-            <Box component="span" mr={6}>
-              <strong>Top of Screen: </strong>
-              {location.screen_top_depth_ft
-                ? `${location.screen_top_depth_ft} ft`
-                : "NA"}
-            </Box>
-            <Box component="span" mr={6}>
-              <strong>Bottom of Screen: </strong>
-              {location.screen_bottom_depth_ft
-                ? `${location.screen_bottom_depth_ft} ft`
-                : "NA"}
-            </Box>
-          </Typography>
-        </>
-      );
-    } else if (graphType === "Water Quality") {
-      return (
-        <>
-          <Typography variant="h4" pl={2} style={{ lineHeight: 1.3 }}>
-            <strong>
-              Reported{" "}
-              {
-                wQparameterOptions.filter(
-                  (item) => item.value === selectedWQParameter
-                )[0].label
-              }{" "}
-              Measurements for Well:{" "}
-            </strong>
-            {location.well_name ?? "NA"} {location.cuwcd_well_number ?? "NA"}
-            <Box>
-              <strong>Aquifer: </strong>
-              {location.source_aquifer ?? "NA"}
-            </Box>
-            {location.state_well_number && (
-              <Box>
-                <strong>State Well Number: </strong>
-                {location.state_well_number}
-              </Box>
-            )}
-          </Typography>
-          <br />
-          <Typography variant="subtitle1" pl={2} style={{ lineHeight: 1.3 }}>
-            <Box>
-              About{" "}
-              {
-                wQparameterOptions.filter(
-                  (item) => item.value === selectedWQParameter
-                )[0].label
-              }
-              :{" "}
-            </Box>
-
-            <Box>{waterQualityReport[selectedWQParameter]}</Box>
           </Typography>
         </>
       );
@@ -662,17 +501,17 @@ function Production() {
 
   return (
     <React.Fragment>
-      <Helmet title="Dashboard" />
-      <Grid justify="space-between" container spacing={6}>
-        <Grid item>
-          <Typography variant="h3" gutterBottom>
-            Dashboard
-          </Typography>
-          <Typography variant="subtitle1">
-            Welcome back, {user?.name}!
-          </Typography>
-        </Grid>
-      </Grid>
+      <Helmet title="Well Production" />
+      <Typography variant="h3" gutterBottom display="inline">
+        Well Production Data Entry
+      </Typography>
+
+      <Breadcrumbs aria-label="Breadcrumb" mt={2}>
+        <Link component={NavLink} exact to="/dashboard">
+          Dashboard
+        </Link>
+        <Typography>Well Production</Typography>
+      </Breadcrumbs>
 
       <Divider my={6} />
 
@@ -690,7 +529,7 @@ function Production() {
             </AccordionSummary>
             <AccordionDetails>
               <MapContainer>
-                <DashboardMap
+                <ProductionMap
                   map={map}
                   setMap={setMap}
                   data={filteredData}
@@ -743,26 +582,6 @@ function Production() {
                           value="has_production"
                           control={<Radio />}
                           label={radioLabels["has_production"]}
-                        />
-                      </ListItem>
-                    </Grid>
-                  </Grid>
-                  <Grid container>
-                    <Grid item xs={6} sm={12}>
-                      <ListItem>
-                        <FormControlLabel
-                          value="has_waterlevels"
-                          control={<Radio />}
-                          label={radioLabels["has_waterlevels"]}
-                        />
-                      </ListItem>
-                    </Grid>
-                    <Grid item xs={6} sm={12}>
-                      <ListItem>
-                        <FormControlLabel
-                          value="has_wqdata"
-                          control={<Radio />}
-                          label={radioLabels["has_wqdata"]}
                         />
                       </ListItem>
                     </Grid>
@@ -822,20 +641,6 @@ function Production() {
                               maxWidth: "calc(100% - 110px)",
                             }}
                           >
-                            {radioValue === "has_wqdata" && wQparameterOptions && (
-                              <>
-                                <SidebarSection ml={-3}>
-                                  Parameters
-                                </SidebarSection>
-
-                                <OptionsPicker
-                                  selectedOption={selectedWQParameter}
-                                  setSelectedOption={setSelectedWQParameter}
-                                  options={wQparameterOptions}
-                                  label="Water Quality Parameters"
-                                />
-                              </>
-                            )}
                             {radioValue === "has_production" &&
                               isGraphRefCurrent && (
                                 <>
@@ -867,7 +672,6 @@ function Production() {
                               title="cuwcd_well_number"
                               data={currentSelectedTimeseriesData}
                               filterValues={filterValues}
-                              parameter={selectedWQParameter}
                             />
                             <SaveRefButton
                               data-html2canvas-ignore
@@ -879,9 +683,7 @@ function Production() {
                       </span>
                       <TimeseriesWrapper
                         style={
-                          radioValue === "has_wqdata"
-                            ? { height: "calc(100% - 100px)" }
-                            : radioValue === "has_production"
+                          radioValue === "has_production"
                             ? { height: "calc(100% - 78px)" }
                             : null
                         }
@@ -890,20 +692,11 @@ function Production() {
                           data={filteredMutatedGraphData}
                           error={error}
                           isLoading={isLoading}
-                          yLLabel={
-                            radioValue === "has_waterlevels"
-                              ? "Water Level (Feet Below Ground Level)"
-                              : radioValue === "has_production"
-                              ? productionUnits
-                              : `${filteredMutatedGraphData?.parameter} (${filteredMutatedGraphData?.units})`
-                          }
+                          yLLabel={productionUnits}
                           reverseLegend={false}
-                          yLReverse={radioValue === "has_waterlevels"}
                           ref={graphSaveRef}
                           filterValues={filterValues}
-                          type={
-                            radioValue === "has_production" ? "bar" : "scatter"
-                          }
+                          type="bar"
                           displayLegend={false}
                           setIsGraphRefCurrent={setIsGraphRefCurrent}
                         />
@@ -926,19 +719,6 @@ function Production() {
                     : `Select a Point on the Map to View ${radioLabels[radioValue]} Summary`
                 }
               />
-              {radioValue === "has_wqdata" && wQparameterOptions && (
-                <Box mr={2} ml={2}>
-                  <SidebarSection>Parameters</SidebarSection>
-                  <ListItem>
-                    <OptionsPicker
-                      selectedOption={selectedWQParameter}
-                      setSelectedOption={setSelectedWQParameter}
-                      options={wQparameterOptions}
-                      label="Water Quality Parameters"
-                    />
-                  </ListItem>
-                </Box>
-              )}
             </Card>
           </Grid>
         </Grid>
@@ -973,28 +753,6 @@ function Production() {
                         disabled: !rowData.has_production,
                         onClick: (event, rowData) => {
                           setRadioValue("has_production");
-                          setCurrentSelectedPoint(rowData.cuwcd_well_number);
-                          setCurrentSelectedTimeseriesData(null);
-                          handlePointInteractions(rowData);
-                        },
-                      }),
-                      (rowData) => ({
-                        icon: "water",
-                        tooltip: "Water Levels",
-                        disabled: !rowData.has_waterlevels,
-                        onClick: (event, rowData) => {
-                          setRadioValue("has_waterlevels");
-                          setCurrentSelectedPoint(rowData.cuwcd_well_number);
-                          setCurrentSelectedTimeseriesData(null);
-                          handlePointInteractions(rowData);
-                        },
-                      }),
-                      (rowData) => ({
-                        icon: "bloodtype",
-                        tooltip: "Water Quality",
-                        disabled: !rowData.has_wqdata,
-                        onClick: (event, rowData) => {
-                          setRadioValue("has_wqdata");
                           setCurrentSelectedPoint(rowData.cuwcd_well_number);
                           setCurrentSelectedTimeseriesData(null);
                           handlePointInteractions(rowData);
