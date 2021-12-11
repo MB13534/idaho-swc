@@ -82,7 +82,7 @@ const TableWrapper = styled.div`
 `;
 
 const MapContainer = styled.div`
-  height: calc(441px);
+  height: calc(328px);
   width: 100%;
 `;
 
@@ -346,6 +346,27 @@ function Production() {
           } else {
             setCurrentSelectedTimeseriesData(null);
           }
+        } catch (err) {
+          // Is this error because we cancelled it ourselves?
+          if (axios.isCancel(err)) {
+            console.log(`call was cancelled`);
+          } else {
+            console.error(err);
+          }
+        }
+      }
+      send();
+    }
+  }, [currentSelectedPoint]); // eslint-disable-line
+
+  const [unfilteredEditTableResults, setunfilteredEditTableResults] =
+    useState(null);
+  useEffect(() => {
+    if (currentSelectedPoint && radioValue !== "all") {
+      async function send() {
+        try {
+          const token = await getAccessTokenSilently();
+          const headers = { Authorization: `Bearer ${token}` };
 
           const { data: editTableResults } = await axios.post(
             `${process.env.REACT_APP_ENDPOINT}/api/dm-well-productions/${currentSelectedPoint}`,
@@ -355,8 +376,17 @@ function Production() {
             { headers }
           );
 
-          if (editTableResults.length) {
-            setCurrentSelectedEditTableData(editTableResults);
+          setunfilteredEditTableResults(editTableResults);
+
+          if (editTableResults?.length > 0) {
+            const dateFilteredEditTableResults = editTableResults.filter(
+              (item) =>
+                new Date(item.report_year, item.report_month) >=
+                  filterValues.startDate &&
+                new Date(item.report_year, item.report_month - 1) <=
+                  filterValues.endDate
+            );
+            setCurrentSelectedEditTableData(dateFilteredEditTableResults);
           } else {
             setCurrentSelectedEditTableData(null);
           }
@@ -372,6 +402,19 @@ function Production() {
       send();
     }
   }, [currentSelectedPoint]); // eslint-disable-line
+
+  useEffect(() => {
+    if (currentSelectedPoint) {
+      const dateFilteredEditTableResults = unfilteredEditTableResults.filter(
+        (item) =>
+          new Date(item.report_year, item.report_month) >=
+            filterValues.startDate &&
+          new Date(item.report_year, item.report_month - 1) <=
+            filterValues.endDate
+      );
+      setCurrentSelectedEditTableData(dateFilteredEditTableResults);
+    }
+  }, [filterValues]); // eslint-disable-line
 
   const [filteredMutatedGraphData, setFilteredMutatedGraphData] = useState({});
   useEffect(() => {
@@ -448,7 +491,6 @@ function Production() {
   ];
 
   const monthsLookup = {
-    0: "December",
     1: "January",
     2: "February",
     3: "March",
@@ -475,7 +517,8 @@ function Production() {
       title: "Report Month",
       field: "report_month",
       lookup: monthsLookup,
-      initialEditValue: new Date().getMonth(),
+      initialEditValue:
+        new Date().getMonth() === 0 ? 12 : new Date().getMonth(),
     },
     {
       title: "Report Year",
@@ -483,12 +526,33 @@ function Production() {
       initialEditValue: new Date().getFullYear(),
       type: "numeric",
       defaultSort: "desc",
+      validate: (rowData) =>
+        rowData.report_year < 2010
+          ? { isValid: false, helperText: "The report year must be after 2010" }
+          : isNaN(rowData.report_year)
+          ? {
+              isValid: false,
+              helperText: "A report year is required",
+            }
+          : true,
     },
     {
       title: "Production Gallons",
       field: "production_gallons",
       type: "numeric",
       initialEditValue: 0,
+      validate: (rowData) =>
+        isNaN(rowData.production_gallons)
+          ? {
+              isValid: false,
+              helperText: "A production value is required",
+            }
+          : rowData.production_gallons < 0
+          ? {
+              isValid: false,
+              helperText: "The production value cannot be negative",
+            }
+          : true,
     },
     {
       title: "Production Notes",
@@ -720,14 +784,6 @@ function Production() {
                       columns={editTableColumns}
                       data={currentSelectedEditTableData}
                       height="350px"
-                      // actions={[
-                      //   (rowData) => ({
-                      //     icon: () => {
-                      //       return <Edit />;
-                      //     },
-                      //     tooltip: "Edit Well",
-                      //   }),
-                      // ]}
                       updateHandler={setCurrentSelectedEditTableData}
                       endpoint="dm-well-productions"
                       ndxField="ndx"

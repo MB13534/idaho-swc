@@ -34,13 +34,23 @@ const DataAdminTable = ({
   // options = {},
   // components = {},
 }) => {
-  const { doToast } = useApp();
+  const { doToast, currentUser } = useApp();
   const { getAccessTokenSilently } = useAuth0();
+
+  const userAuthorizedToEdit =
+    currentUser.isUserAdmin || currentUser.isAdmin || currentUser.isDeveloper;
 
   const [selectedRow, setSelectedRow] = useState(null);
 
   const handleAdd = (newData) => {
     newData["cuwcd_well_number"] = data[0].cuwcd_well_number;
+    if (
+      newData.production_gallons === null ||
+      isNaN(newData.production_gallons)
+    ) {
+      newData.production_gallons = 0;
+    }
+
     return (async () => {
       try {
         const token = await getAccessTokenSilently();
@@ -67,6 +77,12 @@ const DataAdminTable = ({
   };
 
   const handleUpdate = (newData, oldData) => {
+    if (
+      newData.production_gallons === null ||
+      isNaN(newData.production_gallons)
+    ) {
+      newData.production_gallons = 0;
+    }
     return (async () => {
       try {
         if (oldData) {
@@ -136,8 +152,10 @@ const DataAdminTable = ({
           setSelectedRow(selectedRow);
         }}
         editable={{
-          onRowAdd: handleAdd,
+          onRowAdd: userAuthorizedToEdit ? handleAdd : null,
+          isEditHidden: () => !userAuthorizedToEdit,
           onRowUpdate: handleUpdate,
+          isDeleteHidden: () => !userAuthorizedToEdit,
           onRowDelete: handleDelete,
         }}
         components={{
