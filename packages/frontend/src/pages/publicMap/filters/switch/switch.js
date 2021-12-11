@@ -21,6 +21,7 @@ const Switch = ({ label, name, onChange, value }) => {
             }
             label={label}
             labelPlacement="start"
+            style={{ width: "100%", justifyContent: "space-between" }}
           />
         </div>
       </FormGroup>

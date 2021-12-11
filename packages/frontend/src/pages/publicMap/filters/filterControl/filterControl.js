@@ -16,7 +16,6 @@ const FilterAvatar = styled("span")(({ theme }) => ({
 
 const FilterContainer = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
-  width: 400,
 }));
 
 const FilterControl = ({ appliedCount, children, label }) => {
