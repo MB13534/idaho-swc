@@ -8,10 +8,10 @@ const FilterAvatar = styled("span")(({ theme }) => ({
   borderRadius: "50%",
   color: theme.palette.primary.main,
   display: "flex",
-  fontSize: "13px!important",
+  fontSize: "12px!important",
   justifyContent: "center",
-  height: theme.spacing(4.5),
-  width: theme.spacing(4.5),
+  height: theme.spacing(5),
+  width: theme.spacing(5),
 }));
 
 const FilterContainer = styled(Paper)(({ theme }) => ({
@@ -21,7 +21,7 @@ const FilterContainer = styled(Paper)(({ theme }) => ({
 const FilterControl = ({ appliedCount, children, label }) => {
   const [open, setOpen] = useState(false);
   const buttonRef = useRef(null);
-  const [hasFilterBeenOpened, setHasFilterBeenOpened] = useState(false);
+  // const [hasFilterBeenOpened, setHasFilterBeenOpened] = useState(false);
 
   const active = appliedCount > 0;
 
@@ -40,13 +40,11 @@ const FilterControl = ({ appliedCount, children, label }) => {
         size="large"
         variant={active ? "contained" : "outlined"}
         startIcon={
-          active && hasFilterBeenOpened ? (
-            <FilterAvatar>{appliedCount}</FilterAvatar>
-          ) : undefined
+          active ? <FilterAvatar>{appliedCount}</FilterAvatar> : undefined
         }
         onClick={() => {
           setOpen((s) => !s);
-          setHasFilterBeenOpened(true);
+          // setHasFilterBeenOpened(true);
         }}
         ref={buttonRef}
       >

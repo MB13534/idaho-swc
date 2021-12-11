@@ -104,6 +104,14 @@ const useMap = (ref, mapConfig) => {
     }
   };
 
+  const updateLayerStyles = (layer) => {
+    if (!!map) {
+      Object.entries(layer.paint).forEach(([ruleName, ruleValue]) => {
+        map.setPaintProperty(layer.layerId, ruleName, ruleValue);
+      });
+    }
+  };
+
   /**
    * Handler used to update the visibility property on a layer
    * We employ special logic in this handler to allow for toggling
@@ -172,6 +180,7 @@ const useMap = (ref, mapConfig) => {
     mapStatus,
     sources,
     updateLayerFilters,
+    updateLayerStyles,
     updateLayerVisibility,
   };
 };
