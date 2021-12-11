@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT, NUMBER} = DataTypes;
+  const {INTEGER, TEXT, NUMBER, BIGINT} = DataTypes;
   const DmWellProductions = sequelize.define(
     'dm_well_productions',
     {
@@ -25,12 +25,15 @@ module.exports = (sequelize, DataTypes) => {
       production_notes: {
         type: TEXT,
       },
+      ndx: {
+        type: BIGINT,
+      },
     },
     {
       defaultScope: {
         order: [
-          ['report_year', 'asc'],
-          ['report_month', 'asc'],
+          ['report_year', 'desc'],
+          ['report_month', 'desc'],
         ],
       },
       schema: 'client_clearwater',

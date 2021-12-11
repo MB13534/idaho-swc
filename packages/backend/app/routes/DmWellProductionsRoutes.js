@@ -34,12 +34,28 @@ router.put('/:id', (req, res, next) => {
   model
     .update(req.body, {
       where: {
-        INDEX_TO_EDIT: req.params.id,
+        ndx: req.params.id,
       },
       returning: true,
     })
     .then((data) => {
       res.json(data[1][0]);
+    })
+    .catch((err) => {
+      next(err);
+    });
+});
+
+router.delete('/:id', (req, res, next) => {
+  model
+    .destroy({
+      where: {
+        ndx: req.params.id,
+      },
+      returning: true,
+    })
+    .then(() => {
+      res.sendStatus(200);
     })
     .catch((err) => {
       next(err);

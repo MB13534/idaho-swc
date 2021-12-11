@@ -30,7 +30,7 @@ const DataAdminTable = ({
   updateHandler,
   endpoint,
   handleRefresh = () => {},
-  ndxField,
+  // ndxField,
   // options = {},
   // components = {},
 }) => {
@@ -40,6 +40,7 @@ const DataAdminTable = ({
   const [selectedRow, setSelectedRow] = useState(null);
 
   const handleAdd = (newData) => {
+    newData["cuwcd_well_number"] = data[0].cuwcd_well_number;
     return (async () => {
       try {
         const token = await getAccessTokenSilently();
@@ -72,7 +73,7 @@ const DataAdminTable = ({
           const token = await getAccessTokenSilently();
           const headers = { Authorization: `Bearer ${token}` };
           await axios.put(
-            `${process.env.REACT_APP_ENDPOINT}/api/${endpoint}/${newData[ndxField]}`,
+            `${process.env.REACT_APP_ENDPOINT}/api/${endpoint}/${newData.ndx}`,
             newData,
             { headers }
           );
@@ -82,8 +83,38 @@ const DataAdminTable = ({
             return data;
           });
           handleRefresh();
-        } else {
           doToast("success", "New data was updated to the database");
+        } else {
+          doToast("error", "Something went wrong");
+        }
+      } catch (err) {
+        console.error(err);
+        const message = err?.message ?? "Something went wrong";
+        doToast("error", message);
+      }
+    })();
+  };
+
+  const handleDelete = (oldData) => {
+    return (async () => {
+      try {
+        if (oldData) {
+          const token = await getAccessTokenSilently();
+          const headers = { Authorization: `Bearer ${token}` };
+          await axios.delete(
+            `${process.env.REACT_APP_ENDPOINT}/api/${endpoint}/${oldData.ndx}`,
+            { headers }
+          );
+          updateHandler((prevState) => {
+            const data = [...prevState];
+            const index = oldData.tableData.id;
+            data.splice(index, 1);
+            return data;
+          });
+          handleRefresh();
+          doToast("success", "This entry was deleted from the database");
+        } else {
+          doToast("error", "Something went wrong");
         }
       } catch (err) {
         console.error(err);
@@ -107,6 +138,7 @@ const DataAdminTable = ({
         editable={{
           onRowAdd: handleAdd,
           onRowUpdate: handleUpdate,
+          onRowDelete: handleDelete,
         }}
         components={{
           Container: (props) => <div {...props} />,
@@ -135,7 +167,6 @@ const DataAdminTable = ({
           exportButton: true,
           exportAllData: true,
           addRowPosition: "first",
-          // actionsCellStyle: { justifyContent: "center" },
           pageSize: pageSize,
           pageSizeOptions: [5, 10, 30, 60],
           padding: "dense",
