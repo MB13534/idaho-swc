@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import styled from "styled-components/macro";
 import { NavLink } from "react-router-dom";
 
@@ -14,6 +14,7 @@ import {
   Divider as MuiDivider,
   FormControlLabel,
   Grid as MuiGrid,
+  Input,
   lighten,
   List,
   ListItem,
@@ -297,6 +298,18 @@ function Production() {
     { keepPreviousData: true }
   );
 
+  const cuwcdLookup = useMemo(() => {
+    let converted = {};
+    if (data?.length > 0) {
+      data
+        .filter((item) => item.has_production === true)
+        .forEach((item) => {
+          converted[item.well_ndx] = item.cuwcd_well_number;
+        });
+    }
+    return converted;
+  }, [data]);
+
   useEffect(() => {
     if (data?.length > 0) {
       if (radioValue === "all") {
@@ -434,7 +447,8 @@ function Production() {
     },
   ];
 
-  const lookupMonths = {
+  const monthsLookup = {
+    0: "December",
     1: "January",
     2: "February",
     3: "March",
@@ -451,19 +465,43 @@ function Production() {
 
   const editTableColumns = [
     {
-      title: "Well Index",
+      title: "CUWCD Well Number",
       field: "well_ndx",
-      // editable: "never"
+      lookup: cuwcdLookup,
+      editable: "never",
+      initialEditValue: currentlyPaintedPointRef.current,
     },
     {
-      title: "CUWCD Well Number",
-      field: "cuwcd_well_number",
+      title: "Report Month",
+      field: "report_month",
+      lookup: monthsLookup,
+      initialEditValue: new Date().getMonth(),
     },
-    { title: "Report Month", field: "report_month", lookup: lookupMonths },
-    { title: "Report Year", field: "report_year" },
-    { title: "Permit Index", field: "permit_ndx" },
-    { title: "Production Gallons", field: "production_gallons" },
-    { title: "Production Notes", field: "production_notes" },
+    {
+      title: "Report Year",
+      field: "report_year",
+      initialEditValue: new Date().getFullYear(),
+      type: "numeric",
+      defaultSort: "desc",
+    },
+    {
+      title: "Production Gallons",
+      field: "production_gallons",
+      type: "numeric",
+      initialEditValue: 0,
+    },
+    {
+      title: "Production Notes",
+      field: "production_notes",
+      editComponent: (props) => (
+        <Input
+          defaultValue={props.value ?? ""}
+          onChange={(e) => props.onChange(e.target.value)}
+          type="text"
+        />
+      ),
+      // editComponent: (rowData) => rowData.production_notes ?? "",
+    },
   ];
 
   useEffect(() => {
@@ -692,7 +730,7 @@ function Production() {
                       // ]}
                       updateHandler={setCurrentSelectedEditTableData}
                       endpoint="dm-well-productions"
-                      ndxField="STRING_NDX_FIELD"
+                      ndxField="ndx"
                     />
                   </TableWrapper>
                 </AccordionDetails>
