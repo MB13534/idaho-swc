@@ -17,7 +17,7 @@ export const AppProvider = ({ children }) => {
       const roles = myUser[`${process.env.REACT_APP_AUDIENCE}/roles`];
 
       // TODO: dkulak: make this use real users once user section is done
-      myUser.id = "af400afa-6247-4313-9d8a-738a3633db83";
+      // myUser.id = "af400afa-6247-4313-9d8a-738a3633db83";
 
       if (roles && roles.filter((x) => x === "Administrator").length > 0) {
         myUser.isAdmin = true;
@@ -29,6 +29,12 @@ export const AppProvider = ({ children }) => {
         myUser.isDeveloper = true;
       } else {
         myUser.isDeveloper = false;
+      }
+
+      if (roles && roles.filter((x) => x === "User Admin").length > 0) {
+        myUser.isUserAdmin = true;
+      } else {
+        myUser.isUserAdmin = false;
       }
 
       if (roles && roles.filter((x) => x === "User").length > 0) {
