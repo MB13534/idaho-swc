@@ -1,11 +1,12 @@
 import { useRef } from "react";
 import styled from "styled-components/macro";
-import { Paper, Typography } from "@material-ui/core";
+import { Box, Paper, Typography } from "@material-ui/core";
 
 import AppBar from "../../components/AppBar";
 import Map from "./map";
 import LayersControl from "./controls/layers";
 import Search from "./filters/search";
+import FilterControl from "./filters/filterControl";
 import Filter from "./filters/filter";
 
 import { useMap } from "./mapContext";
@@ -30,6 +31,18 @@ const FiltersContainer = styled.div`
   display: flex;
   gap: ${({ theme }) => theme.spacing(2)}px;
 `;
+
+const getMoreFiltersCount = (filterValues) => {
+  const keys = [
+    "hasProduction",
+    "hasWaterLevels",
+    "hasWQData",
+    "isPermitted",
+    "isExempt",
+    "isMonitoring",
+  ];
+  return keys.filter((key) => filterValues[key].value).length;
+};
 
 const PublicMap = () => {
   const mapContainer = useRef(null);
@@ -59,33 +72,115 @@ const PublicMap = () => {
         <FiltersSection>
           <Typography variant="subtitle1">Filters</Typography>
           <FiltersContainer>
-            <Filter
+            <FilterControl
+              appliedCount={filterValues?.aquifers?.value?.length}
               label="Aquifers"
-              name="aquifers"
-              onChange={handleFilterValues}
-              onSelectAll={handleSelectAll}
-              onSelectNone={handleSelectNone}
-              options={filterValues?.aquifers?.options}
-              value={filterValues?.aquifers?.value}
-            />
-            <Filter
+            >
+              <Filter
+                label="Aquifers"
+                name="aquifers"
+                onChange={handleFilterValues}
+                onSelectAll={handleSelectAll}
+                onSelectNone={handleSelectNone}
+                options={filterValues?.aquifers?.options}
+                type={filterValues?.aquifers?.type}
+                value={filterValues?.aquifers?.value}
+              />
+            </FilterControl>
+            <FilterControl
+              appliedCount={filterValues?.aquifers?.value?.length}
               label="Primary Use"
-              name="primaryUses"
-              onChange={handleFilterValues}
-              onSelectAll={handleSelectAll}
-              onSelectNone={handleSelectNone}
-              options={filterValues?.primaryUses?.options}
-              value={filterValues?.primaryUses?.value}
-            />
-            <Filter
+            >
+              <Filter
+                label="Primary Use"
+                name="primaryUses"
+                onChange={handleFilterValues}
+                onSelectAll={handleSelectAll}
+                onSelectNone={handleSelectNone}
+                options={filterValues?.primaryUses?.options}
+                type={filterValues?.primaryUses?.type}
+                value={filterValues?.primaryUses?.value}
+              />
+            </FilterControl>
+            <FilterControl
+              appliedCount={filterValues?.aquifers?.value?.length}
               label="Well Status"
-              name="wellStatus"
-              onChange={handleFilterValues}
-              onSelectAll={handleSelectAll}
-              onSelectNone={handleSelectNone}
-              options={filterValues?.wellStatus?.options}
-              value={filterValues?.wellStatus?.value}
-            />
+            >
+              <Filter
+                label="Well Status"
+                name="wellStatus"
+                onChange={handleFilterValues}
+                onSelectAll={handleSelectAll}
+                onSelectNone={handleSelectNone}
+                options={filterValues?.wellStatus?.options}
+                type={filterValues?.wellStatus?.type}
+                value={filterValues?.wellStatus?.value}
+              />
+            </FilterControl>
+            <FilterControl
+              appliedCount={filterValues?.aquifers?.value?.length}
+              label="Aggregated System"
+            >
+              <Filter
+                label="Aggregated System"
+                name="aggregatedSystems"
+                onChange={handleFilterValues}
+                onSelectAll={handleSelectAll}
+                onSelectNone={handleSelectNone}
+                options={filterValues?.aggregatedSystems?.options}
+                type={filterValues?.aggregatedSystems?.type}
+                value={filterValues?.aggregatedSystems?.value}
+              />
+            </FilterControl>
+            <FilterControl
+              appliedCount={getMoreFiltersCount(filterValues)}
+              label="More Filters"
+            >
+              <Box display="flex" flexDirection="column">
+                <Filter
+                  label="Has Production"
+                  name="hasProduction"
+                  onChange={handleFilterValues}
+                  type="boolean"
+                  value={filterValues?.hasProduction?.value}
+                />
+                <Filter
+                  label="Has Water Levels"
+                  name="hasWaterLevels"
+                  onChange={handleFilterValues}
+                  type="boolean"
+                  value={filterValues?.hasWaterLevels?.value}
+                />
+                <Filter
+                  label="Has Water Quality Data"
+                  name="hasWQData"
+                  onChange={handleFilterValues}
+                  type="boolean"
+                  value={filterValues?.hasWQData?.value}
+                />
+                <Filter
+                  label="Is Permitted"
+                  name="isPermitted"
+                  onChange={handleFilterValues}
+                  type="boolean"
+                  value={filterValues?.isPermitted?.value}
+                />
+                <Filter
+                  label="Is Exempt"
+                  name="isExempt"
+                  onChange={handleFilterValues}
+                  type="boolean"
+                  value={filterValues?.isExempt?.value}
+                />
+                <Filter
+                  label="Is Monitoring"
+                  name="isMonitoring"
+                  onChange={handleFilterValues}
+                  type="boolean"
+                  value={filterValues?.isMonitoring?.value}
+                />
+              </Box>
+            </FilterControl>
           </FiltersContainer>
         </FiltersSection>
       </FiltersBar>

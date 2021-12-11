@@ -84,11 +84,21 @@ const useMap = (ref, mapConfig) => {
     if (!!map) {
       const mapFilterExpression = ["all"];
       Object.values(filterValues).forEach((filter) => {
-        mapFilterExpression.push([
-          "in",
-          ["get", filter.layerFieldName],
-          ["literal", filter.value],
-        ]);
+        if (filter.type === "multi-select") {
+          mapFilterExpression.push([
+            "match",
+            ["get", filter.layerFieldName],
+            [...filter.value],
+            true,
+            false,
+          ]);
+        } else if (filter.type === "boolean") {
+          mapFilterExpression.push([
+            "==",
+            ["get", filter.layerFieldName],
+            filter.value,
+          ]);
+        }
       });
       map.setFilter("clearwater-wells-circle", mapFilterExpression);
     }

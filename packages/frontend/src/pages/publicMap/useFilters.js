@@ -2,24 +2,71 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
 
+const layerId = "clearwater-wells-circle";
 const initFilterValues = {
   aquifers: {
-    layerId: "clearwater-wells-circle",
+    layerId,
     layerFieldName: "source_aquifer",
     options: [],
+    type: "multi-select",
     value: [],
   },
   primaryUses: {
-    layerId: "clearwater-wells-circle",
+    layerId,
     layerFieldName: "primary_use",
     options: [],
+    type: "multi-select",
     value: [],
   },
   wellStatus: {
-    layerId: "clearwater-wells-circle",
+    layerId,
     layerFieldName: "well_status",
     options: [],
+    type: "multi-select",
     value: [],
+  },
+  aggregatedSystems: {
+    layerId,
+    layerFieldName: "agg_system_name",
+    options: [],
+    type: "multi-select",
+    value: [],
+  },
+  hasProduction: {
+    layerId,
+    layerFieldName: "has_production",
+    type: "boolean",
+    value: false,
+  },
+  hasWaterLevels: {
+    layerId,
+    layerFieldName: "has_waterlevels",
+    type: "boolean",
+    value: false,
+  },
+  hasWQData: {
+    layerId,
+    layerFieldName: "has_wqdata",
+    type: "boolean",
+    value: false,
+  },
+  isPermitted: {
+    layerId,
+    layerFieldName: "is_permitted",
+    type: "boolean",
+    value: false,
+  },
+  isExempt: {
+    layerId,
+    layerFieldName: "is_exempt",
+    type: "boolean",
+    value: true,
+  },
+  isMonitoring: {
+    layerId,
+    layerFieldName: "is_monitoring",
+    type: "boolean",
+    value: false,
   },
 };
 
@@ -39,6 +86,7 @@ const useFilters = ({ onFilterChange }) => {
 
   useEffect(() => {
     setFilterValues((prevState) => ({
+      ...prevState,
       aquifers: {
         ...prevState.aquifers,
         options: data?.data?.aquifers || [],
@@ -53,6 +101,11 @@ const useFilters = ({ onFilterChange }) => {
         ...prevState.wellStatus,
         options: data?.data?.wellStatus || [],
         value: data?.data?.wellStatus.map(({ value }) => value) || [],
+      },
+      aggregatedSystems: {
+        ...prevState.aggregatedSystems,
+        options: data?.data?.aggregatedSystems || [],
+        value: data?.data?.aggregatedSystems.map(({ value }) => value) || [],
       },
     }));
   }, [data?.data]);
@@ -86,25 +139,42 @@ const useFilters = ({ onFilterChange }) => {
   };
 
   const handleFilterValues = (event) => {
-    const { name, value } = event.target;
-    setFilterValues((prevState) => {
-      const newValue = [...prevState[name].value];
-      const existingIndex = newValue.indexOf(value);
-      if (existingIndex > -1) {
-        newValue.splice(existingIndex, 1);
-      } else {
-        newValue.push(value);
-      }
-      const newState = {
-        ...prevState,
-        [name]: {
-          ...prevState[name],
-          value: newValue,
-        },
-      };
-      onFilterChange(newState);
-      return newState;
-    });
+    const { checked, name, value } = event.target;
+
+    const type = filterValues[name].type;
+
+    if (type === "multi-select") {
+      setFilterValues((prevState) => {
+        const newValue = [...prevState[name].value];
+        const existingIndex = newValue.indexOf(value);
+        if (existingIndex > -1) {
+          newValue.splice(existingIndex, 1);
+        } else {
+          newValue.push(value);
+        }
+        const newState = {
+          ...prevState,
+          [name]: {
+            ...prevState[name],
+            value: newValue,
+          },
+        };
+        onFilterChange(newState);
+        return newState;
+      });
+    } else if (type === "boolean") {
+      setFilterValues((prevState) => {
+        const newState = {
+          ...prevState,
+          [name]: {
+            ...prevState[name],
+            value: checked,
+          },
+        };
+        onFilterChange(newState);
+        return newState;
+      });
+    }
   };
 
   return {
