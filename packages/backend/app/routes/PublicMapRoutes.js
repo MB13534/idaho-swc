@@ -1,5 +1,9 @@
 const express = require('express');
-const {ui_list_wells: model, list_aquifers} = require('../../core/models');
+const {
+  ui_list_wells: model,
+  list_aquifers,
+  list_aggregate_systems,
+} = require('../../core/models');
 
 const router = express.Router();
 
@@ -149,7 +153,7 @@ const toGeoJSON = ({data, geometryField}) => {
   return {
     type: 'FeatureCollection',
     features: data.map((d) => ({
-      type: 'feature',
+      type: 'Feature',
       geometry: d[geometryField],
       properties: (() => {
         const properties = {...d};
@@ -206,10 +210,20 @@ router.get('/filters', async (req, res, next) => {
       display: use,
       value: use,
     }));
+    const aggregatedSystems = await list_aggregate_systems
+      .findAll({
+        order: [['agg_system_name', 'asc']],
+      })
+      .map(({agg_system_name}) => ({
+        display: agg_system_name,
+        value: agg_system_name,
+      }));
     res.json({
       aquifers: aquifers || [],
       primaryUses,
       wellStatus,
+      aggregatedSystems:
+        [...aggregatedSystems, {display: '--', value: '--'}] || [],
     });
   } catch (err) {
     next(err);
