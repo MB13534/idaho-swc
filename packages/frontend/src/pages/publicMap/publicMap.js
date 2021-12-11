@@ -5,12 +5,14 @@ import { Box, Paper, Typography } from "@material-ui/core";
 import AppBar from "../../components/AppBar";
 import Map from "./map";
 import LayersControl from "./controls/layers";
+import WellStylesControl from "./controls/wellStyles";
 import Search from "./filters/search";
 import FilterControl from "./filters/filterControl";
 import Filter from "./filters/filter";
 
 import { useMap } from "./mapContext";
 import useFilters from "./useFilters";
+import useLayerStyles from "./useLayerStyles";
 import { INIT_MAP_CONFIG } from "./constants";
 
 const FiltersBar = styled(Paper)`
@@ -46,16 +48,22 @@ const getMoreFiltersCount = (filterValues) => {
 
 const PublicMap = () => {
   const mapContainer = useRef(null);
-  const { layers, map, updateLayerFilters, updateLayerVisibility } = useMap(
-    mapContainer,
-    INIT_MAP_CONFIG
-  );
+  const {
+    layers,
+    map,
+    updateLayerFilters,
+    updateLayerStyles,
+    updateLayerVisibility,
+  } = useMap(mapContainer, INIT_MAP_CONFIG);
   const {
     filterValues,
     handleFilterValues,
     handleSelectAll,
     handleSelectNone,
   } = useFilters({ onFilterChange: updateLayerFilters });
+  const { activeStyle, handleActiveStyle, styleOptions } = useLayerStyles({
+    onLayerStyleChange: updateLayerStyles,
+  });
 
   const handleSearchSelect = (result) => {
     map?.flyTo({ center: result?.location_geometry?.coordinates, zoom: 16 });
@@ -88,7 +96,7 @@ const PublicMap = () => {
               />
             </FilterControl>
             <FilterControl
-              appliedCount={filterValues?.aquifers?.value?.length}
+              appliedCount={filterValues?.primaryUses?.value?.length}
               label="Primary Use"
             >
               <Filter
@@ -103,7 +111,7 @@ const PublicMap = () => {
               />
             </FilterControl>
             <FilterControl
-              appliedCount={filterValues?.aquifers?.value?.length}
+              appliedCount={filterValues?.wellStatus?.value?.length}
               label="Well Status"
             >
               <Filter
@@ -118,7 +126,7 @@ const PublicMap = () => {
               />
             </FilterControl>
             <FilterControl
-              appliedCount={filterValues?.aquifers?.value?.length}
+              appliedCount={filterValues?.aggregatedSystems?.value?.length}
               label="Aggregated System"
             >
               <Filter
@@ -180,6 +188,23 @@ const PublicMap = () => {
                   value={filterValues?.isMonitoring?.value}
                 />
               </Box>
+            </FilterControl>
+          </FiltersContainer>
+        </FiltersSection>
+        <FiltersSection>
+          <Typography variant="subtitle1">Layer Styling</Typography>
+          <FiltersContainer>
+            <FilterControl label="Color wells by Aquifer">
+              <Typography variant="subtitle1" gutterBottom>
+                Color wells by
+              </Typography>
+              <WellStylesControl
+                label="Color wells by"
+                name="wellStyles"
+                onChange={handleActiveStyle}
+                options={styleOptions}
+                value={activeStyle.id}
+              />
             </FilterControl>
           </FiltersContainer>
         </FiltersSection>

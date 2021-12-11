@@ -38,8 +38,30 @@ const layers = [
     source: 'major-aquifers',
     'source-layer': 'Aquifers_major_dd-1n355v',
     paint: {
-      'fill-opacity': 0.5,
-      'fill-color': '#9AC0F9',
+      'fill-opacity': 0.75,
+      'fill-color': [
+        'match',
+        ['get', 'AQ_NAME'],
+        ['CARRIZO'],
+        '#a6cee3',
+        ['SEYMOUR'],
+        '#1f78b4',
+        ['TRINITY'],
+        '#b2df8a',
+        ['OGALLALA'],
+        '#33a02c',
+        ['PECOS VALLEY'],
+        '#fb9a99',
+        ['HUECO_BOLSON'],
+        '#e31a1c',
+        ['EDWARDS-TRINITY'],
+        '#fdbf6f',
+        ['EDWARDS'],
+        '#cab2d6',
+        ['GULF_COAST'],
+        '#ff7f00',
+        '#000000',
+      ],
     },
     layout: {
       visibility: 'none',
@@ -55,7 +77,8 @@ const layers = [
     source: 'major-aquifers',
     'source-layer': 'Aquifers_major_dd-1n355v',
     paint: {
-      'line-color': '#444',
+      'line-color': 'hsla(0, 3%, 25%, 0.56)',
+      'line-width': 0.4,
     },
     layout: {
       visibility: 'none',
@@ -97,28 +120,32 @@ const layers = [
       layerGroup: 'ccn-water-gcs',
     },
   },
-  // {
-  //   id: 'fema-flood-hazard-line',
-  //   name: 'FEMA Flood Hazard',
-  //   type: 'line',
-  //   source: 'fema-flood-hazard',
-  //   'source-layer': 'FEMA_Milam_S_FLD_HAZ_AR-ckbcnb',
-  //   paint: {
-  //     'line-color': '#444',
-  //     'line-width': 12,
-  //   },
-  //   layout: {
-  //     visibility: 'none',
-  //   },
-  // },
   {
     id: 'clearwater-wells-circle',
     name: 'Clearwater Wells',
     type: 'circle',
     source: 'clearwater-wells',
     paint: {
-      'circle-color': '#4094ae',
-      'circle-radius': 4,
+      'circle-color': '#1e8dd2',
+      'circle-radius': [
+        'interpolate',
+        ['exponential', 1.16],
+        ['zoom'],
+        0, // min zoom level
+        3, // circle radius at min zoom
+        22, // max zoom level
+        24, // circle radius at max zoom
+      ],
+      'circle-stroke-width': [
+        'interpolate',
+        ['exponential', 1.16],
+        ['zoom'],
+        0, // min zoom level
+        1, // stroke width at min zoom
+        22, // max zoom level
+        4, // stroke width at max zoom
+      ],
+      'circle-stroke-color': '#fff',
     },
     layout: {
       visibility: 'visible',
