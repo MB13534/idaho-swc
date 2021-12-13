@@ -50,6 +50,8 @@ export const CRUD_LOOKUP_TABLES = [
   "list_aquifers",
   "list_water_uses",
   "list_well_statuses",
+  "list_booleans",
+  "current_wells_to_rolodex_owners_texts",
 ];
 
 export const THEME = {

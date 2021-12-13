@@ -1,6 +1,5 @@
-const {BIGINT} = require('sequelize');
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT, UUID, NUMBER, BOOLEAN} = DataTypes;
+  const {INTEGER, TEXT, UUID, NUMBER, BOOLEAN, BIGINT} = DataTypes;
   const DataWellProductions = sequelize.define(
     'data_well_productions',
     {

@@ -63,6 +63,9 @@ module.exports = (sequelize, DataTypes) => {
       secondary_well_use_ndx: {
         type: INTEGER,
       },
+      owner_rolo_ndx: {
+        type: INTEGER,
+      },
       id: {
         type: UUID,
         primaryKey: true,

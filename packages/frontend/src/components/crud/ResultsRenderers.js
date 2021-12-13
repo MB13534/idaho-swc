@@ -351,6 +351,18 @@ export const DropdownValueRenderer = (params) => {
 
   return <span>{returnValue}</span>;
 };
+// display: block;
+// line-height: 1 !important;
+export const FormatAddress = ({ props }) => {
+  const roloInfo = props.children.split(";");
+  return (
+    <div style={{ lineHeight: "normal" }}>
+      {roloInfo.map((item) => (
+        <div>{item}</div>
+      ))}
+    </div>
+  );
+};
 
 export const Renderers = {
   AssociatedFieldRenderer,
@@ -359,6 +371,7 @@ export const Renderers = {
   StatusDotRenderer,
   DropdownValueRenderer,
   StatusHelpIconRenderer,
+  FormatAddress,
   TimestampRenderer,
   ValueWithIconRenderer,
   DateRenderer,
