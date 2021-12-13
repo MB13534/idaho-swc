@@ -1,5 +1,5 @@
 import React from "react";
-import { Droplet, CheckSquare, List, CreditCard } from "react-feather";
+import { Droplet, CheckSquare, CreditCard } from "react-feather";
 
 export const STARTING_LOCATION = [-97.4718189239502, 31.050691282461912];
 
@@ -12,11 +12,6 @@ export const CRUD_MODELS = [
     icon: <CheckSquare />,
   },
   { name: "DmWells", sidebarName: "Wells", icon: <Droplet /> },
-  {
-    name: "DataWellProductions",
-    sidebarName: "Well Production Data",
-    icon: <List />,
-  },
   { name: "ListRolodexes", sidebarName: "Rolodex", icon: <CreditCard /> },
   { name: "ListPermitTypes", sidebarName: "List Permit Types" },
 ];
