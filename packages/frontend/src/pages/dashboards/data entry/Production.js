@@ -301,11 +301,9 @@ function Production() {
   const cuwcdLookup = useMemo(() => {
     let converted = {};
     if (data?.length > 0) {
-      data
-        .filter((item) => item.has_production === true)
-        .forEach((item) => {
-          converted[item.well_ndx] = item.cuwcd_well_number;
-        });
+      data.forEach((item) => {
+        converted[item.well_ndx] = item.cuwcd_well_number;
+      });
     }
     return converted;
   }, [data]);
