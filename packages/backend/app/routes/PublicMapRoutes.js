@@ -150,6 +150,24 @@ const layers = [
     layout: {
       visibility: 'visible',
     },
+    lreProperties: {
+      popup: {
+        titleField: 'cucwcd_well_number',
+        excludeFields: [
+          'well_ndx',
+          'longitude_dd',
+          'latitude_dd',
+          'location_geometry',
+          'has_production',
+          'has_waterlevels',
+          'has_wqdata',
+          'count_waterlevels',
+          'well_type',
+          'count_',
+          'id',
+        ],
+      },
+    },
   },
 ];
 

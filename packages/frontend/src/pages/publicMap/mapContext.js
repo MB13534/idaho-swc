@@ -1,7 +1,16 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import axios from "axios";
+import ReactDOM from "react-dom";
 import { useQuery } from "react-query";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
+
+import Popup from "./popup";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -19,6 +28,7 @@ const MapContext = React.createContext();
  */
 const useMap = (ref, mapConfig) => {
   const context = useContext(MapContext);
+  const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
   if (!context) {
     throw new Error(`useMap must be used within a MapProvider`);
   }
@@ -32,7 +42,7 @@ const useMap = (ref, mapConfig) => {
    * our application state and update the map status
    */
   const initializeMap = useCallback(() => {
-    if (ref?.current && !mapStatus.map.created) {
+    if (ref?.current && !mapStatus.map.created && layers) {
       const newMap = new mapboxgl.Map({
         container: ref.current,
         ...mapConfig,
@@ -48,9 +58,35 @@ const useMap = (ref, mapConfig) => {
           },
         }));
       });
+
+      newMap.on("click", (e) => {
+        const features = newMap.queryRenderedFeatures(e.point, {
+          layers: ["clearwater-wells-circle"],
+        });
+        if (features.length > 0) {
+          const feature = features[0];
+          const { popup } = layers.find(
+            ({ id }) => id === feature?.layer?.id
+          )?.lreProperties;
+          // create popup node
+          const popupNode = document.createElement("div");
+          ReactDOM.render(
+            <Popup
+              excludeFields={popup?.excludeFields}
+              feature={feature}
+              titleField={popup?.titleField}
+            />,
+            popupNode
+          );
+          popUpRef.current
+            .setLngLat(e.lngLat)
+            .setDOMContent(popupNode)
+            .addTo(newMap);
+        }
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ref, mapStatus.map.created]);
+  }, [ref, mapStatus.map.created, layers]);
 
   /**
    * Function responsible for adding sources and layers to the map
@@ -206,6 +242,9 @@ const useMap = (ref, mapConfig) => {
   // initialize and load the map
   useEffect(() => {
     initializeMap();
+    // cleanup function to remove map on unmount
+    return () => map?.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initializeMap]);
 
   // add all the sources and layers to the map
