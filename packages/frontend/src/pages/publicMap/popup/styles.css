@@ -1,4 +1,4 @@
-.mapboxgl-popup-content {
+#public-map .mapboxgl-popup-content {
   height: 300px;
   width: 375px;
   overflow-x: hidden;
