@@ -1,5 +1,9 @@
 import React from "react";
 import { Droplet, CheckSquare, List, CreditCard } from "react-feather";
+import AdminGuard from "../components/AdminGuard";
+import AdminVisibilityFilter from "../components/AdminVisibilityFilter";
+import DeveloperGuard from "../components/DeveloperGuard";
+import DeveloperVisibilityFilter from "../components/DeveloperVisibilityFilter";
 
 export const STARTING_LOCATION = [-97.4718189239502, 31.050691282461912];
 
@@ -10,15 +14,36 @@ export const CRUD_MODELS = [
     sidebarName: "Permits",
     header: "Data Management",
     icon: <CheckSquare />,
+    guard: AdminGuard,
+    visibilityFilter: AdminVisibilityFilter,
   },
-  { name: "DmWells", sidebarName: "Wells", icon: <Droplet /> },
+  {
+    name: "DmWells",
+    sidebarName: "Wells",
+    icon: <Droplet />,
+    guard: AdminGuard,
+    visibilityFilter: AdminVisibilityFilter,
+  },
   {
     name: "DataWellProductions",
     sidebarName: "Well Production Data",
     icon: <List />,
+    guard: DeveloperGuard,
+    visibilityFilter: DeveloperVisibilityFilter,
   },
-  { name: "ListRolodexes", sidebarName: "Rolodex", icon: <CreditCard /> },
-  { name: "ListPermitTypes", sidebarName: "List Permit Types" },
+  {
+    name: "ListRolodexes",
+    sidebarName: "Rolodex",
+    icon: <CreditCard />,
+    guard: AdminGuard,
+    visibilityFilter: AdminVisibilityFilter,
+  },
+  {
+    name: "ListPermitTypes",
+    sidebarName: "List Permit Types",
+    guard: DeveloperGuard,
+    visibilityFilter: DeveloperVisibilityFilter,
+  },
 ];
 
 export const CRUD_LOOKUP_TABLES = [

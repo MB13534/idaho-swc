@@ -37,8 +37,7 @@ const DataAdminTable = ({
   const { doToast, currentUser } = useApp();
   const { getAccessTokenSilently } = useAuth0();
 
-  const userAuthorizedToEdit =
-    currentUser.isUserAdmin || currentUser.isAdmin || currentUser.isDeveloper;
+  const userAuthorizedToEdit = currentUser.isAdmin || currentUser.isDeveloper;
 
   const [selectedRow, setSelectedRow] = useState(null);
 

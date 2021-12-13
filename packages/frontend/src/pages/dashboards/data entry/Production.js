@@ -137,7 +137,7 @@ function Production() {
 
   //date filter defaults
   const defaultFilterValues = {
-    startDate: null,
+    startDate: new Date(new Date().getFullYear(), 0, 1),
     endDate: new Date(),
   };
   const [filterValues, setFilterValues] = useState(defaultFilterValues);
@@ -651,7 +651,7 @@ function Production() {
     <React.Fragment>
       <Helmet title="Well Production" />
       <Typography variant="h3" gutterBottom display="inline">
-        Well Production Data Entry
+        Well Production Data
       </Typography>
 
       <Breadcrumbs aria-label="Breadcrumb" mt={2}>

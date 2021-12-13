@@ -133,7 +133,7 @@ function Default() {
 
   //date filter defaults
   const defaultFilterValues = {
-    startDate: null,
+    startDate: new Date(new Date().getFullYear(), 0, 1),
     endDate: new Date(),
   };
   const [filterValues, setFilterValues] = useState(defaultFilterValues);
