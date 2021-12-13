@@ -362,7 +362,7 @@ function Production() {
   const [unfilteredEditTableResults, setunfilteredEditTableResults] =
     useState(null);
   useEffect(() => {
-    if (currentSelectedPoint && radioValue !== "all") {
+    if (currentSelectedPoint) {
       async function send() {
         try {
           const token = await getAccessTokenSilently();
