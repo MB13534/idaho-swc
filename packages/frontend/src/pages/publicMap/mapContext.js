@@ -1,14 +1,34 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, {
+  useCallback,
+  useContext,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import axios from "axios";
+import ReactDOM from "react-dom";
 import { useQuery } from "react-query";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
+
+import Popup from "./popup";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
 const MapContext = React.createContext();
 
+/**
+ * The `useMap` hook controls all of the Mapbox functionality. It controls
+ * everything from rendering the map and popups to filtering layers to styling
+ * layers.
+ * The hook exposes the map instance in addition to a variety of handlers
+ * responsible for applying filters and styles to the map
+ * @param {object} ref a React ref for the map container
+ * @param {*} mapConfig initial configuration options for the map
+ * see https://docs.mapbox.com/mapbox-gl-js/api/map/
+ */
 const useMap = (ref, mapConfig) => {
   const context = useContext(MapContext);
+  const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
   if (!context) {
     throw new Error(`useMap must be used within a MapProvider`);
   }
@@ -22,7 +42,7 @@ const useMap = (ref, mapConfig) => {
    * our application state and update the map status
    */
   const initializeMap = useCallback(() => {
-    if (ref?.current && !mapStatus.map.created) {
+    if (ref?.current && !mapStatus.map.created && layers) {
       const newMap = new mapboxgl.Map({
         container: ref.current,
         ...mapConfig,
@@ -38,9 +58,35 @@ const useMap = (ref, mapConfig) => {
           },
         }));
       });
+
+      newMap.on("click", (e) => {
+        const features = newMap.queryRenderedFeatures(e.point, {
+          layers: ["clearwater-wells-circle"],
+        });
+        if (features.length > 0) {
+          const feature = features[0];
+          const { popup } = layers.find(
+            ({ id }) => id === feature?.layer?.id
+          )?.lreProperties;
+          // create popup node
+          const popupNode = document.createElement("div");
+          ReactDOM.render(
+            <Popup
+              excludeFields={popup?.excludeFields}
+              feature={feature}
+              titleField={popup?.titleField}
+            />,
+            popupNode
+          );
+          popUpRef.current
+            .setLngLat(e.lngLat)
+            .setDOMContent(popupNode)
+            .addTo(newMap);
+        }
+      });
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ref, mapStatus.map.created]);
+  }, [ref, mapStatus.map.created, layers]);
 
   /**
    * Function responsible for adding sources and layers to the map
@@ -80,8 +126,29 @@ const useMap = (ref, mapConfig) => {
     }
   }, [layers, map, mapStatus.map.loaded, setMapStatus, sources]);
 
+  /**
+   * Handler used to apply user's filter values to the map instance
+   * We rely on the `setFilter` method available on the map instance
+   * and Mapbox expressions to apply filters to the wells layer
+   * This function translates the filter values into valid
+   * Mapbox expressions
+   * Mapbox expressions are gnarly, powerful black box.
+   * See https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/
+   * The easiest way to get a feel for expressions is to create a new map
+   * in Mapbox Studio, add a map layer, apply some filters to the layer and
+   * then click on the code icon in the sidebar drawer to inspect the
+   * Mapbox expression that is generated for the applied filters
+   * (ask Ben Tyler if this doesn't make sense)
+   * @param {object} filterValues object representing all of the current
+   * filter values
+   */
   const updateLayerFilters = (filterValues) => {
     if (!!map) {
+      /**
+       * Setting to all means that all conditions must be met
+       * Equivalent to and in SQL, change to "any" for the or
+       * equivalent
+       */
       const mapFilterExpression = ["all"];
       Object.values(filterValues).forEach((filter) => {
         if (filter.type === "multi-select") {
@@ -104,6 +171,14 @@ const useMap = (ref, mapConfig) => {
     }
   };
 
+  /**
+   * Handler used to update paint styles applied to map layer
+   * This is used to support the color wells by x control
+   * We look through each provided paint style property and apply the
+   * style rule to the layer
+   * Reference https://docs.mapbox.com/mapbox-gl-js/api/map/#map#setpaintproperty
+   * @param {object} layer object representing a map layer
+   */
   const updateLayerStyles = (layer) => {
     if (!!map) {
       Object.entries(layer.paint).forEach(([ruleName, ruleValue]) => {
@@ -167,6 +242,9 @@ const useMap = (ref, mapConfig) => {
   // initialize and load the map
   useEffect(() => {
     initializeMap();
+    // cleanup function to remove map on unmount
+    return () => map?.remove();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initializeMap]);
 
   // add all the sources and layers to the map
@@ -201,6 +279,8 @@ const MapProvider = (props) => {
       added: false,
     },
   });
+
+  // Fetch a list of sources to add to the map
   const { data: sourcesData } = useQuery(["Sources"], async () => {
     try {
       return await axios.get(
@@ -210,6 +290,8 @@ const MapProvider = (props) => {
       console.error(err);
     }
   });
+
+  // Fetch a list of layers to add to the map
   const { data: layersData } = useQuery(["Layers"], async () => {
     try {
       return await axios.get(

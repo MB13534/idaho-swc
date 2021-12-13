@@ -9,7 +9,7 @@ const mapStyles = {
 
 const Map = React.forwardRef(function Map({ children }, ref) {
   return (
-    <section id="map" ref={ref} style={mapStyles}>
+    <section id="public-map" ref={ref} style={mapStyles}>
       {children}
     </section>
   );
