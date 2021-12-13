@@ -42,6 +42,8 @@ import {
   formatBooleanTrueFalse,
   lineColors,
   renderStatusChip,
+  firstOfYear,
+  lastOfYear,
 } from "../../../utils";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
@@ -82,7 +84,7 @@ const TableWrapper = styled.div`
 `;
 
 const MapContainer = styled.div`
-  height: calc(328px);
+  height: calc(458px);
   width: 100%;
 `;
 
@@ -137,7 +139,7 @@ function Production() {
 
   //date filter defaults
   const defaultFilterValues = {
-    startDate: new Date(new Date().getFullYear(), 0, 1),
+    startDate: firstOfYear,
     endDate: new Date(),
   };
   const [filterValues, setFilterValues] = useState(defaultFilterValues);
@@ -755,6 +757,46 @@ function Production() {
                     checked={filterValues.checked}
                   />
                 </ListItem>
+                <SidebarSection>Quick Set</SidebarSection>
+                <Grid container>
+                  <Grid item xs={6} sm={12}>
+                    <ListItem>
+                      <Button
+                        size="small"
+                        style={{ width: "100%" }}
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => {
+                          changeFilterValues("startDate", null);
+                          changeFilterValues("endDate", new Date());
+                        }}
+                      >
+                        Period of Record
+                      </Button>
+                    </ListItem>
+                  </Grid>
+                  <Grid item xs={6} sm={12}>
+                    <ListItem
+                      style={{
+                        alignItems: "stretch",
+                        height: "100%",
+                      }}
+                    >
+                      <Button
+                        size="small"
+                        style={{ width: "100%" }}
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => {
+                          changeFilterValues("startDate", firstOfYear);
+                          changeFilterValues("endDate", lastOfYear);
+                        }}
+                      >
+                        Current Year
+                      </Button>
+                    </ListItem>
+                  </Grid>
+                </Grid>
               </List>
             </AccordionDetails>
           </Accordion>
@@ -837,6 +879,9 @@ function Production() {
                             style={{
                               flexGrow: 1,
                               maxWidth: "calc(100% - 110px)",
+                              display: "flex",
+                              flexDirection: "column",
+                              JustifyContent: "center",
                             }}
                           >
                             {radioValue === "has_production" &&
@@ -847,16 +892,12 @@ function Production() {
                                   </SidebarSection>
                                   <Button
                                     size="small"
-                                    style={{ width: "170px" }}
+                                    style={{ width: "130px" }}
                                     variant="contained"
                                     color="primary"
                                     onClick={handleToggleProductionUnitsChange}
                                   >
-                                    Switch to{" "}
-                                    {productionUnits ===
-                                    "Groundwater Pumping (Gallons)"
-                                      ? "Acre-Feet"
-                                      : "Gallons"}
+                                    Switch Units
                                   </Button>
                                 </>
                               )}
@@ -882,7 +923,7 @@ function Production() {
                       <TimeseriesWrapper
                         style={
                           radioValue === "has_production"
-                            ? { height: "calc(100% - 78px)" }
+                            ? { height: "calc(100% - 58px)" }
                             : null
                         }
                       >

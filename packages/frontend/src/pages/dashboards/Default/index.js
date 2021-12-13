@@ -36,7 +36,9 @@ import Table from "../../../components/Table";
 import axios from "axios";
 import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart";
 import {
+  firstOfYear,
   formatBooleanTrueFalse,
+  lastOfYear,
   lineColors,
   renderStatusChip,
 } from "../../../utils";
@@ -78,7 +80,7 @@ const TableWrapper = styled.div`
 `;
 
 const MapContainer = styled.div`
-  height: calc(441px);
+  height: calc(570px);
   width: 100%;
 `;
 
@@ -133,7 +135,7 @@ function Default() {
 
   //date filter defaults
   const defaultFilterValues = {
-    startDate: new Date(new Date().getFullYear(), 0, 1),
+    startDate: firstOfYear,
     endDate: new Date(),
   };
   const [filterValues, setFilterValues] = useState(defaultFilterValues);
@@ -787,6 +789,46 @@ function Default() {
                     checked={filterValues.checked}
                   />
                 </ListItem>
+                <SidebarSection>Quick Set</SidebarSection>
+                <Grid container>
+                  <Grid item xs={6} sm={12}>
+                    <ListItem>
+                      <Button
+                        size="small"
+                        style={{ width: "100%" }}
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => {
+                          changeFilterValues("startDate", null);
+                          changeFilterValues("endDate", new Date());
+                        }}
+                      >
+                        Period of Record
+                      </Button>
+                    </ListItem>
+                  </Grid>
+                  <Grid item xs={6} sm={12}>
+                    <ListItem
+                      style={{
+                        alignItems: "stretch",
+                        height: "100%",
+                      }}
+                    >
+                      <Button
+                        size="small"
+                        style={{ width: "100%" }}
+                        variant="outlined"
+                        color="primary"
+                        onClick={() => {
+                          changeFilterValues("startDate", firstOfYear);
+                          changeFilterValues("endDate", lastOfYear);
+                        }}
+                      >
+                        Current Year
+                      </Button>
+                    </ListItem>
+                  </Grid>
+                </Grid>
               </List>
             </AccordionDetails>
           </Accordion>
@@ -820,6 +862,9 @@ function Default() {
                             style={{
                               flexGrow: 1,
                               maxWidth: "calc(100% - 110px)",
+                              display: "flex",
+                              flexDirection: "column",
+                              JustifyContent: "center",
                             }}
                           >
                             {radioValue === "has_wqdata" && wQparameterOptions && (
@@ -827,33 +872,29 @@ function Default() {
                                 <SidebarSection ml={-3}>
                                   Parameters
                                 </SidebarSection>
-
-                                <OptionsPicker
-                                  selectedOption={selectedWQParameter}
-                                  setSelectedOption={setSelectedWQParameter}
-                                  options={wQparameterOptions}
-                                  label="Water Quality Parameters"
-                                />
+                                <ListItem
+                                  style={{ paddingLeft: 0, paddingRight: 0 }}
+                                >
+                                  <OptionsPicker
+                                    selectedOption={selectedWQParameter}
+                                    setSelectedOption={setSelectedWQParameter}
+                                    options={wQparameterOptions}
+                                    label="Water Quality Parameters"
+                                  />
+                                </ListItem>
                               </>
                             )}
                             {radioValue === "has_production" &&
                               isGraphRefCurrent && (
                                 <>
-                                  <SidebarSection ml={-3}>
-                                    Toggle Units
-                                  </SidebarSection>
                                   <Button
                                     size="small"
-                                    style={{ width: "170px" }}
+                                    style={{ width: "130px" }}
                                     variant="contained"
                                     color="primary"
                                     onClick={handleToggleProductionUnitsChange}
                                   >
-                                    Switch to{" "}
-                                    {productionUnits ===
-                                    "Groundwater Pumping (Gallons)"
-                                      ? "Acre-Feet"
-                                      : "Gallons"}
+                                    Switch Units
                                   </Button>
                                 </>
                               )}
@@ -880,9 +921,9 @@ function Default() {
                       <TimeseriesWrapper
                         style={
                           radioValue === "has_wqdata"
-                            ? { height: "calc(100% - 100px)" }
+                            ? { height: "calc(100% - 118px)" }
                             : radioValue === "has_production"
-                            ? { height: "calc(100% - 78px)" }
+                            ? { height: "calc(100% - 58px)" }
                             : null
                         }
                       >
