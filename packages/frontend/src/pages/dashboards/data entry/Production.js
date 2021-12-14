@@ -879,15 +879,12 @@ function Production() {
                               maxWidth: "calc(100% - 110px)",
                               display: "flex",
                               flexDirection: "column",
-                              JustifyContent: "center",
+                              justifyContent: "center",
                             }}
                           >
                             {radioValue === "has_production" &&
                               isGraphRefCurrent && (
                                 <>
-                                  <SidebarSection ml={-3}>
-                                    Toggle Units
-                                  </SidebarSection>
                                   <Button
                                     size="small"
                                     style={{ width: "130px" }}

@@ -864,7 +864,7 @@ function Default() {
                               maxWidth: "calc(100% - 110px)",
                               display: "flex",
                               flexDirection: "column",
-                              JustifyContent: "center",
+                              justifyContent: "center",
                             }}
                           >
                             {radioValue === "has_wqdata" && wQparameterOptions && (
