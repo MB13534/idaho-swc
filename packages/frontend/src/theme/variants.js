@@ -119,8 +119,8 @@ const defaultVariant = {
     },
   },
   scrollbar: {
-    track: "rgb(240, 242, 247)",
-    thumb: "rgb(218, 222, 237)",
+    thumb: "rgb(240, 242, 247)",
+    track: "rgb(218, 222, 237)",
   },
   severity: {
     success: "",
@@ -209,8 +209,8 @@ const lightVariant = merge(defaultVariant, {
     background: "#FFF",
   },
   scrollbar: {
-    track: darken(customGrey[300], 0.05),
-    thumb: customGrey[500],
+    thumb: darken(customGrey[300], 0.05),
+    track: customGrey[500],
   },
 });
 

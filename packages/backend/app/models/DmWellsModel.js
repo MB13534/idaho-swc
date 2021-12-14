@@ -66,6 +66,21 @@ module.exports = (sequelize, DataTypes) => {
       owner_rolo_ndx: {
         type: INTEGER,
       },
+      contact_rolo_ndx: {
+        type: INTEGER,
+      },
+      list_of_attachments: {
+        type: TEXT,
+      },
+      editor_name: {
+        type: TEXT,
+      },
+      registration_date: {
+        type: DATE,
+      },
+      registration_notes: {
+        type: TEXT,
+      },
       id: {
         type: UUID,
         primaryKey: true,

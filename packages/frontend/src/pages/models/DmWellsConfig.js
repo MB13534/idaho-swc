@@ -110,7 +110,7 @@ export function columns(modelName) {
     },
     {
       field: "well_notes",
-      headerName: "Notes",
+      headerName: "Well Notes",
       width: 300,
     },
     {
@@ -154,22 +154,60 @@ export function columns(modelName) {
       headerName: "Well Owner",
       width: 400,
       renderCell: (params) =>
-        Renderers.FormatAddress(Renderers.DropdownValueRenderer(params)),
+        Renderers.FormatIndexFromSplitString(
+          Renderers.DropdownValueRenderer(params),
+          0,
+          "; "
+        ),
       lookupModel: "current_wells_to_rolodex_owners_texts",
       lookupKey: "rolo_ndx",
       lookupValue: "rolo_text",
+    },
+    {
+      field: "contact_rolo_ndx",
+      headerName: "Well Contact",
+      width: 400,
+      renderCell: (params) =>
+        Renderers.FormatIndexFromSplitString(
+          Renderers.DropdownValueRenderer(params),
+          0,
+          "; "
+        ),
+      lookupModel: "current_wells_to_rolodex_contacts_texts",
+      lookupKey: "rolo_ndx",
+      lookupValue: "rolo_text",
+    },
+    {
+      field: "list_of_attachments",
+      headerName: "Attachments",
+      width: 150,
+    },
+    {
+      field: "editor_name",
+      headerName: "Updated By",
+      width: 150,
+    },
+    {
+      field: "registration_date ",
+      headerName: "Original Registration Date",
+      width: 150,
+    },
+    {
+      field: "registration_notes ",
+      headerName: "Original Registration Notes",
+      width: 150,
     },
     // {
     //   field: "well_ndx",
     //   headerName: "Well Index",
     //   width: 125,
     // },
-    {
-      field: "id",
-      headerName: "ID",
-      width: 100,
-      renderCell: Renderers.IdRenderer,
-    },
+    // {
+    //   field: "id",
+    //   headerName: "ID",
+    //   width: 100,
+    //   renderCell: Renderers.IdRenderer,
+    // },
     {
       field: "created_at",
       headerName: "Created At",
@@ -242,7 +280,7 @@ export const fields = [
     isOpen: true,
   },
   {
-    name: "Notes",
+    name: "Well Notes",
     key: "well_notes",
     required: false,
     type: CRUD_FIELD_TYPES.MULTILINE_TEXT,
@@ -419,15 +457,19 @@ export const fields = [
     name: "Construction Notes",
     key: "construction_notes",
     required: true,
-    type: CRUD_FIELD_TYPES.TEXT,
+    type: CRUD_FIELD_TYPES.MULTILINE_TEXT,
     cols: 12,
     isOpen: true,
+  },
+  {
+    type: CRUD_FIELD_TYPES.SECTION_HEADER,
+    title: "Owner and Contact Information",
   },
   {
     name: "Well Owner",
     key: "owner_rolo_ndx",
     required: true,
-    type: CRUD_FIELD_TYPES.DROPDOWN,
+    type: CRUD_FIELD_TYPES.SPLIT_STRING_DROPDOWN,
     typeConfig: {
       table: "current_wells_to_rolodex_owners_texts",
       key: "rolo_ndx",
@@ -437,14 +479,36 @@ export const fields = [
     cols: 12,
     isOpen: true,
   },
-  // {
-  //   name: "Well Index",
-  //   key: "well_ndx",
-  //   required: true,
-  //   type: CRUD_FIELD_TYPES.TEXT,
-  //   cols: 12,
-  //   isOpen: true,
-  // },
+  {
+    name: "Well Contact",
+    key: "contact_rolo_ndx",
+    required: true,
+    type: CRUD_FIELD_TYPES.SPLIT_STRING_DROPDOWN,
+    typeConfig: {
+      table: "current_wells_to_rolodex_contacts_texts",
+      key: "rolo_ndx",
+      value: "rolo_text",
+      crud: false,
+    },
+    cols: 12,
+    isOpen: true,
+  },
+  {
+    name: "Attachments",
+    key: "list_of_attachments",
+    required: true,
+    type: CRUD_FIELD_TYPES.MULTILINE_TEXT,
+    cols: 12,
+    isOpen: true,
+  },
+  {
+    name: "Well Index",
+    key: "well_ndx",
+    required: true,
+    type: CRUD_FIELD_TYPES.TEXT,
+    cols: 12,
+    isOpen: true,
+  },
 ];
 
 const config = {

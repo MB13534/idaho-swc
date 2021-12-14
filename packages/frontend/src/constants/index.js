@@ -52,6 +52,7 @@ export const CRUD_LOOKUP_TABLES = [
   "list_well_statuses",
   "list_booleans",
   "current_wells_to_rolodex_owners_texts",
+  "current_wells_to_rolodex_contacts_texts",
 ];
 
 export const THEME = {
@@ -131,6 +132,7 @@ export const CRUD_FIELD_TYPES = {
   MULTILINE_TEXT: "MULTILINE_TEXT",
   EMAIL: "EMAIL",
   DROPDOWN: "DROPDOWN",
+  SPLIT_STRING_DROPDOWN: "SPLIT_STRING_DROPDOWN",
   NUMBER: "NUMBER",
   DATE: "DATE",
   TIME: "TIME",

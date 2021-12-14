@@ -7,6 +7,7 @@ import EditFormDateTime from "./fields/EditFormDateTime";
 import { v4 as uuidv4 } from "uuid";
 import EditFormSectionHeader from "./fields/EditFormSectionHeader";
 import EditFormDivider from "./fields/EditFormDivider";
+import EditFormSplitStringDropdown from "./fields/EditFormSplitStringDropdown";
 
 export function EditFormFieldList({
   data,
@@ -51,6 +52,10 @@ export function EditFormFieldList({
 
     if (type === CRUD_FIELD_TYPES.DROPDOWN) {
       FieldComponent = EditFormDropdown;
+    }
+
+    if (type === CRUD_FIELD_TYPES.SPLIT_STRING_DROPDOWN) {
+      FieldComponent = EditFormSplitStringDropdown;
     }
 
     if (type === CRUD_FIELD_TYPES.NUMBER) {

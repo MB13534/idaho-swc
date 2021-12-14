@@ -353,15 +353,9 @@ export const DropdownValueRenderer = (params) => {
 };
 // display: block;
 // line-height: 1 !important;
-export const FormatAddress = ({ props }) => {
-  const roloInfo = props.children.split(";");
-  return (
-    <div style={{ lineHeight: "normal" }}>
-      {roloInfo.map((item) => (
-        <div>{item}</div>
-      ))}
-    </div>
-  );
+export const FormatIndexFromSplitString = ({ props }, index, splitter) => {
+  if (typeof props.children !== "string") return;
+  return props.children.split(splitter)[index];
 };
 
 export const Renderers = {
@@ -371,7 +365,7 @@ export const Renderers = {
   StatusDotRenderer,
   DropdownValueRenderer,
   StatusHelpIconRenderer,
-  FormatAddress,
+  FormatIndexFromSplitString,
   TimestampRenderer,
   ValueWithIconRenderer,
   DateRenderer,
