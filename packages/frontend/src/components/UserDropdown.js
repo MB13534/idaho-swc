@@ -87,7 +87,7 @@ function UserDropdown({ children }) {
   const [anchorMenu, setAnchorMenu] = useState(null);
   const { user, isLoading, isAuthenticated, logout } = useAuth0();
 
-  const [isAdmin, setIsAdmin] = useState(false);
+  const [isDeveloper, setIsDeveloper] = useState(false);
 
   const toggleMenu = (event) => {
     setAnchorMenu(event.currentTarget);
@@ -99,10 +99,8 @@ function UserDropdown({ children }) {
 
   useEffect(() => {
     if (user) {
-      setIsAdmin(
-        user[`${process.env.REACT_APP_AUDIENCE}/roles`].includes(
-          "Administrator"
-        )
+      setIsDeveloper(
+        user[`${process.env.REACT_APP_AUDIENCE}/roles`].includes("Developer")
       );
     }
   }, [user]);
@@ -172,7 +170,7 @@ function UserDropdown({ children }) {
         >
           About LRE Water Unified Platform
         </MenuItem>
-        {isAdmin && (
+        {isDeveloper && (
           <MenuItem
             onClick={() => {
               history.push(ROUTES.PAGE_DOCUMENTATION);

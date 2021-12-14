@@ -3,7 +3,7 @@ import { NavLink, useHistory } from "react-router-dom";
 import styled from "styled-components/macro";
 import { Helmet } from "react-helmet-async";
 
-import "../../vendor/roundedBarCharts";
+// import "../../vendor/roundedBarCharts";
 import {
   Breadcrumbs as MuiBreadcrumbs,
   Card,

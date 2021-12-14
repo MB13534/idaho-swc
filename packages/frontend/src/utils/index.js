@@ -172,3 +172,7 @@ export const applyInflectorOverrides = (str) => {
   const myStr = str ? str : "";
   return myStr.replace("Curf", "Curve");
 };
+
+export const firstOfYear = new Date(new Date().getFullYear(), 0, 1);
+
+export const lastOfYear = new Date(new Date().getFullYear(), 11, 31);

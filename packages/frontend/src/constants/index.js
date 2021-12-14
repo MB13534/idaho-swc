@@ -1,5 +1,9 @@
 import React from "react";
 import { Droplet, CheckSquare, CreditCard } from "react-feather";
+import AdminGuard from "../components/AdminGuard";
+import AdminVisibilityFilter from "../components/AdminVisibilityFilter";
+import DeveloperGuard from "../components/DeveloperGuard";
+import DeveloperVisibilityFilter from "../components/DeveloperVisibilityFilter";
 
 export const STARTING_LOCATION = [-97.4718189239502, 31.050691282461912];
 
@@ -10,16 +14,38 @@ export const CRUD_MODELS = [
     sidebarName: "Permits",
     header: "Data Management",
     icon: <CheckSquare />,
+    guard: AdminGuard,
+    visibilityFilter: AdminVisibilityFilter,
   },
-  { name: "DmWells", sidebarName: "Wells", icon: <Droplet /> },
-  { name: "ListRolodexes", sidebarName: "Rolodex", icon: <CreditCard /> },
-  { name: "ListPermitTypes", sidebarName: "List Permit Types" },
+  {
+    name: "DmWells",
+    sidebarName: "Wells",
+    icon: <Droplet />,
+    guard: AdminGuard,
+    visibilityFilter: AdminVisibilityFilter,
+  },
+  {
+    name: "ListRolodexes",
+    sidebarName: "Rolodex",
+    icon: <CreditCard />,
+    guard: AdminGuard,
+    visibilityFilter: AdminVisibilityFilter,
+  },
+  {
+    name: "ListPermitTypes",
+    sidebarName: "List Permit Types",
+    guard: DeveloperGuard,
+    visibilityFilter: DeveloperVisibilityFilter,
+  },
 ];
 
 export const CRUD_LOOKUP_TABLES = [
   "list_aquifers",
   "list_water_uses",
   "list_well_statuses",
+  "list_booleans",
+  "current_wells_to_rolodex_owners_texts",
+  "current_wells_to_rolodex_contacts_texts",
 ];
 
 export const THEME = {
@@ -99,6 +125,7 @@ export const CRUD_FIELD_TYPES = {
   MULTILINE_TEXT: "MULTILINE_TEXT",
   EMAIL: "EMAIL",
   DROPDOWN: "DROPDOWN",
+  SPLIT_STRING_DROPDOWN: "SPLIT_STRING_DROPDOWN",
   NUMBER: "NUMBER",
   DATE: "DATE",
   TIME: "TIME",

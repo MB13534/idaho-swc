@@ -12,7 +12,7 @@ import {
 import Tooltip from "@material-ui/core/Tooltip";
 import Link from "@material-ui/core/Link";
 import DevTools from "./dev/DevTools";
-import AdminVisibilityFilter from "./AdminVisibilityFilter";
+import DeveloperVisibilityFilter from "./DeveloperVisibilityFilter";
 
 const Wrapper = styled.div`
   padding: ${(props) => props.theme.spacing(1) / 4}px
@@ -100,11 +100,11 @@ function Footer() {
                 primary={`© ${new Date().getFullYear()} - Leonard Rice Engineers, Inc.`}
               />
             </ListItem>
-            <AdminVisibilityFilter>
+            <DeveloperVisibilityFilter>
               <ListItem button={true}>
                 <DevTools />
               </ListItem>
-            </AdminVisibilityFilter>
+            </DeveloperVisibilityFilter>
           </List>
         </Grid>
       </Grid>

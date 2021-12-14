@@ -23,8 +23,11 @@ const DataTable = styled(MuiDataGrid)`
     font-weight: ${(props) => props.theme.typography.fontWeightLight};
     font-family: ${(props) => props.theme.typography.fontFamily};
     color: ${(props) => props.theme.palette.text.secondary} !important;
-
-    .MuiDataGrid-cell,
+    .MuiDataGrid-cell
+    // {
+    //   max-height: 100% !important;
+    // }
+    ,
     .MuiDataGrid-columnsContainer {
       color: ${(props) => props.theme.palette.text.primary} !important;
       border-bottom: 1px solid
@@ -59,6 +62,7 @@ const DataTable = styled(MuiDataGrid)`
 
   .MuiDataGrid-row {
     cursor: pointer;
+    // max-height: 100%;
   }
 `;
 

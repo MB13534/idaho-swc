@@ -23,8 +23,12 @@ import {
 } from "react-feather";
 
 import AuthGuard from "../components/AuthGuard";
+import DeveloperGuard from "../components/DeveloperGuard";
+import DeveloperVisibilityFilter from "../components/DeveloperVisibilityFilter";
 import AdminGuard from "../components/AdminGuard";
 import AdminVisibilityFilter from "../components/AdminVisibilityFilter";
+import UserVisibilityFilter from "../components/UserVisibilityFilter";
+import UserGuard from "../components/UserGuard";
 
 import Blank from "../pages/pages/Blank";
 import Changelog from "../pages/docs/Changelog";
@@ -41,8 +45,6 @@ import Default from "../pages/dashboards/Default";
 import { CrudProvider } from "../CrudProvider";
 import CRUD from "../pages/docs/CRUD";
 import Deploy from "../pages/docs/Deploy";
-import UserVisibilityFilter from "../components/UserVisibilityFilter";
-import UserGuard from "../components/UserGuard";
 import UiPermitsExpiringsReport from "../pages/dataAccess/reports/UiPermitsExpiringsReport";
 import FullMap from "../components/map/FullMap";
 
@@ -68,6 +70,8 @@ const getSidebarMenu = (list) => {
       provider: CrudProvider,
       children: item.children,
       header: item.header,
+      guard: item.guard,
+      visibilityFilter: item.visibilityFilter,
     };
   });
 };
@@ -109,9 +113,25 @@ const getCrudRoutes = (list) => {
 const crudSidebarMenu = [...getSidebarMenu(CRUD_MODELS)];
 const modelCrudRoutes = [...getCrudRoutes(CRUD_MODELS)];
 
+const dataEntryRoutes = {
+  id: "Data Entry",
+  header: "Data Access",
+  icon: <Share2 />,
+  children: [
+    {
+      path: "/data-access/well-production-data-entry",
+      name: "Well Production",
+      component: Production,
+      guard: UserGuard,
+      visibilityFilter: UserVisibilityFilter,
+    },
+  ],
+  guard: UserGuard,
+  visibilityFilter: UserVisibilityFilter,
+};
+
 const reportsRoutes = {
   id: "Reports",
-  header: "Data Access",
   icon: <FileText />,
   children: [
     {
@@ -123,30 +143,26 @@ const reportsRoutes = {
       path: "/data-access/reports/production",
       name: "Production",
       component: Blank,
+      guard: DeveloperGuard,
+      visibilityFilter: DeveloperVisibilityFilter,
     },
     {
       path: "/data-access/reports/permits",
       name: "Permits",
       component: Blank,
+      guard: DeveloperGuard,
+      visibilityFilter: DeveloperVisibilityFilter,
     },
     {
       path: "/data-access/reports/ect",
       name: "Ect...",
       component: Blank,
+      guard: DeveloperGuard,
+      visibilityFilter: DeveloperVisibilityFilter,
     },
   ],
-};
-
-const dataEntryRoutes = {
-  id: "Data Entry",
-  icon: <Share2 />,
-  children: [
-    {
-      path: "/data-access/well-production-data-entry",
-      name: "Well Production",
-      component: Production,
-    },
-  ],
+  guard: AdminGuard,
+  visibilityFilter: AdminVisibilityFilter,
 };
 
 const mapRoutes = {
@@ -184,8 +200,8 @@ const timeseriesRoutes = {
       component: Blank,
     },
   ],
-  guard: AdminGuard,
-  visibilityFilter: AdminVisibilityFilter,
+  guard: DeveloperGuard,
+  visibilityFilter: DeveloperVisibilityFilter,
 };
 
 const publicFilesRoutes = {
@@ -195,6 +211,8 @@ const publicFilesRoutes = {
   path: "/data-access/documents/public-files",
   name: "Public Files",
   component: Blank,
+  guard: UserGuard,
+  visibilityFilter: UserVisibilityFilter,
 };
 
 const clientDocsRoutes = {
@@ -203,18 +221,18 @@ const clientDocsRoutes = {
   path: "/data-access/documents/client-docs",
   name: "Client Documents",
   component: Blank,
-  guard: UserGuard,
-  visibilityFilter: UserVisibilityFilter,
-};
-
-const adminDocsRoutes = {
-  id: "Admin Docs",
-  icon: <Briefcase />,
-  path: "/data-access/documents/admin-docs",
-  name: "Admin Documents",
-  component: Blank,
   guard: AdminGuard,
   visibilityFilter: AdminVisibilityFilter,
+};
+
+const DeveloperDocsRoutes = {
+  id: "Developer Docs",
+  icon: <Briefcase />,
+  path: "/data-access/documents/developer-docs",
+  name: "Developer Documents",
+  component: Blank,
+  guard: DeveloperGuard,
+  visibilityFilter: DeveloperVisibilityFilter,
 };
 
 const accountRoutes = {
@@ -257,6 +275,8 @@ const mainRoutes = {
   component: Default,
   children: null,
   containsHome: true,
+  guard: UserGuard,
+  visibilityFilter: UserVisibilityFilter,
 };
 
 const pageRoutes = {
@@ -291,6 +311,8 @@ const pageRoutes = {
       component: Blank,
     },
   ],
+  guard: UserGuard,
+  visibilityFilter: UserVisibilityFilter,
 };
 
 const documentationRoutes = {
@@ -303,31 +325,26 @@ const documentationRoutes = {
       path: ROUTES.PAGE_DOCS_INTRODUCTION,
       name: "Introduction",
       component: Introduction,
-      guard: AdminGuard,
     },
     {
       path: ROUTES.PAGE_DOCS_GETTING_STARTED,
       name: "Getting Started",
       component: GettingStarted,
-      guard: AdminGuard,
     },
     {
       path: ROUTES.PAGE_DOCS_CRUD,
       name: "CRUD",
       component: CRUD,
-      guard: AdminGuard,
     },
     {
       path: ROUTES.PAGE_DOCS_DEPLOY,
       name: "Deploy",
       component: Deploy,
-      guard: AdminGuard,
     },
     {
       path: ROUTES.PAGE_DOCS_SUPPORT,
       name: "Support",
       component: Support,
-      guard: AdminGuard,
     },
     {
       path: ROUTES.PAGE_CHANGELOG,
@@ -336,8 +353,8 @@ const documentationRoutes = {
     },
   ],
   component: null,
-  guard: AdminGuard,
-  visibilityFilter: AdminVisibilityFilter,
+  guard: DeveloperGuard,
+  visibilityFilter: DeveloperVisibilityFilter,
 };
 
 const slugify = (str) => {
@@ -362,7 +379,8 @@ const componentsRoutes = {
     })),
   ],
   component: null,
-  visibilityFilter: AdminVisibilityFilter,
+  guard: DeveloperGuard,
+  visibilityFilter: DeveloperVisibilityFilter,
 };
 
 const changelogRoutes = {
@@ -408,8 +426,8 @@ const adminRoutes = {
       component: Blank,
     },
   ],
-  guard: AdminGuard,
-  visibilityFilter: AdminVisibilityFilter,
+  guard: DeveloperGuard,
+  visibilityFilter: DeveloperVisibilityFilter,
 };
 
 // Routes using the Dashboard layout
@@ -417,13 +435,13 @@ export const dashboardLayoutRoutes = [
   pageRoutes,
   mainRoutes,
   changelogRoutes,
-  reportsRoutes,
   dataEntryRoutes,
+  reportsRoutes,
   mapRoutes,
   timeseriesRoutes,
   publicFilesRoutes,
   clientDocsRoutes,
-  adminDocsRoutes,
+  DeveloperDocsRoutes,
   accountRoutes,
   documentationRoutes,
   componentsRoutes,
@@ -451,13 +469,13 @@ export const protectedRoutes = [protectedPageRoutes];
 export const sidebarRoutes = [
   mainRoutes,
   ...crudSidebarMenu,
-  reportsRoutes,
   dataEntryRoutes,
+  reportsRoutes,
   mapRoutes,
   timeseriesRoutes,
   publicFilesRoutes,
   clientDocsRoutes,
-  adminDocsRoutes,
+  DeveloperDocsRoutes,
   adminRoutes,
   componentsRoutes,
   documentationRoutes,

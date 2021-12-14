@@ -351,6 +351,12 @@ export const DropdownValueRenderer = (params) => {
 
   return <span>{returnValue}</span>;
 };
+// display: block;
+// line-height: 1 !important;
+export const FormatIndexFromSplitString = ({ props }, index, splitter) => {
+  if (typeof props.children !== "string") return;
+  return props.children.split(splitter)[index];
+};
 
 export const Renderers = {
   AssociatedFieldRenderer,
@@ -359,6 +365,7 @@ export const Renderers = {
   StatusDotRenderer,
   DropdownValueRenderer,
   StatusHelpIconRenderer,
+  FormatIndexFromSplitString,
   TimestampRenderer,
   ValueWithIconRenderer,
   DateRenderer,

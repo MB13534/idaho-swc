@@ -19,25 +19,19 @@ export const AppProvider = ({ children }) => {
       // TODO: dkulak: make this use real users once user section is done
       // myUser.id = "af400afa-6247-4313-9d8a-738a3633db83";
 
-      if (roles && roles.filter((x) => x === "Administrator").length > 0) {
-        myUser.isAdmin = true;
-      } else {
-        myUser.isAdmin = false;
-      }
-
       if (roles && roles.filter((x) => x === "Developer").length > 0) {
         myUser.isDeveloper = true;
       } else {
         myUser.isDeveloper = false;
       }
 
-      if (roles && roles.filter((x) => x === "User Admin").length > 0) {
-        myUser.isUserAdmin = true;
+      if (roles && roles.filter((x) => x === "Administrator").length > 0) {
+        myUser.isAdmin = true;
       } else {
-        myUser.isUserAdmin = false;
+        myUser.isAdmin = false;
       }
 
-      if (roles && roles.filter((x) => x === "User").length > 0) {
+      if (roles && roles.filter((x) => x === "Well Owner").length > 0) {
         myUser.isUser = true;
       } else {
         myUser.isUser = false;

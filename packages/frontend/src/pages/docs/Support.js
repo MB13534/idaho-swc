@@ -17,8 +17,10 @@ function Support() {
       <Box mb={10}>
         <Typography variant="subtitle1" gutterBottom my={4}>
           If you have any issues, questions, comments, or bug reports, please
-          send them to Doug Kulak:{" "}
-          <Link href="mailto:dougkulak@gmail.com">dougkulak@gmail.com</Link>
+          send them to Michael Barry:{" "}
+          <Link href="mailto:michael.barry@lrewater.com">
+            michael.barry@lrewater.com
+          </Link>
           . Please describe your issue in detail and include any relevant links
           that may help me.
           <br />
