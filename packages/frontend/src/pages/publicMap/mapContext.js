@@ -100,6 +100,7 @@ const useMap = (ref, mapConfig) => {
           map.addSource(id, rest);
           return source;
         }
+        return null;
       });
 
       const addedLayers = layers.map((layer) => {
