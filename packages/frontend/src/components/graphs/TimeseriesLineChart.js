@@ -119,6 +119,16 @@ const TimeseriesLineChart = forwardRef(
         legend: {
           display: displayLegend,
           reverse: reverseLegend,
+          onClick: () =>
+            // e, legendItem, legend
+            {
+              return null;
+              // const currentIndex = legendItem.datasetIndex;
+              // ref.current.setDatasetVisibility(
+              //   currentIndex,
+              //   !ref.current.isDatasetVisible(currentIndex)
+              // );
+            },
           labels: {
             filter: (legendItem) => {
               return !legendItem.hidden;

@@ -463,7 +463,7 @@ function Production() {
               type: "line",
               yAxisID: "yR",
               pointStyle: "rect",
-              stepped: true,
+              stepped: "middle",
               backgroundColor: "rgba(141, 144, 147, .5)",
               borderColor: lineColors.gray,
               data: currentSelectedTimeseriesData.map(
@@ -481,7 +481,7 @@ function Production() {
               type: "line",
               yAxisID: "yR",
               pointStyle: "rect",
-              stepped: true,
+              stepped: "middle",
               backgroundColor: "rgba(141, 144, 147, .5)",
               borderColor: lineColors.gray,
               data: currentSelectedTimeseriesData.map(
