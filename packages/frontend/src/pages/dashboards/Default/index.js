@@ -157,6 +157,10 @@ function Default() {
 
   const handleRadioChange = (event) => {
     setRadioValue(event.target.value);
+    setProductionUnitsLabels({
+      yLLabel: "Monthly Well Production, Gallons",
+      yRLabel: "Annual Production and Allocations, Gallons",
+    });
     map.fire("closeAllPopups");
     map.setFeatureState(
       {
@@ -380,22 +384,124 @@ function Default() {
           ),
           datasets: [
             {
-              label: "Gallons",
-              backgroundColor: lighten(lineColors.blue, 0.5),
+              label: "Annual Allocation (g)",
+              type: "line",
+              yAxisID: "yR",
+              pointStyle: "line",
+              backgroundColor: lineColors.darkGray,
+              borderColor: lineColors.darkGray,
+              data: currentSelectedTimeseriesData.map(
+                (item) => item.allocation_gallons
+              ),
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              borderWidth: 4,
+              spanGaps: true,
+              hidden: false,
+            },
+            {
+              label: "Annual Allocation (af)",
+              type: "line",
+              yAxisID: "yR",
+              pointStyle: "line",
+              backgroundColor: lineColors.darkGray,
+              borderColor: lineColors.darkGray,
+              data: currentSelectedTimeseriesData.map(
+                (item) => item.allocation_af
+              ),
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              borderWidth: 4,
+              spanGaps: true,
+              hidden: true,
+            },
+            {
+              label: "Cumulative Pumping (g)",
+              type: "line",
+              yAxisID: "yR",
+              pointStyle: "rect",
+              stepped: true,
+              backgroundColor: "rgba(141, 144, 147, .5)",
+              borderColor: lineColors.gray,
+              data: currentSelectedTimeseriesData.map(
+                (item) => item.cum_production_gallons
+              ),
+              fill: true,
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              borderWidth: 2,
+              spanGaps: true,
+              hidden: false,
+            },
+            {
+              label: "Cumulative Pumping (af)",
+              type: "line",
+              yAxisID: "yR",
+              pointStyle: "rect",
+              stepped: true,
+              backgroundColor: "rgba(141, 144, 147, .5)",
+              borderColor: lineColors.gray,
+              data: currentSelectedTimeseriesData.map(
+                (item) => item.cum_production_af
+              ),
+              fill: true,
+              pointRadius: 0,
+              pointHoverRadius: 0,
+              borderWidth: 2,
+              spanGaps: true,
+              hidden: true,
+            },
+            {
+              label: "Operational Permit Pumping (g)",
+              type: "bar",
+              yAxisID: "yL",
+              pointStyle: "rect",
+              backgroundColor: "rgba(67, 99, 215, .7)",
               borderColor: lineColors.blue,
               data: currentSelectedTimeseriesData.map(
-                (item) => item.production_gallons
+                (item) => item.o_pumping_gallons
               ),
               borderWidth: 2,
               spanGaps: true,
               hidden: false,
             },
             {
-              label: "Acre-feet",
-              backgroundColor: lighten(lineColors.red, 0.5),
-              borderColor: lineColors.red,
+              label: "Operational Permit Pumping (af)",
+              type: "bar",
+              yAxisID: "yL",
+              pointStyle: "rect",
+              backgroundColor: "rgba(67, 99, 215, .7)",
+              borderColor: lineColors.blue,
               data: currentSelectedTimeseriesData.map(
-                (item) => item.production_af
+                (item) => item.o_pumping_af
+              ),
+              borderWidth: 2,
+              spanGaps: true,
+              hidden: true,
+            },
+            {
+              label: "Historical Pumping (g)",
+              type: "bar",
+              yAxisID: "yL",
+              pointStyle: "rect",
+              backgroundColor: "rgba(245, 130, 49, .7)",
+              borderColor: lineColors.orange,
+              data: currentSelectedTimeseriesData.map(
+                (item) => item.h_pumping_gallons
+              ),
+              borderWidth: 2,
+              spanGaps: true,
+              hidden: false,
+            },
+            {
+              label: "Historical Pumping (af)",
+              type: "bar",
+              yAxisID: "yL",
+              pointStyle: "rect",
+              backgroundColor: "rgba(245, 130, 49, .7)",
+              borderColor: lineColors.orange,
+              data: currentSelectedTimeseriesData.map(
+                (item) => item.h_pumping_af
               ),
               borderWidth: 2,
               spanGaps: true,
@@ -634,31 +740,54 @@ function Default() {
     }
   };
 
-  const [productionUnits, setProductionUnits] = useState(
-    "Groundwater Pumping (Gallons)"
-  );
+  const [productionUnitsLabels, setProductionUnitsLabels] = useState({
+    yLLabel: "Monthly Well Production, Gallons",
+    yRLabel: "Annual Production and Allocations, Gallons",
+  });
+  const changeProductionUnitsLabels = (name, value) => {
+    setProductionUnitsLabels((prevState) => {
+      let newLabelsValues = { ...prevState };
+      newLabelsValues[name] = value;
+      return newLabelsValues;
+    });
+  };
+
   const [isGraphRefCurrent, setIsGraphRefCurrent] = useState(false);
 
   const handleToggleProductionUnitsChange = () => {
-    graphSaveRef.current.setDatasetVisibility(
-      0,
-      !graphSaveRef.current.isDatasetVisible(0)
-    );
-    graphSaveRef.current.setDatasetVisibility(
-      1,
-      !graphSaveRef.current.isDatasetVisible(1)
-    );
+    for (let x = 0; x < filteredMutatedGraphData.datasets.length; x++) {
+      graphSaveRef.current.setDatasetVisibility(
+        x,
+        !graphSaveRef.current.isDatasetVisible(x)
+      );
+    }
+
     graphSaveRef.current.config._config.options.scales.yL.title.text =
-      productionUnits[
-        productionUnits === "Groundwater Pumping (Gallons)"
-          ? "Groundwater Pumping (Acre-Feet)"
-          : "Groundwater Pumping (Gallons)"
-      ];
-    setProductionUnits((state) =>
-      state === "Groundwater Pumping (Gallons)"
-        ? "Groundwater Pumping (Acre-Feet)"
-        : "Groundwater Pumping (Gallons)"
+      productionUnitsLabels.yLLabel === "Monthly Well Production, Gallons"
+        ? "Monthly Well Production, Acre-Feet"
+        : "Monthly Well Production, Gallons";
+
+    graphSaveRef.current.config._config.options.scales.yR.title.text =
+      productionUnitsLabels.yRLabel ===
+      "Annual Production and Allocations, Gallons"
+        ? "Annual Production and Allocations, Acre-Feet"
+        : "Annual Production and Allocations, Gallons";
+
+    changeProductionUnitsLabels(
+      "yLLabel",
+      productionUnitsLabels.yLLabel === "Monthly Well Production, Gallons"
+        ? "Monthly Well Production, Acre-Feet"
+        : "Monthly Well Production, Gallons"
     );
+
+    changeProductionUnitsLabels(
+      "yRLabel",
+      productionUnitsLabels.yRLabel ===
+        "Annual Production and Allocations, Gallons"
+        ? "Annual Production and Allocations, Acre-Feet"
+        : "Annual Production and Allocations, Gallons"
+    );
+
     graphSaveRef.current.update();
   };
 
@@ -935,8 +1064,12 @@ function Default() {
                             radioValue === "has_waterlevels"
                               ? "Water Level (Feet Below Ground Level)"
                               : radioValue === "has_production"
-                              ? productionUnits
+                              ? productionUnitsLabels.yLLabel
                               : `${filteredMutatedGraphData?.parameter} (${filteredMutatedGraphData?.units})`
+                          }
+                          yRLLabel={
+                            radioValue === "has_production" &&
+                            productionUnitsLabels.yRLabel
                           }
                           reverseLegend={false}
                           yLReverse={radioValue === "has_waterlevels"}
@@ -945,8 +1078,12 @@ function Default() {
                           type={
                             radioValue === "has_production" ? "bar" : "scatter"
                           }
-                          displayLegend={false}
+                          displayLegend={radioValue === "has_production"}
                           setIsGraphRefCurrent={setIsGraphRefCurrent}
+                          stacked={true}
+                          maxTicksX={12}
+                          maxTicksYL={6}
+                          maxTicksYR={5}
                         />
                       </TimeseriesWrapper>
                     </TimeseriesContainer>
