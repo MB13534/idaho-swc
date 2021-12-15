@@ -29,12 +29,26 @@ const MapContext = React.createContext();
 const useMap = (ref, mapConfig) => {
   const context = useContext(MapContext);
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
+  const [mapStatus, setMapStatus] = useState({
+    map: {
+      created: false,
+      loaded: false,
+    },
+    sources: {
+      loaded: false,
+      added: false,
+    },
+    layers: {
+      loaded: false,
+      added: false,
+    },
+  });
+
   if (!context) {
     throw new Error(`useMap must be used within a MapProvider`);
   }
 
-  const { layers, map, mapStatus, setLayers, setMap, setMapStatus, sources } =
-    context;
+  const { layers, map, setLayers, setMap, sources } = context;
 
   /**
    * Function responsible for initializing the map
@@ -42,7 +56,7 @@ const useMap = (ref, mapConfig) => {
    * our application state and update the map status
    */
   const initializeMap = useCallback(() => {
-    if (ref?.current && !mapStatus.map.created && layers) {
+    if (ref?.current && !mapStatus.map.created) {
       const newMap = new mapboxgl.Map({
         container: ref.current,
         ...mapConfig,
@@ -58,9 +72,69 @@ const useMap = (ref, mapConfig) => {
           },
         }));
       });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [ref, mapStatus.map.created]);
 
-      newMap.on("click", (e) => {
-        const features = newMap.queryRenderedFeatures(e.point, {
+  /**
+   * Function responsible for adding sources and layers to the map
+   * There are a number of checks in place to ensure that sources
+   * only get added to the map once the map and sources are loaded and
+   * to ensure that layers are only added to the map once the layers are
+   * loaded and the associated sources are added to the map
+   */
+  const loadMapData = useCallback(() => {
+    const shouldAddData =
+      map &&
+      map.loaded() &&
+      !mapStatus.sources.added &&
+      !mapStatus.layers.added &&
+      sources?.length > 0 &&
+      layers?.length > 0;
+
+    if (shouldAddData) {
+      const addedSources = sources.map((source) => {
+        const { id, ...rest } = source;
+        const sourceExists = !!map.getSource(id);
+        if (!sourceExists) {
+          map.addSource(id, rest);
+          return source;
+        }
+      });
+
+      const addedLayers = layers.map((layer) => {
+        const { lreProperties, ...rest } = layer;
+        const layerExists = map.getLayer(layer.id);
+        if (!layerExists) {
+          map.addLayer(rest);
+          return layer;
+        }
+        return null;
+      });
+
+      setMapStatus((prevState) => ({
+        ...prevState,
+        layers: {
+          added: addedLayers?.length > 0,
+          loaded: true,
+        },
+        sources: {
+          added: addedSources?.length > 0,
+          loaded: true,
+        },
+      }));
+    }
+  }, [layers, map, mapStatus, sources]);
+
+  const addMapEvents = useCallback(() => {
+    const shouldAddClickEvent =
+      map &&
+      mapStatus.map.loaded &&
+      layers?.length > 0 &&
+      mapStatus.layers.added;
+    if (shouldAddClickEvent) {
+      map.on("click", (e) => {
+        const features = map.queryRenderedFeatures(e.point, {
           layers: ["clearwater-wells-circle"],
         });
         if (features.length > 0) {
@@ -81,50 +155,11 @@ const useMap = (ref, mapConfig) => {
           popUpRef.current
             .setLngLat(e.lngLat)
             .setDOMContent(popupNode)
-            .addTo(newMap);
+            .addTo(map);
         }
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ref, mapStatus.map.created, layers]);
-
-  /**
-   * Function responsible for adding sources and layers to the map
-   * There are a number of checks in place to ensure that sources
-   * only get added to the map once the map and sources are loaded and
-   * to ensure that layers are only added to the map once the layers are
-   * loaded and the associated sources are added to the map
-   */
-  const loadMapData = useCallback(() => {
-    const shouldAddData =
-      map && mapStatus.map.loaded && sources?.length > 0 && layers?.length > 0;
-
-    if (shouldAddData) {
-      sources.forEach((source) => {
-        const { id, ...rest } = source;
-        const sourceExists = !!map.getSource(id);
-        if (!sourceExists) map.addSource(id, rest);
-      });
-
-      layers.forEach((layer) => {
-        const { lreProperties, ...rest } = layer;
-        const layerExists = map.getLayer(layer.id);
-        if (!layerExists) map.addLayer(rest);
-      });
-
-      setMapStatus((prevState) => ({
-        ...prevState,
-        layers: {
-          added: true,
-          loaded: true,
-        },
-        sources: {
-          added: true,
-          loaded: true,
-        },
-      }));
-    }
-  }, [layers, map, mapStatus.map.loaded, setMapStatus, sources]);
+  }, [map, mapStatus.map.loaded, mapStatus.layers.added, layers]);
 
   /**
    * Handler used to apply user's filter values to the map instance
@@ -252,6 +287,10 @@ const useMap = (ref, mapConfig) => {
     loadMapData();
   }, [loadMapData]);
 
+  useEffect(() => {
+    addMapEvents();
+  }, [addMapEvents]);
+
   return {
     layers,
     map,
@@ -265,20 +304,6 @@ const useMap = (ref, mapConfig) => {
 
 const MapProvider = (props) => {
   const [map, setMap] = useState(null);
-  const [mapStatus, setMapStatus] = useState({
-    map: {
-      created: false,
-      loaded: false,
-    },
-    sources: {
-      loaded: false,
-      added: false,
-    },
-    layers: {
-      loaded: false,
-      added: false,
-    },
-  });
 
   // Fetch a list of sources to add to the map
   const { data: sourcesData } = useQuery(["Sources"], async () => {
@@ -316,14 +341,12 @@ const MapProvider = (props) => {
     () => ({
       layers,
       map,
-      mapStatus,
       setLayers,
       setMap,
-      setMapStatus,
       setSources,
       sources,
     }),
-    [layers, map, mapStatus, setMap, setMapStatus, sources]
+    [layers, map, setMap, sources]
   );
   return <MapContext.Provider value={value} {...props} />;
 };

@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-  ui_list_wells: model,
+  ui_list_wells_table,
   list_aquifers,
   list_aggregate_systems,
 } = require('../../core/models');
@@ -211,7 +211,7 @@ const toGeoJSON = ({data, geometryField}) => {
 
 router.get('/sources', async (req, res, next) => {
   try {
-    const wellsData = await model.findAll();
+    const wellsData = await ui_list_wells_table.findAll();
     const finalSources = sources.map((source) => {
       if (source.id === 'clearwater-wells') {
         return {
@@ -232,7 +232,7 @@ router.get('/sources', async (req, res, next) => {
 
 router.get('/sources/wells', async (req, res, next) => {
   try {
-    const wellsData = await model.findAll();
+    const wellsData = await ui_list_wells_table.findAll();
     res.json(wellsData);
   } catch (err) {
     next(err);
