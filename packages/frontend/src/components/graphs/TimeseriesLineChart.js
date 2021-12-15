@@ -29,6 +29,10 @@ const TimeseriesLineChart = forwardRef(
       theme,
       displayLegend = true,
       setIsGraphRefCurrent,
+      stacked = false,
+      maxTicksX = 8.3,
+      maxTicksYL = 11,
+      maxTicksYR = 11,
     },
     ref
   ) => {
@@ -116,6 +120,9 @@ const TimeseriesLineChart = forwardRef(
           display: displayLegend,
           reverse: reverseLegend,
           labels: {
+            filter: (legendItem) => {
+              return !legendItem.hidden;
+            },
             usePointStyle: true,
             color: lineColors.darkGray,
           },
@@ -166,9 +173,10 @@ const TimeseriesLineChart = forwardRef(
           },
           ticks: {
             color: lineColors.darkGray,
-            maxTicksLimit: 8.3,
+            maxTicksLimit: maxTicksX,
             source: data.labels?.length === 1 ? "labels" : "auto",
           },
+          stacked: stacked,
         },
 
         yL: {
@@ -182,6 +190,7 @@ const TimeseriesLineChart = forwardRef(
           },
           ticks: {
             color: lineColors.darkGray,
+            maxTicksLimit: maxTicksYL,
           },
           grid: {
             color: theme.palette.text.gridLines,
@@ -189,6 +198,7 @@ const TimeseriesLineChart = forwardRef(
             drawBorder: true,
             drawTicks: true,
           },
+          stacked: stacked,
         },
         yR: {
           position: "right",
@@ -200,6 +210,7 @@ const TimeseriesLineChart = forwardRef(
           },
           ticks: {
             color: lineColors.darkGray,
+            maxTicksLimit: maxTicksYR,
           },
           grid: {
             display: false,
