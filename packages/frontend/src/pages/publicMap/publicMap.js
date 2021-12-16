@@ -194,7 +194,7 @@ const PublicMap = () => {
         <FiltersSection>
           <Typography variant="subtitle1">Layer Styling</Typography>
           <FiltersContainer>
-            <FilterControl label="Color wells by Aquifer">
+            <FilterControl label={`Color wells by ${activeStyle.name}`}>
               <Typography variant="subtitle1" gutterBottom>
                 Color wells by
               </Typography>

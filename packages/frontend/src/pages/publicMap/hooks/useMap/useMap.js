@@ -168,6 +168,18 @@ const useMap = (ref, mapConfig) => {
       Object.entries(layer.paint).forEach(([ruleName, ruleValue]) => {
         map.setPaintProperty(layer.layerId, ruleName, ruleValue);
       });
+      setLayers((prevState) => {
+        return prevState.map((d) => {
+          if (d.id !== layer.layerId) return d;
+          return {
+            ...d,
+            paint: {
+              ...d.paint,
+              ...layer.paint,
+            },
+          };
+        });
+      });
     }
   };
 
