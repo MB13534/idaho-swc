@@ -10,7 +10,7 @@ import Search from "./filters/search";
 import FilterControl from "./filters/filterControl";
 import Filter from "./filters/filter";
 
-import { useMap } from "./mapContext";
+import { useMap } from "./hooks/useMap";
 import useFilters from "./useFilters";
 import useLayerStyles from "./useLayerStyles";
 import { INIT_MAP_CONFIG } from "./constants";

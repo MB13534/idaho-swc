@@ -1,20 +1,12 @@
-import React, {
-  useCallback,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from "react";
-import axios from "axios";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import ReactDOM from "react-dom";
-import { useQuery } from "react-query";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 
-import Popup from "./popup";
+import Popup from "../../popup";
+import useSources from "../useSources";
+import useLayers from "../useLayers";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
-
-const MapContext = React.createContext();
 
 /**
  * The `useMap` hook controls all of the Mapbox functionality. It controls
@@ -27,28 +19,13 @@ const MapContext = React.createContext();
  * see https://docs.mapbox.com/mapbox-gl-js/api/map/
  */
 const useMap = (ref, mapConfig) => {
-  const context = useContext(MapContext);
+  const [map, setMap] = useState(null);
+  const [dataAdded, setDataAdded] = useState(false);
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
-  const [mapStatus, setMapStatus] = useState({
-    map: {
-      created: false,
-      loaded: false,
-    },
-    sources: {
-      loaded: false,
-      added: false,
-    },
-    layers: {
-      loaded: false,
-      added: false,
-    },
-  });
 
-  if (!context) {
-    throw new Error(`useMap must be used within a MapProvider`);
-  }
-
-  const { layers, map, setLayers, setMap, sources } = context;
+  // Fetch a list of sources  and layers to add to the map
+  const { sources } = useSources();
+  const { layers, setLayers } = useLayers();
 
   /**
    * Function responsible for initializing the map
@@ -56,25 +33,20 @@ const useMap = (ref, mapConfig) => {
    * our application state and update the map status
    */
   const initializeMap = useCallback(() => {
-    if (ref?.current && !mapStatus.map.created) {
-      const newMap = new mapboxgl.Map({
+    if (ref?.current && !map?.loaded()) {
+      const mapInstance = new mapboxgl.Map({
         container: ref.current,
         ...mapConfig,
       });
-      newMap.on("load", () => {
-        setMap(newMap);
-        setMapStatus((s) => ({
-          ...s,
-          map: {
-            ...s.map,
-            created: true,
-            loaded: true,
-          },
-        }));
+
+      const nav = new mapboxgl.NavigationControl();
+      mapInstance.addControl(nav, "top-right");
+
+      mapInstance.on("load", () => {
+        setMap(mapInstance);
       });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [ref, mapStatus.map.created]);
+  }, [ref, mapConfig, map]);
 
   /**
    * Function responsible for adding sources and layers to the map
@@ -85,54 +57,30 @@ const useMap = (ref, mapConfig) => {
    */
   const loadMapData = useCallback(() => {
     const shouldAddData =
-      map &&
-      map.loaded() &&
-      !mapStatus.sources.added &&
-      !mapStatus.layers.added &&
-      sources?.length > 0 &&
-      layers?.length > 0;
+      map?.loaded() && sources?.length > 0 && layers?.length > 0 && !dataAdded;
 
     if (shouldAddData) {
-      const addedSources = sources.map((source) => {
+      sources.forEach((source) => {
         const { id, ...rest } = source;
         const sourceExists = !!map.getSource(id);
         if (!sourceExists) {
           map.addSource(id, rest);
-          return source;
         }
-        return null;
       });
-
-      const addedLayers = layers.map((layer) => {
+      layers.forEach((layer) => {
         const { lreProperties, ...rest } = layer;
         const layerExists = map.getLayer(layer.id);
         if (!layerExists) {
           map.addLayer(rest);
-          return layer;
         }
-        return null;
       });
-
-      setMapStatus((prevState) => ({
-        ...prevState,
-        layers: {
-          added: addedLayers?.length > 0,
-          loaded: true,
-        },
-        sources: {
-          added: addedSources?.length > 0,
-          loaded: true,
-        },
-      }));
+      setDataAdded(true);
     }
-  }, [layers, map, mapStatus, sources]);
+  }, [dataAdded, layers, map, sources]);
 
   const addMapEvents = useCallback(() => {
-    const shouldAddClickEvent =
-      map &&
-      mapStatus.map.loaded &&
-      layers?.length > 0 &&
-      mapStatus.layers.added;
+    const shouldAddClickEvent = map && layers?.length > 0 && dataAdded;
+
     if (shouldAddClickEvent) {
       map.on("click", (e) => {
         const features = map.queryRenderedFeatures(e.point, {
@@ -160,7 +108,7 @@ const useMap = (ref, mapConfig) => {
         }
       });
     }
-  }, [map, mapStatus.map.loaded, mapStatus.layers.added, layers]);
+  }, [map, layers, dataAdded]);
 
   /**
    * Handler used to apply user's filter values to the map instance
@@ -275,12 +223,9 @@ const useMap = (ref, mapConfig) => {
     }
   };
 
-  // initialize and load the map
+  // initialize and render the map
   useEffect(() => {
     initializeMap();
-    // cleanup function to remove map on unmount
-    return () => map?.remove();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [initializeMap]);
 
   // add all the sources and layers to the map
@@ -288,6 +233,7 @@ const useMap = (ref, mapConfig) => {
     loadMapData();
   }, [loadMapData]);
 
+  // wire up all map related events
   useEffect(() => {
     addMapEvents();
   }, [addMapEvents]);
@@ -295,7 +241,6 @@ const useMap = (ref, mapConfig) => {
   return {
     layers,
     map,
-    mapStatus,
     sources,
     updateLayerFilters,
     updateLayerStyles,
@@ -303,53 +248,4 @@ const useMap = (ref, mapConfig) => {
   };
 };
 
-const MapProvider = (props) => {
-  const [map, setMap] = useState(null);
-
-  // Fetch a list of sources to add to the map
-  const { data: sourcesData } = useQuery(["Sources"], async () => {
-    try {
-      return await axios.get(
-        `${process.env.REACT_APP_ENDPOINT}/api/public-map/sources`
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  });
-
-  // Fetch a list of layers to add to the map
-  const { data: layersData } = useQuery(["Layers"], async () => {
-    try {
-      return await axios.get(
-        `${process.env.REACT_APP_ENDPOINT}/api/public-map/layers`
-      );
-    } catch (err) {
-      console.error(err);
-    }
-  });
-  const [sources, setSources] = useState([]);
-  const [layers, setLayers] = useState([]);
-
-  useEffect(() => {
-    setSources(sourcesData?.data || []);
-  }, [sourcesData]);
-
-  useEffect(() => {
-    setLayers(layersData?.data || []);
-  }, [layersData]);
-
-  const value = React.useMemo(
-    () => ({
-      layers,
-      map,
-      setLayers,
-      setMap,
-      setSources,
-      sources,
-    }),
-    [layers, map, setMap, sources]
-  );
-  return <MapContext.Provider value={value} {...props} />;
-};
-
-export { MapProvider, useMap };
+export { useMap };
