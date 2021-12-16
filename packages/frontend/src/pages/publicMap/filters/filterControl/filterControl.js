@@ -1,5 +1,11 @@
 import { useRef, useState } from "react";
-import { ClickAwayListener, Button, Paper, Popper } from "@material-ui/core";
+import {
+  ClickAwayListener,
+  Fade,
+  Button,
+  Paper,
+  Popper,
+} from "@material-ui/core";
 import { styled } from "@material-ui/core/styles";
 
 const FilterAvatar = styled("span")(({ theme }) => ({
@@ -57,9 +63,13 @@ const FilterControl = ({ appliedCount, children, label }) => {
         style={{ zIndex: 2, border: "1px solid #ddd" }}
         transition
       >
-        <ClickAwayListener onClickAway={handleClose}>
-          <FilterContainer>{children}</FilterContainer>
-        </ClickAwayListener>
+        {({ TransitionProps }) => (
+          <ClickAwayListener onClickAway={handleClose}>
+            <Fade {...TransitionProps} timeout={350}>
+              <FilterContainer>{children}</FilterContainer>
+            </Fade>
+          </ClickAwayListener>
+        )}
       </Popper>
     </div>
   );

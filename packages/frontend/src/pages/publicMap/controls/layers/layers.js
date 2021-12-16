@@ -1,6 +1,7 @@
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import {
   Box,
+  Button,
   Checkbox,
   IconButton,
   List,
@@ -21,14 +22,32 @@ const Container = styled(Paper)`
   left: 15px;
   position: absolute;
   top: 15px;
-  width: 400px;
+  transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  transition-duration: 300ms;
+  width: ${(props) => (props.open ? "300px" : "200px")};
   z-index: 1;
+`;
+
+const ControlHeader = styled.div`
+  background-color: #fafafa;
+  border-bottom: 1px solid #dddddd;
+  display: flex;
+  justify-content: space-between;
+  position: fixed;
+  transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  transition-duration: 300ms;
+  width: ${(props) => (props.open ? "300px" : "200px")};
 `;
 
 const LayersInnerContainer = styled.div`
   margin-top: 43px;
   overflow-y: auto;
   max-height: 500px;
+  min-height: 0px;
+  overflow: hidden;
+  height: ${(props) => props.height}px;
+  transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
+  transition-duration: 300ms;
 `;
 
 const getLegendOptions = (item) => {
@@ -79,7 +98,15 @@ const LayerLegend = ({ item, open }) => {
 };
 
 const LayersControl = ({ items, onLayerChange }) => {
+  const [controlOpen, setControlOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState(["Clearwater Wells"]);
+  const childRef = useRef(null);
+  const [childHeight, setChildHeight] = useState(0);
+
+  useEffect(() => {
+    const childHeight = controlOpen ? childRef?.current?.clientHeight : 0;
+    setChildHeight(childHeight);
+  }, [childRef, controlOpen, expandedItems]);
 
   /**
    * Generate a unique list of items to display in the layer
@@ -132,20 +159,22 @@ const LayersControl = ({ items, onLayerChange }) => {
   };
 
   return (
-    <Container>
-      <Box
-        alignItems="center"
-        bgcolor="#fafafa"
-        borderBottom="1px solid #dddddd"
-        display="flex"
-        gridColumnGap={8}
-        p={2}
-        position="fixed"
-        width={400}
-      >
-        <LayersIcon />
-        <Typography variant="subtitle1">Layers</Typography>
-      </Box>
+    <Container open={controlOpen}>
+      <ControlHeader open={controlOpen}>
+        <Box alignItems="center" display="flex" gridColumnGap={8} p={2}>
+          <LayersIcon />
+          <Typography variant="subtitle1">Layers</Typography>
+        </Box>
+        <Box m={2}>
+          <Button
+            size="small"
+            variant="outlined"
+            onClick={() => setControlOpen((s) => !s)}
+          >
+            {controlOpen ? "Hide" : "Show"}
+          </Button>
+        </Box>
+      </ControlHeader>
       {/* <Box p={2}>
         <TextField
           InputProps={{
@@ -162,39 +191,42 @@ const LayersControl = ({ items, onLayerChange }) => {
           fullWidth
         />
       </Box> */}
-      <LayersInnerContainer>
-        <List dense>
-          {uniqueItems?.length === 0 && (
-            <Box textAlign="center">
-              <Typography variant="body1">No layers found</Typography>
-            </Box>
-          )}
-          {uniqueItems?.map((item) => {
-            const open = expandedItems.includes(item?.name);
-            return (
-              <Box key={item?.name}>
-                <ListItem onClick={() => handleVisibilityChange(item)}>
-                  <Checkbox
-                    edge="start"
-                    checked={item?.layout?.visibility === "visible"}
-                    tabIndex={-1}
-                    disableRipple
-                    inputProps={{ "aria-labelledby": "test" }}
-                  />
-                  <ListItemText primary={item?.name} />
-                  <ListItemSecondaryAction
-                    onClick={() => handleExpandItem(item?.name)}
-                  >
-                    <IconButton edge="end" aria-label="delete">
-                      <LayerLegendIcon open={open} />
-                    </IconButton>
-                  </ListItemSecondaryAction>
-                </ListItem>
-                <LayerLegend open={open} item={item} />
+
+      <LayersInnerContainer open={controlOpen} height={childHeight}>
+        <Box display="flex" flexDirection="column" ref={childRef}>
+          <List dense>
+            {uniqueItems?.length === 0 && (
+              <Box textAlign="center">
+                <Typography variant="body1">No layers found</Typography>
               </Box>
-            );
-          })}
-        </List>
+            )}
+            {uniqueItems?.map((item) => {
+              const open = expandedItems.includes(item?.name);
+              return (
+                <Box key={item?.name}>
+                  <ListItem onClick={() => handleVisibilityChange(item)}>
+                    <Checkbox
+                      edge="start"
+                      checked={item?.layout?.visibility === "visible"}
+                      tabIndex={-1}
+                      disableRipple
+                      inputProps={{ "aria-labelledby": "test" }}
+                    />
+                    <ListItemText primary={item?.name} />
+                    <ListItemSecondaryAction
+                      onClick={() => handleExpandItem(item?.name)}
+                    >
+                      <IconButton edge="end" aria-label="delete">
+                        <LayerLegendIcon open={open} />
+                      </IconButton>
+                    </ListItemSecondaryAction>
+                  </ListItem>
+                  <LayerLegend open={open} item={item} />
+                </Box>
+              );
+            })}
+          </List>
+        </Box>
       </LayersInnerContainer>
     </Container>
   );
