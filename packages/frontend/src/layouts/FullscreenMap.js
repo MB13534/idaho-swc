@@ -2,8 +2,6 @@ import React from "react";
 import styled, { createGlobalStyle } from "styled-components/macro";
 import { CssBaseline } from "@material-ui/core";
 
-import { MapProvider } from "../pages/publicMap/mapContext";
-
 const GlobalStyle = createGlobalStyle`
   html,
   body,
@@ -49,9 +47,7 @@ const FullscreenMap = ({ children }) => {
     <Root>
       <CssBaseline />
       <GlobalStyle />
-      <MapProvider>
-        <AppContent>{children}</AppContent>
-      </MapProvider>
+      <AppContent>{children}</AppContent>
     </Root>
   );
 };

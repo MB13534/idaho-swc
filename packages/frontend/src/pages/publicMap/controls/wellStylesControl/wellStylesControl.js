@@ -7,6 +7,7 @@ const WellStylesControl = ({ onChange, options, value }) => {
         const active = value === option.value;
         return (
           <Button
+            key={option.value}
             color={active ? "primary" : "inherit"}
             onClick={() => onChange(option.value)}
             variant={active ? "contained" : "outlined"}

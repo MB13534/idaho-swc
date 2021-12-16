@@ -4,15 +4,15 @@ import { Box, Paper, Typography } from "@material-ui/core";
 
 import AppBar from "../../components/AppBar";
 import Map from "./map";
-import LayersControl from "./controls/layers";
-import WellStylesControl from "./controls/wellStyles";
+import LayersControl from "./controls/layersControl";
+import WellStylesControl from "./controls/wellStylesControl";
 import Search from "./filters/search";
 import FilterControl from "./filters/filterControl";
 import Filter from "./filters/filter";
 
-import { useMap } from "./mapContext";
-import useFilters from "./useFilters";
-import useLayerStyles from "./useLayerStyles";
+import { useMap } from "./hooks/useMap";
+import useFilters from "./hooks/useFilters";
+import useLayerStyles from "./hooks/useLayerStyles";
 import { INIT_MAP_CONFIG } from "./constants";
 
 const FiltersBar = styled(Paper)`
@@ -194,7 +194,7 @@ const PublicMap = () => {
         <FiltersSection>
           <Typography variant="subtitle1">Layer Styling</Typography>
           <FiltersContainer>
-            <FilterControl label="Color wells by Aquifer">
+            <FilterControl label={`Color wells by ${activeStyle.name}`}>
               <Typography variant="subtitle1" gutterBottom>
                 Color wells by
               </Typography>
