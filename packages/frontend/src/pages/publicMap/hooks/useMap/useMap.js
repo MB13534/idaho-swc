@@ -5,6 +5,12 @@ import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-load
 import Popup from "../../popup";
 import useSources from "../useSources";
 import useLayers from "../useLayers";
+import { MapLogger } from "./mapUtils";
+
+const mapLogger = new MapLogger({
+  enabled: process.env.NODE_ENV === "development",
+  prefix: "Public Map",
+});
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -21,6 +27,7 @@ mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 const useMap = (ref, mapConfig) => {
   const [map, setMap] = useState(null);
   const [dataAdded, setDataAdded] = useState(false);
+  const [eventsRegistered, setEventsRegistered] = useState(false);
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
 
   // Fetch a list of sources  and layers to add to the map
@@ -44,6 +51,7 @@ const useMap = (ref, mapConfig) => {
 
       mapInstance.on("load", () => {
         setMap(mapInstance);
+        mapLogger.log("Map loaded");
       });
     }
   }, [ref, mapConfig, map]);
@@ -67,6 +75,9 @@ const useMap = (ref, mapConfig) => {
           map.addSource(id, rest);
         }
       });
+
+      mapLogger.log("Sources added to map");
+
       layers.forEach((layer) => {
         const { lreProperties, ...rest } = layer;
         const layerExists = map.getLayer(layer.id);
@@ -74,6 +85,9 @@ const useMap = (ref, mapConfig) => {
           map.addLayer(rest);
         }
       });
+
+      mapLogger.log("Layers added to map");
+
       setDataAdded(true);
     }
   }, [dataAdded, layers, map, sources]);
@@ -81,7 +95,7 @@ const useMap = (ref, mapConfig) => {
   const addMapEvents = useCallback(() => {
     const shouldAddClickEvent = map && layers?.length > 0 && dataAdded;
 
-    if (shouldAddClickEvent) {
+    if (shouldAddClickEvent && !eventsRegistered) {
       map.on("click", (e) => {
         const features = map.queryRenderedFeatures(e.point, {
           layers: ["clearwater-wells-circle"],
@@ -107,8 +121,10 @@ const useMap = (ref, mapConfig) => {
             .addTo(map);
         }
       });
+      setEventsRegistered(true);
+      mapLogger.log("Event handlers attached to map");
     }
-  }, [map, layers, dataAdded]);
+  }, [map, layers, dataAdded, eventsRegistered]);
 
   /**
    * Handler used to apply user's filter values to the map instance
@@ -152,6 +168,7 @@ const useMap = (ref, mapConfig) => {
         }
       });
       map.setFilter("clearwater-wells-circle", mapFilterExpression);
+      mapLogger.log("Filters updated on the clearwater-wells-circle layer");
     }
   };
 
@@ -180,6 +197,9 @@ const useMap = (ref, mapConfig) => {
           };
         });
       });
+      mapLogger.log(
+        "Paint styles updated on the clearwater-wells-circle layer"
+      );
     }
   };
 
@@ -232,6 +252,9 @@ const useMap = (ref, mapConfig) => {
         return layer;
       });
       setLayers(updatedLayers);
+      mapLogger.log(
+        `Visibility set to ${visible ? "visible" : "none"} for the ${id} layer`
+      );
     }
   };
 

@@ -21,22 +21,26 @@ const Container = styled(Paper)`
   box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
   left: 15px;
   position: absolute;
-  top: 15px;
+  top: 10px;
   transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   transition-duration: 300ms;
-  width: ${(props) => (props.open ? "300px" : "200px")};
+  width: ${(props) => (props.open ? "300px" : "40px")};
   z-index: 1;
 `;
 
 const ControlHeader = styled.div`
+  align-items: center;
   background-color: #fafafa;
-  border-bottom: 1px solid #dddddd;
+  border-bottom: ${(props) =>
+    props.open ? "1px solid #dddddd" : "1px solid transparent"};
+  cursor: pointer;
   display: flex;
   justify-content: space-between;
+  height: 42px;
   position: fixed;
   transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   transition-duration: 300ms;
-  width: ${(props) => (props.open ? "300px" : "200px")};
+  width: ${(props) => (props.open ? "300px" : "40px")};
 `;
 
 const LayersInnerContainer = styled.div`
@@ -50,27 +54,67 @@ const LayersInnerContainer = styled.div`
   transition-duration: 300ms;
 `;
 
-const getLegendOptions = (item) => {
-  const colorProperty = `${item?.type}-color`;
-  const color = item?.paint?.[colorProperty];
+/**
+ * Utility used to translate a Mapbox paint style
+ * into an array of legend items
+ * Currently only setup to support a basic fill color and
+ * the 'match' flavor of Mapbox Expressions/data driven styling
+ * Reference https://docs.mapbox.com/mapbox-gl-js/style-spec/expressions/#match
+ * @param {object} layer Mapbox layer representation
+ * @returns
+ */
+const getLegendOptions = (layer) => {
+  /**
+   * Get the proper object property and color associated with the layer
+   * based on the layer type
+   */
+  const colorProperty = `${layer?.type}-color`;
+  const color = layer?.paint?.[colorProperty];
+
+  /**
+   * If it is just a standard color rule (i.e. no data driven styling), just
+   * grab the color,
+   * Otherwise, if we are using Mapbox expressions/data-driven styling we need
+   * to parse the paint property and convert it into an array of legend
+   * items
+   */
   if (!Array.isArray(color)) {
-    return [{ color, text: item.name }];
+    return [{ color, text: layer.name }];
   }
-  const newColor = [...color];
-  newColor.splice(0, 2);
-  newColor.splice(newColor.length - 1, 1);
-  const remappedColors = newColor
+
+  const colorsExpression = [...color];
+
+  // remove some unused parts of the expression
+  colorsExpression.splice(0, 2);
+
+  // grab the fallback value (i.e. what is used if a feature doesn't match any category)
+  const fallbackValue = colorsExpression.splice(colorsExpression.length - 1, 1);
+
+  /**
+   * Loop through the mapbox expression and pull out the color and the
+   * category it is associated with
+   * The expression that is being parsed is in a format like
+   * [["Industrial"], "#1f78b4", ["Ag/Irrigation"],"#b2df8a"]
+   * so even odd indexes in the array represent categories and even number
+   * indexes represent the associated color
+   * As a result we have to loop through the expression and merge
+   * two items into a single one
+   */
+  const legendOptions = colorsExpression
     .map((value, index) => {
-      if (index < newColor.length - 1 && index % 2 === 0) {
+      if (index < colorsExpression.length - 1 && index % 2 === 0) {
         return {
-          color: newColor[index + 1],
+          color: colorsExpression[index + 1],
           text: Array.isArray(value) ? value?.join(", ") : value,
         };
       }
       return null;
     })
     .filter((d) => d !== null);
-  return remappedColors;
+
+  // Add the fallback value to the end of array
+  legendOptions.push({ color: fallbackValue, text: "N/A Value" });
+  return legendOptions;
 };
 
 const LegendSymbol = ({ color }) => (
@@ -97,12 +141,20 @@ const LayerLegend = ({ item, open }) => {
   );
 };
 
+/**
+ * TODOS
+ * [] Add support for layers search
+ */
 const LayersControl = ({ items, onLayerChange }) => {
   const [controlOpen, setControlOpen] = useState(false);
   const [expandedItems, setExpandedItems] = useState(["Clearwater Wells"]);
   const childRef = useRef(null);
   const [childHeight, setChildHeight] = useState(0);
 
+  /**
+   * This logic is used to properly animate the height changes
+   * when a user shows/hides the layer control
+   */
   useEffect(() => {
     const childHeight = controlOpen ? childRef?.current?.clientHeight : 0;
     setChildHeight(childHeight);
@@ -145,6 +197,10 @@ const LayersControl = ({ items, onLayerChange }) => {
     });
   };
 
+  /**
+   * Handler used to control the expanded/collapsed state of the
+   * legend for a layer
+   */
   const handleExpandItem = (value) => {
     setExpandedItems((prevState) => {
       const newValues = [...prevState];
@@ -161,19 +217,27 @@ const LayersControl = ({ items, onLayerChange }) => {
   return (
     <Container open={controlOpen}>
       <ControlHeader open={controlOpen}>
-        <Box alignItems="center" display="flex" gridColumnGap={8} p={2}>
+        <Box
+          alignItems="center"
+          display="flex"
+          gridColumnGap={8}
+          p={2}
+          onClick={() => setControlOpen((s) => !s)}
+        >
           <LayersIcon />
-          <Typography variant="subtitle1">Layers</Typography>
+          {controlOpen && <Typography variant="subtitle1">Layers</Typography>}
         </Box>
-        <Box m={2}>
-          <Button
-            size="small"
-            variant="outlined"
-            onClick={() => setControlOpen((s) => !s)}
-          >
-            {controlOpen ? "Hide" : "Show"}
-          </Button>
-        </Box>
+        {controlOpen && (
+          <Box m={2}>
+            <Button
+              size="small"
+              variant="outlined"
+              onClick={() => setControlOpen((s) => !s)}
+            >
+              {controlOpen ? "Hide" : "Show"}
+            </Button>
+          </Box>
+        )}
       </ControlHeader>
       {/* <Box p={2}>
         <TextField
@@ -202,17 +266,23 @@ const LayersControl = ({ items, onLayerChange }) => {
             )}
             {uniqueItems?.map((item) => {
               const open = expandedItems.includes(item?.name);
+              const layerVisible = item?.layout?.visibility === "visible";
               return (
                 <Box key={item?.name}>
                   <ListItem onClick={() => handleVisibilityChange(item)}>
                     <Checkbox
                       edge="start"
-                      checked={item?.layout?.visibility === "visible"}
+                      checked={layerVisible}
                       tabIndex={-1}
                       disableRipple
                       inputProps={{ "aria-labelledby": "test" }}
                     />
-                    <ListItemText primary={item?.name} />
+                    <ListItemText
+                      primary={item?.name}
+                      primaryTypographyProps={{
+                        color: layerVisible ? "textPrimary" : "textSecondary",
+                      }}
+                    />
                     <ListItemSecondaryAction
                       onClick={() => handleExpandItem(item?.name)}
                     >

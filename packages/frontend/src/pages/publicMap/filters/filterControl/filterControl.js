@@ -50,7 +50,6 @@ const FilterControl = ({ appliedCount, children, label }) => {
         }
         onClick={() => {
           setOpen((s) => !s);
-          // setHasFilterBeenOpened(true);
         }}
         ref={buttonRef}
       >
