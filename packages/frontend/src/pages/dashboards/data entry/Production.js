@@ -43,6 +43,7 @@ import {
   renderStatusChip,
   firstOfYear,
   lastOfYear,
+  lastOfJanuary,
 } from "../../../utils";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
@@ -138,8 +139,8 @@ function Production() {
 
   //date filter defaults
   const defaultFilterValues = {
-    startDate: firstOfYear,
-    endDate: new Date(),
+    startDate: lastOfJanuary,
+    endDate: null,
   };
   const [filterValues, setFilterValues] = useState(defaultFilterValues);
   const changeFilterValues = (name, value) => {
@@ -383,7 +384,7 @@ function Production() {
                 new Date(item.report_year, item.report_month) >=
                   filterValues.startDate &&
                 new Date(item.report_year, item.report_month - 1) <=
-                  filterValues.endDate
+                  (filterValues.endDate || new Date(3000, 0, 1))
             );
             setCurrentSelectedEditTableData(dateFilteredEditTableResults);
           } else {
@@ -409,7 +410,7 @@ function Production() {
           new Date(item.report_year, item.report_month) >=
             filterValues.startDate &&
           new Date(item.report_year, item.report_month - 1) <=
-            filterValues.endDate
+            (filterValues.endDate || new Date(3000, 0, 1))
       );
       setCurrentSelectedEditTableData(dateFilteredEditTableResults);
     }
@@ -423,7 +424,7 @@ function Production() {
       if (radioValue === "has_production") {
         graphData = {
           labels: currentSelectedTimeseriesData.map(
-            (item) => new Date(item.report_year, item.report_month)
+            (item) => new Date(item.report_date)
           ),
           datasets: [
             {
@@ -890,7 +891,7 @@ function Production() {
                         color="primary"
                         onClick={() => {
                           changeFilterValues("startDate", null);
-                          changeFilterValues("endDate", new Date());
+                          changeFilterValues("endDate", null);
                         }}
                       >
                         Period of Record

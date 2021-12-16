@@ -46,7 +46,6 @@ import { CrudProvider } from "../CrudProvider";
 import CRUD from "../pages/docs/CRUD";
 import Deploy from "../pages/docs/Deploy";
 import UiPermitsExpiringsReport from "../pages/dataAccess/reports/UiPermitsExpiringsReport";
-import FullMap from "../components/map/FullMap";
 
 // TODO MAYBE LAZY IMPORT
 import PublicMap from "../pages/publicMap";
@@ -166,11 +165,11 @@ const reportsRoutes = {
 };
 
 const mapRoutes = {
+  link: "external",
   id: "Map",
   icon: <Map />,
-  path: "/data-access/map",
+  path: "/public-map",
   name: "Map",
-  component: FullMap,
 };
 
 const publicMapRoutes = {

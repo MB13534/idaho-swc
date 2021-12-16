@@ -386,6 +386,20 @@ const Sidebar = ({
                           })}
                         </Collapse>
                       </React.Fragment>
+                    ) : category.link === "external" ? (
+                      <SidebarCategory
+                        isCollapsable={false}
+                        name={category.id}
+                        to={category.path}
+                        activeClassName="active"
+                        component={NavLink}
+                        icon={category.icon}
+                        exact
+                        button
+                        badge={category.badge}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                      />
                     ) : category.icon ? (
                       <SidebarCategory
                         isCollapsable={false}

@@ -41,6 +41,7 @@ import {
   lastOfYear,
   lineColors,
   renderStatusChip,
+  lastOfJanuary,
 } from "../../../utils";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
@@ -135,8 +136,8 @@ function Default() {
 
   //date filter defaults
   const defaultFilterValues = {
-    startDate: firstOfYear,
-    endDate: new Date(),
+    startDate: lastOfJanuary,
+    endDate: null,
   };
   const [filterValues, setFilterValues] = useState(defaultFilterValues);
   const changeFilterValues = (name, value) => {
@@ -380,7 +381,7 @@ function Default() {
       if (radioValue === "has_production") {
         graphData = {
           labels: currentSelectedTimeseriesData.map(
-            (item) => new Date(item.report_year, item.report_month)
+            (item) => new Date(item.report_date)
           ),
           datasets: [
             {
@@ -929,7 +930,7 @@ function Default() {
                         color="primary"
                         onClick={() => {
                           changeFilterValues("startDate", null);
-                          changeFilterValues("endDate", new Date());
+                          changeFilterValues("endDate", null);
                         }}
                       >
                         Period of Record

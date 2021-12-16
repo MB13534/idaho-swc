@@ -175,4 +175,12 @@ export const applyInflectorOverrides = (str) => {
 
 export const firstOfYear = new Date(new Date().getFullYear(), 0, 1);
 
+export const lastOfJanuary = new Date(new Date().getFullYear(), 1, 0);
+
+export const lastOfCurrentMonth = new Date(
+  new Date().getFullYear(),
+  new Date().getMonth() + 1,
+  0
+);
+
 export const lastOfYear = new Date(new Date().getFullYear(), 11, 31);
