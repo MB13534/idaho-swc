@@ -465,6 +465,7 @@ function Default() {
               borderWidth: 2,
               spanGaps: true,
               hidden: false,
+              barPercentage: 0.2,
             },
             {
               label: "Operational Permit Pumping (af)",
@@ -479,6 +480,7 @@ function Default() {
               borderWidth: 2,
               spanGaps: true,
               hidden: true,
+              barPercentage: 0.2,
             },
             {
               label: "Historical Pumping (g)",
@@ -493,6 +495,7 @@ function Default() {
               borderWidth: 2,
               spanGaps: true,
               hidden: false,
+              barPercentage: 0.2,
             },
             {
               label: "Historical Pumping (af)",
@@ -507,6 +510,7 @@ function Default() {
               borderWidth: 2,
               spanGaps: true,
               hidden: true,
+              barPercentage: 0.2,
             },
           ],
         };
@@ -1082,9 +1086,15 @@ function Default() {
                           displayLegend={radioValue === "has_production"}
                           setIsGraphRefCurrent={setIsGraphRefCurrent}
                           stacked={true}
+                          xLabelUnit={
+                            radioValue === "has_production" ? "month" : "day"
+                          }
                           maxTicksX={12}
                           maxTicksYL={6}
                           maxTicksYR={5}
+                          align={
+                            radioValue === "has_production" ? "start" : "center"
+                          }
                         />
                       </TimeseriesWrapper>
                     </TimeseriesContainer>

@@ -33,6 +33,7 @@ const TimeseriesLineChart = forwardRef(
       maxTicksX = 8.3,
       maxTicksYL = 11,
       maxTicksYR = 11,
+      align = "center",
     },
     ref
   ) => {
@@ -158,7 +159,7 @@ const TimeseriesLineChart = forwardRef(
       scales: {
         x: {
           type: "time",
-          offset: true,
+          offset: false,
           min:
             filterValues.previousDays === ""
               ? null
@@ -185,10 +186,10 @@ const TimeseriesLineChart = forwardRef(
             color: lineColors.darkGray,
             maxTicksLimit: maxTicksX,
             source: data.labels?.length === 1 ? "labels" : "auto",
+            align: align,
           },
           stacked: stacked,
         },
-
         yL: {
           position: "left",
           reverse: yLReverse,

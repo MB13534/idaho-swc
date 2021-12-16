@@ -327,7 +327,7 @@ function Production() {
     useState(null);
 
   useEffect(() => {
-    if (currentSelectedPoint && radioValue !== "all") {
+    if (currentSelectedPoint) {
       async function send() {
         try {
           const token = await getAccessTokenSilently();
@@ -357,7 +357,7 @@ function Production() {
       }
       send();
     }
-  }, [currentSelectedPoint]); // eslint-disable-line
+  }, [currentSelectedPoint, currentSelectedEditTableData]); // eslint-disable-line
 
   const [unfilteredEditTableResults, setunfilteredEditTableResults] =
     useState(null);
@@ -508,6 +508,7 @@ function Production() {
               borderWidth: 2,
               spanGaps: true,
               hidden: false,
+              barPercentage: 0.2,
             },
             {
               label: "Operational Permit Pumping (af)",
@@ -522,6 +523,7 @@ function Production() {
               borderWidth: 2,
               spanGaps: true,
               hidden: true,
+              barPercentage: 0.2,
             },
             {
               label: "Historical Pumping (g)",
@@ -536,6 +538,7 @@ function Production() {
               borderWidth: 2,
               spanGaps: true,
               hidden: false,
+              barPercentage: 0.2,
             },
             {
               label: "Historical Pumping (af)",
@@ -550,6 +553,7 @@ function Production() {
               borderWidth: 2,
               spanGaps: true,
               hidden: true,
+              barPercentage: 0.2,
             },
           ],
         };
@@ -1060,9 +1064,11 @@ function Production() {
                           displayLegend={true}
                           setIsGraphRefCurrent={setIsGraphRefCurrent}
                           stacked={true}
+                          xLabelUnit="month"
                           maxTicksX={12}
                           maxTicksYL={6}
                           maxTicksYR={5}
+                          align="start"
                         />
                       </TimeseriesWrapper>
                     </TimeseriesContainer>

@@ -62,7 +62,7 @@ const DataAdminTable = ({
         );
         updateHandler((prevState) => {
           let data = [...prevState];
-          data.push(addedRec.data);
+          data.unshift(addedRec.data);
           return data;
         });
         handleRefresh();
