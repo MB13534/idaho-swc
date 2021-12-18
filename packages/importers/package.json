@@ -1,0 +1,19 @@
+{
+  "name": "importers",
+  "version": "0.0.0",
+  "description": "Package that houses all importers and extract, transform, and load (ETL) logic for bringing data into the Clearwater platform",
+  "main": "index.js",
+  "author": "tylerben <tylerben14@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "scripts": {
+    "start": "swc src -d build"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@mapbox/mapbox-sdk": "^0.13.2",
+    "axios": "^0.24.0",
+    "dotenv": "^10.0.0",
+    "geojson-stream": "^0.1.0"
+  }
+}
