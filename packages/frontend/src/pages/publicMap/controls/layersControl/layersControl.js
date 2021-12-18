@@ -146,7 +146,7 @@ const LayerLegend = ({ item, open }) => {
  * [] Add support for layers search
  */
 const LayersControl = ({ items, onLayerChange }) => {
-  const [controlOpen, setControlOpen] = useState(false);
+  const [controlOpen, setControlOpen] = useState(true);
   const [expandedItems, setExpandedItems] = useState(["Clearwater Wells"]);
   const childRef = useRef(null);
   const [childHeight, setChildHeight] = useState(0);
@@ -158,7 +158,7 @@ const LayersControl = ({ items, onLayerChange }) => {
   useEffect(() => {
     const childHeight = controlOpen ? childRef?.current?.clientHeight : 0;
     setChildHeight(childHeight);
-  }, [childRef, controlOpen, expandedItems]);
+  }, [childRef, controlOpen, expandedItems, items]);
 
   /**
    * Generate a unique list of items to display in the layer
