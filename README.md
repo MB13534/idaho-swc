@@ -1,22 +1,18 @@
 <div align="center">
 
-  ![LRE Water](https://user-images.githubusercontent.com/366737/131208262-d428e49f-3757-474f-ba3c-a12ca98b3215.png)
+![LRE Water](https://user-images.githubusercontent.com/366737/131208262-d428e49f-3757-474f-ba3c-a12ca98b3215.png)
 
   <h1 align="center">Unified Platform</h1>
   <p align="center">
 
-  [![Dependency Status](https://img.shields.io/david/dev/lre-water/up?label=deps)](https://david-dm.org/lre-water/up)
-  [![Dependency Status](https://img.shields.io/david/dev/lre-water/up?label=devDeps)](https://david-dm.org/lre-water/up?type=dev)
+[![Dependency Status](https://img.shields.io/david/dev/lre-water/up?label=deps)](https://david-dm.org/lre-water/up) [![Dependency Status](https://img.shields.io/david/dev/lre-water/up?label=devDeps)](https://david-dm.org/lre-water/up?type=dev)
 
   </p>
 </div>
 
 ## Introduction
 
-LRE Water's Unified Platform (UP) is a modern CMS and Dashboard Starter
-Kit built with React, Node.js, and Material UI. UP provides a standard
-and robust starting point for any project requiring modern content
-management tools with a responsive, mobile-first design.
+LRE Water's Unified Platform (UP) is a modern CMS and Dashboard Starter Kit built with React, Node.js, and Material UI. UP provides a standard and robust starting point for any project requiring modern content management tools with a responsive, mobile-first design.
 
 ## Installation
 
@@ -24,7 +20,7 @@ It is recommended that you fork the project on GitHub so that you can have a rep
 
 To fork, visit https://github.com/lre-water/up and click the **Fork** button in the upper-right corner.
 
-After forking, use the following commands to clone your fork and install the starter kit. Be sure to replace *yourusername*, *yourforkname*, and *yourappname* with the appropriate values.
+After forking, use the following commands to clone your fork and install the starter kit. Be sure to replace _yourusername_, _yourforkname_, and _yourappname_ with the appropriate values.
 
 ```sh
 git clone https://github.com/yourusername/yourforkname yourappname
@@ -68,8 +64,10 @@ $ yarn commit          > Commit the code using a wizard
 
 - [Slack](https://lrewits.slack.com/archives/C02C386BBAT)
 - [Documentation](https://lre-water.github.io/up)
+  - [Public map documentation](./documentation/publicMap.md)
 - [Private Issue Tracker](https://dougkulak.atlassian.net/browse/LRE)
 - [Public Issue Tracker](https://github.com/lre-water/up/issues)
 
 ## License
+
 Distributed under the [MIT](./LICENSE) license.

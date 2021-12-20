@@ -2,77 +2,24 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useQuery } from "react-query";
 
-const layerId = "clearwater-wells-circle";
-const initFilterValues = {
-  aquifers: {
-    layerId,
-    layerFieldName: "source_aquifer",
-    options: [],
-    type: "multi-select",
-    value: [],
-  },
-  primaryUses: {
-    layerId,
-    layerFieldName: "primary_use",
-    options: [],
-    type: "multi-select",
-    value: [],
-  },
-  wellStatus: {
-    layerId,
-    layerFieldName: "well_status",
-    options: [],
-    type: "multi-select",
-    value: [],
-  },
-  aggregatedSystems: {
-    layerId,
-    layerFieldName: "agg_system_name",
-    options: [],
-    type: "multi-select",
-    value: [],
-  },
-  hasProduction: {
-    layerId,
-    layerFieldName: "has_production",
-    type: "boolean",
-    value: false,
-  },
-  hasWaterLevels: {
-    layerId,
-    layerFieldName: "has_waterlevels",
-    type: "boolean",
-    value: false,
-  },
-  hasWQData: {
-    layerId,
-    layerFieldName: "has_wqdata",
-    type: "boolean",
-    value: false,
-  },
-  isPermitted: {
-    layerId,
-    layerFieldName: "is_permitted",
-    type: "boolean",
-    value: false,
-  },
-  isExempt: {
-    layerId,
-    layerFieldName: "is_exempt",
-    type: "boolean",
-    value: true,
-  },
-  isMonitoring: {
-    layerId,
-    layerFieldName: "is_monitoring",
-    type: "boolean",
-    value: false,
-  },
-};
+import { INIT_FILTER_VALUES } from "../../constants";
 
+/**
+ * Custom hook responsible for controlling the state related to the
+ * Map filter controls
+ * Accepts one argument, `onFilterChange` that is a callback that
+ * can be run whenever a filter value changes
+ */
 const useFilters = ({ onFilterChange }) => {
-  const [filterValues, setFilterValues] = useState(initFilterValues);
+  const [filterValues, setFilterValues] = useState(INIT_FILTER_VALUES);
 
+  /**
+   * Hit the API and get a list of options for each filter
+   * The endpoint returns an object where each key/value pair
+   * represents the options for a specific filter
+   * This approach allows us to make a single API request instead
+   * of multiple
+   */
   const { data } = useQuery(["filterData"], async () => {
     try {
       const response = await axios.get(
@@ -84,6 +31,10 @@ const useFilters = ({ onFilterChange }) => {
     }
   });
 
+  /**
+   * Set the options and initial value for each filter based on
+   * what is returned from the DB
+   */
   useEffect(() => {
     setFilterValues((prevState) => ({
       ...prevState,
