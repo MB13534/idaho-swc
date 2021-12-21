@@ -28,6 +28,11 @@ const sources = [
     type: 'vector',
     url: 'mapbox://txclearwater.8v5dou5d',
   },
+  {
+    id: 'bell-parcels',
+    type: 'vector',
+    url: 'mapbox://txclearwater.6b5qr6h3',
+  },
 ];
 
 const layers = [
@@ -118,6 +123,41 @@ const layers = [
     },
     lreProperties: {
       layerGroup: 'ccn-water-gcs',
+    },
+  },
+  {
+    id: 'bell-parcels-line',
+    name: 'Bell Parcels',
+    type: 'line',
+    source: 'bell-parcels',
+    'source-layer': 'output-5axzun',
+    paint: {
+      'line-color': '#9a184e',
+    },
+    layout: {
+      visibility: 'visible',
+    },
+    lreProperties: {
+      layerGroup: 'bell-parcels',
+    },
+  },
+  {
+    id: 'bell-parcels-symbol',
+    name: 'Bell Parcels',
+    type: 'symbol',
+    source: 'bell-parcels',
+    'source-layer': 'output-5axzun',
+    paint: {
+      // 'line-color': '#444',
+      'text-color': '#9a184e',
+    },
+    layout: {
+      'text-field': ['get', 'PROP_ID'],
+      'text-size': 14,
+      visibility: 'visible',
+    },
+    lreProperties: {
+      layerGroup: 'bell-parcels',
     },
   },
   {
