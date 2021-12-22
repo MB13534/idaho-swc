@@ -8,6 +8,7 @@ import { v4 as uuidv4 } from "uuid";
 import EditFormSectionHeader from "./fields/EditFormSectionHeader";
 import EditFormDivider from "./fields/EditFormDivider";
 import EditFormSplitStringDropdown from "./fields/EditFormSplitStringDropdown";
+import EditFormReadOnlyArrayOfLinks from "./fields/EditFormReadOnlyArrayOfLinks";
 
 export function EditFormFieldList({
   data,
@@ -54,10 +55,6 @@ export function EditFormFieldList({
       FieldComponent = EditFormDropdown;
     }
 
-    if (type === CRUD_FIELD_TYPES.SPLIT_STRING_DROPDOWN) {
-      FieldComponent = EditFormSplitStringDropdown;
-    }
-
     if (type === CRUD_FIELD_TYPES.NUMBER) {
       FieldComponent = EditFormNumber;
     }
@@ -68,6 +65,14 @@ export function EditFormFieldList({
       type === CRUD_FIELD_TYPES.DATETIME
     ) {
       FieldComponent = EditFormDateTime;
+    }
+
+    if (type === CRUD_FIELD_TYPES.SPLIT_STRING_DROPDOWN) {
+      FieldComponent = EditFormSplitStringDropdown;
+    }
+
+    if (type === CRUD_FIELD_TYPES.READ_ONLY_ARRAY_OF_LINKS) {
+      FieldComponent = EditFormReadOnlyArrayOfLinks;
     }
 
     if (type === CRUD_FIELD_TYPES.DIVIDER) {

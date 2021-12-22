@@ -234,9 +234,13 @@ const ComponentBody = ({ children, routes, width, contentWidth }) => {
 
   useEffect(() => {
     if (!appContentWidth) {
-      setAppContentWidth(
-        drawerOpen && !mobileOpen ? "calc(100% - 258px)" : "100%"
-      );
+      if (width === "sm" || width === "xs") {
+        setAppContentWidth("100%");
+      } else {
+        setAppContentWidth(
+          drawerOpen && !mobileOpen ? "calc(100% - 258px)" : "100%"
+        );
+      }
     } else if (!drawerOpen) {
       setAppContentWidth("100%");
     } else if (width === "sm" || width === "xs") {

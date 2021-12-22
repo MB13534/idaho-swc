@@ -323,10 +323,10 @@ export function StatusDotRenderer(
 }
 
 export const FormatBooleanTrueFalse = (params) => {
-  if (typeof params.value !== "boolean") {
-    return <span>{params.value}</span>;
-  }
-  if (params.value === true) {
+  // if (typeof params.value !== "boolean") {
+  //   return <span>{params.value}</span>;
+  // }
+  if (params.value) {
     return <span>yes</span>;
   }
   return <span>no</span>;

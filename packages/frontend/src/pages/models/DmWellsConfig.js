@@ -180,7 +180,8 @@ export function columns(modelName) {
     {
       field: "list_of_attachments",
       headerName: "Attachments",
-      width: 150,
+      renderCell: Renderers.FormatBooleanTrueFalse,
+      width: 170,
     },
     {
       field: "editor_name",
@@ -496,8 +497,8 @@ export const fields = [
   {
     name: "Attachments",
     key: "list_of_attachments",
-    required: true,
-    type: CRUD_FIELD_TYPES.MULTILINE_TEXT,
+    required: false,
+    type: CRUD_FIELD_TYPES.READ_ONLY_ARRAY_OF_LINKS,
     cols: 12,
     isOpen: true,
   },

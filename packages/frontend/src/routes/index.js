@@ -60,7 +60,7 @@ const getSidebarMenu = (list) => {
   return list.map((item) => {
     const slug = inflector.dasherize(inflector.underscore(item.name));
     return {
-      id: item.sidebarName,
+      id: item.sidebarName ?? inflector.titleize(item.name),
       path: `/models/${slug}`,
       model: inflector.singularize(item.name),
       icon: item.icon || <Database />,
