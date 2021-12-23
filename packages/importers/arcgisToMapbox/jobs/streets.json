@@ -8,8 +8,8 @@
     "layers": {
       "streets": {
         "source": "mapbox://tileset-source/txclearwater/bell_cad_streets",
-        "minzoom": 0,
-        "maxzoom": 5
+        "minzoom": 12,
+        "maxzoom": 16
       }
     }
   }

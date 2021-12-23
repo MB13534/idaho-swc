@@ -4,8 +4,8 @@
     "layers": {
       "parcels": {
         "source": "mapbox://tileset-source/txclearwater/bell_cad_parcels",
-        "minzoom": 0,
-        "maxzoom": 5
+        "minzoom": 12,
+        "maxzoom": 16
       }
     }
   },
