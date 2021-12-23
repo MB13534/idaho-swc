@@ -11,6 +11,6 @@
   },
   "tilesetName": "TWDB Well Reports",
   "tilesetId": "txclearwater.twdb_well_reports",
-  "tilesetSourceId": "twdb_plugging_reports",
+  "tilesetSourceId": "twdb_well_reports",
   "url": "http://services.twdb.texas.gov/arcgis/rest/services/Public/WellReports/MapServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson"
 }
