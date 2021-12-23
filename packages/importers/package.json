@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "start": "swc src -d build"
+    "importers:arcgisToMapbox": "node arcgisToMapbox/index.js"
   },
   "devDependencies": {},
   "dependencies": {
