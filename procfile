@@ -1,0 +1,1 @@
+worker: node arcgisToMapbox/index.js --job=streets

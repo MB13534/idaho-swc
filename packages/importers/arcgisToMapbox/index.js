@@ -19,18 +19,15 @@ const mts = require('@mapbox/mapbox-sdk/services/tilesets');
 const fs = require('fs');
 const geojsonStream = require('geojson-stream');
 const path = require('path');
+const EventEmitter = require('events');
 require('dotenv').config({path: path.join(__dirname, '/../.env')});
+
+// ee.setMaxListeners(30);
 
 if (fs.existsSync(path.join(__dirname, '/temp'))) {
   fs.rmdirSync(path.join(__dirname, '/temp'), {recursive: true});
 }
 fs.mkdirSync(path.join(__dirname, '/temp'));
-
-// base geojson that we will be building up in the script
-let geojson = {
-  type: 'FeatureCollection',
-  features: [],
-};
 
 /**
  * Utility used to fetch data from the ArcGIS service
@@ -54,7 +51,7 @@ let geojson = {
  * ben written to
  * should be returned
  */
-async function fetch({url, offset, limit, filePath}) {
+async function fetch({url, offset, limit, jobName}) {
   const finalUrl = !!limit
     ? `${url}&resultOffset=${offset}&resultRecordCount=${limit}`
     : url;
@@ -66,11 +63,29 @@ async function fetch({url, offset, limit, filePath}) {
   console.log(fetchMessage);
   const {data} = await axios.get(finalUrl);
 
+  if (!fs.existsSync(path.join(__dirname, '/temp', jobName))) {
+    fs.mkdirSync(path.join(__dirname, '/temp', jobName));
+  }
+
   if (data?.features?.length > 0 && !!limit) {
-    geojson.features = [...geojson.features, ...data?.features];
-    return fetch({url, offset: offset + 1000, limit, filePath});
+    // geojson.features = [...geojson.features, ...data?.features];
+    const filePath = path.join(
+      __dirname,
+      'temp',
+      jobName,
+      `file_${offset}.geojson`
+    );
+    fs.writeFileSync(filePath, JSON.stringify(data));
+    return fetch({url, offset: offset + 1000, limit, jobName});
   } else {
-    fs.writeFileSync(filePath, JSON.stringify(geojson));
+    const filePath = path.join(
+      __dirname,
+      'temp',
+      jobName,
+      `file_${offset}.geojson`
+    );
+    fs.writeFileSync(filePath, JSON.stringify(data));
+    // fs.writeFileSync(jobName, JSON.stringify(geojson));
     return data;
   }
 }
@@ -86,17 +101,45 @@ async function convert(readPath, writePath) {
   try {
     const ldgeojson = fs.createWriteStream(writePath);
     console.log('Converting GeoJSON file...');
+    const filePaths = fs
+      .readdirSync(path.join(__dirname, 'temp', 'parcels'))
+      .map((file) => {
+        return path.join(__dirname, 'temp', 'parcels', file);
+      });
+
+    function mergeGeoJSON(filePaths) {
+      // const out = geojsonStream.stringify();
+      // const transform = geojsonStream.parse((row) => {
+      //   if (row.geometry.coordinates === null) {
+      //     return null;
+      //   }
+      //   return JSON.stringify(row) + '\r\n';
+      // });
+      const out = geojsonStream.stringify();
+      for (const file of filePaths) {
+        fs.createReadStream(file)
+          .pipe(
+            geojsonStream.parse((row) => {
+              if (row.geometry.coordinates === null) {
+                return null;
+              }
+              // return row;
+              return JSON.stringify(row) + '\r\n';
+            })
+          )
+          .pipe(out);
+      }
+      return out;
+    }
     return new Promise((resolve, reject) => {
-      fs.createReadStream(readPath)
-        .pipe(
-          geojsonStream.parse((row) => {
-            if (row.geometry.coordinates === null) {
-              return null;
-            }
-            return JSON.stringify(row) + '\r\n';
-          })
-        )
+      const mergedGeoJSON = mergeGeoJSON(filePaths);
+      mergedGeoJSON
+        .pipe(geojsonStream.parse())
         .pipe(ldgeojson)
+        // console.log(mergedGeoJSON);
+        // mergedGeoJSON;
+        // .pipe(ldgeojson)
+        // fs.createReadStream(geojson)
         .on('finish', () => {
           console.log('Finished writing file...');
           resolve(true);
@@ -279,7 +322,7 @@ const checkStatus = async function (tilesetId) {
   }
 };
 
-async function runJob(config) {
+async function runJob({name, config}) {
   try {
     const readPath = path.join(
       __dirname,
@@ -295,7 +338,7 @@ async function runJob(config) {
       url: config.url,
       offset: 0,
       limit: 1000,
-      filePath: readPath,
+      jobName: name,
     });
     await convert(readPath, writePath);
     await deleteTilesetSource(config.tilesetSourceId);
@@ -319,7 +362,7 @@ async function runJob(config) {
 async function executeJob({name, config}) {
   try {
     console.log(`Job Starting - ${name}`);
-    await runJob(config);
+    await runJob({name, config});
     console.log(`Job finished - ${name}`);
   } catch (err) {
     console.error(err);
