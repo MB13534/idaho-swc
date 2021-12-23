@@ -24,7 +24,7 @@
     "add:model": "cd packages/backend && npm run add:model",
     "add:page": "cd packages/backend && npm run add:page",
     "lint-staged": "lint-staged --allow-empty",
-    "importers:arcgisToMapbox:parcels": "node packages/importers/arcgisToMapbox/index.js --job=parcels",
+    "importers:arcgisToMapbox:parcels": "node packages/importers/arcgisToMapbox/index.js --job=parcels --max-old-space-size=500",
     "importers:arcgisToMapbox:streets": "node packages/importers/arcgisToMapbox/index.js --job=streets",
     "importers:arcgisToMapbox:pluggingReports": "node packages/importers/arcgisToMapbox/index.js --job=twdb_plugging_reports",
     "importers:arcgisToMapbox:groundwaterDatabase": "node packages/importers/arcgisToMapbox/index.js --job=twdb_groundwater_database"
