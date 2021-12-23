@@ -127,6 +127,7 @@ const createTilesetSource = async function (
   tilesetSourceId,
   tilesetSourcePath
 ) {
+  console.log(tilesetSourceId, tilesetSourcePath);
   console.log('Uploading the source data...');
   try {
     const response = await mtsService
@@ -283,26 +284,26 @@ async function runJob(config) {
       __dirname,
       `/temp/${config.tilesetSourceId}.geojson.ld`
     );
+    fs.writeFileSync(readPath, '');
+    fs.writeFileSync(writePath, '');
     await fetch({
       url: config.url,
       offset: 0,
       limit: 1000,
       filePath: readPath,
     });
-    fs.writeFileSync(readPath, '');
-    fs.writeFileSync(writePath, '');
     await convert(readPath, writePath);
-    // await deleteTilesetSource(config.tilesetSourceId);
-    // await createTilesetSource(config.tilesetSourceId, writePath);
-    // await validateRecipe(config.recipe);
-    // const tilesetAlreadyExists = await tilesetExists(config.tilesetId);
-    // if (!tilesetAlreadyExists) {
-    //   await createTileset(config.tilesetId, config.tilesetName, config.recipe);
-    // } else {
-    //   await updateRecipe(config.tilesetId, config.recipe);
-    // }
-    // await publishTileset(config.tilesetId);
-    // return await checkStatus(config.tilesetId);
+    await deleteTilesetSource(config.tilesetSourceId);
+    await createTilesetSource(config.tilesetSourceId, writePath);
+    await validateRecipe(config.recipe);
+    const tilesetAlreadyExists = await tilesetExists(config.tilesetId);
+    if (!tilesetAlreadyExists) {
+      await createTileset(config.tilesetId, config.tilesetName, config.recipe);
+    } else {
+      await updateRecipe(config.tilesetId, config.recipe);
+    }
+    await publishTileset(config.tilesetId);
+    return await checkStatus(config.tilesetId);
   } catch (err) {
     console.log(err);
   }
@@ -311,9 +312,13 @@ async function runJob(config) {
 // TODO look into multilayer tiletsets
 // https://docs.mapbox.com/help/troubleshooting/multilayer-tilesets/
 async function executeJob({name, config}) {
-  console.log(`Job Starting - ${name}`);
-  await runJob(config);
-  console.log(`Job finished - ${name}`);
+  try {
+    console.log(`Job Starting - ${name}`);
+    await runJob(config);
+    console.log(`Job finished - ${name}`);
+  } catch (err) {
+    console.error(err);
+  }
 }
 
 const jobArg = process.argv[2];
