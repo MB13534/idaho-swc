@@ -61,9 +61,9 @@ async function fetch({url, offset, limit, filePath}) {
   console.log(fetchMessage);
   const {data} = await axios.get(finalUrl);
 
-  if (data?.features?.length > 0 && !!limit) {
+  if (data?.features?.length > 0 && !!limit && offset < 1000) {
     geojson.features = [...geojson.features, ...data?.features];
-    return fetch({url, offset: offset + 1000, limit});
+    return fetch({url, offset: offset + 1000, limit, filePath});
   } else {
     fs.writeFileSync(filePath, JSON.stringify(geojson));
     return data;
@@ -292,17 +292,17 @@ async function runJob(config) {
     fs.writeFileSync(readPath, '');
     fs.writeFileSync(writePath, '');
     await convert(readPath, writePath);
-    await deleteTilesetSource(config.tilesetSourceId);
-    await createTilesetSource(config.tilesetSourceId, writePath);
-    await validateRecipe(config.recipe);
-    const tilesetAlreadyExists = await tilesetExists(config.tilesetId);
-    if (!tilesetAlreadyExists) {
-      await createTileset(config.tilesetId, config.tilesetName, config.recipe);
-    } else {
-      await updateRecipe(config.tilesetId, config.recipe);
-    }
-    await publishTileset(config.tilesetId);
-    return await checkStatus(config.tilesetId);
+    // await deleteTilesetSource(config.tilesetSourceId);
+    // await createTilesetSource(config.tilesetSourceId, writePath);
+    // await validateRecipe(config.recipe);
+    // const tilesetAlreadyExists = await tilesetExists(config.tilesetId);
+    // if (!tilesetAlreadyExists) {
+    //   await createTileset(config.tilesetId, config.tilesetName, config.recipe);
+    // } else {
+    //   await updateRecipe(config.tilesetId, config.recipe);
+    // }
+    // await publishTileset(config.tilesetId);
+    // return await checkStatus(config.tilesetId);
   } catch (err) {
     console.log(err);
   }
