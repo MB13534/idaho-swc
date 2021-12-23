@@ -1,0 +1,16 @@
+{
+  "recipe": {
+    "version": 1,
+    "layers": {
+      "parcels": {
+        "source": "mapbox://tileset-source/txclearwater/twdb_groundwater_database",
+        "minzoom": 12,
+        "maxzoom": 16
+      }
+    }
+  },
+  "tilesetName": "TWDB Groundwater Database",
+  "tilesetId": "txclearwater.twdb_groundwater_database",
+  "tilesetSourceId": "twdb_plugging_reports",
+  "url": "http://services.twdb.texas.gov/arcgis/rest/services/Public/TWDB_Groundwater_database/MapServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson"
+}

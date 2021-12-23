@@ -1,0 +1,16 @@
+{
+  "recipe": {
+    "version": 1,
+    "layers": {
+      "parcels": {
+        "source": "mapbox://tileset-source/txclearwater/twdb_plugging_reports",
+        "minzoom": 12,
+        "maxzoom": 16
+      }
+    }
+  },
+  "tilesetName": "TWDB Plugging Reports",
+  "tilesetId": "txclearwater.twdb_plugging_reports",
+  "tilesetSourceId": "twdb_plugging_reports",
+  "url": "http://services.twdb.texas.gov/arcgis/rest/services/Public/PluggingReports/MapServer/0/query?where=1%3D1&outFields=*&outSR=4326&f=geojson"
+}

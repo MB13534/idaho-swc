@@ -13,7 +13,9 @@
   },
   "scripts": {
     "importers:arcgisToMapbox:parcels": "node arcgisToMapbox/index.js --job=parcels",
-    "importers:arcgisToMapbox:streets": "node arcgisToMapbox/index.js --job=streets"
+    "importers:arcgisToMapbox:streets": "node arcgisToMapbox/index.js --job=streets",
+    "importers:arcgisToMapbox:pluggingReports": "node arcgisToMapbox/index.js --job=twdb_plugging_reports",
+    "importers:arcgisToMapbox:groundwaterDatabase": "node arcgisToMapbox/index.js --job=twdb_groundwater_database"
   },
   "devDependencies": {},
   "dependencies": {
