@@ -21,14 +21,6 @@ const geojsonStream = require('geojson-stream');
 const path = require('path');
 require('dotenv').config({path: path.join(__dirname, '/../.env')});
 
-/**
- * Configure file system paths used throughout the
- * ETL script
- */
-const PATHS = {
-  JOBS: path.join(__dirname, '/jobs'),
-};
-
 // base geojson that we will be building up in the script
 let geojson = {
   type: 'FeatureCollection',
@@ -281,7 +273,7 @@ const checkStatus = async function (tilesetId) {
   }
 };
 
-async function runJob({config, mode}) {
+async function runJob(config) {
   try {
     const readPath = path.join(
       __dirname,
@@ -309,10 +301,6 @@ async function runJob({config, mode}) {
     } else {
       await updateRecipe(config.tilesetId, config.recipe);
     }
-
-    if (mode === 'synchronous') {
-      return await publishTileset(config.tilesetId);
-    }
     await publishTileset(config.tilesetId);
     return await checkStatus(config.tilesetId);
   } catch (err) {
@@ -320,42 +308,21 @@ async function runJob({config, mode}) {
   }
 }
 
-const jobs = fs.readdirSync(PATHS.JOBS);
-
 // TODO look into multilayer tiletsets
 // https://docs.mapbox.com/help/troubleshooting/multilayer-tilesets/
-async function processJobs({jobs, mode}) {
-  if (mode === 'synchronous') {
-    for (const job of jobs) {
-      // clear out the temporary files
-      console.log(`Job Starting - ${job}`);
-      const config = fs.readFileSync(path.join(__dirname, `/jobs/${job}`), {
-        encoding: 'utf-8',
-      });
-      await runJob({config: JSON.parse(config), mode});
-      await checkStatus(config.tilesetId);
-      console.log(`Job finished - ${job}`);
-    }
-  } else {
-    jobs.forEach(async (job) => {
-      console.log(`Job Starting - ${job}`);
-      const config = fs.readFileSync(path.join(__dirname, `/jobs/${job}`), {
-        encoding: 'utf-8',
-      });
-      runJob({config: JSON.parse(config), mode});
-      console.log(`Job finished - ${job}`);
-    });
-  }
+async function executeJob({name, config}) {
+  console.log(`Job Starting - ${name}`);
+  await runJob(config);
+  console.log(`Job finished - ${name}`);
 }
 
-const mode = !!typeof process.argv[2]
-  ? process.argv[2]
-      .split('')
-      .filter((_, i) => i > 1)
-      .join('')
-  : 'concurrent';
+const jobArg = process.argv[2];
+const jobName = jobArg.replace('--job=', '');
+const jobPath = path.join(__dirname, '/jobs/', `${jobName}.json`);
+const job = fs.readFileSync(jobPath, {encoding: 'utf-8'});
 
-processJobs({
-  jobs,
-  mode,
-});
+if (!job) {
+  throw new Error('A valid importer job is required');
+} else {
+  executeJob({name: jobName, config: JSON.parse(job)});
+}

@@ -6,8 +6,14 @@
   "author": "tylerben <tylerben14@gmail.com>",
   "license": "MIT",
   "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lre-up/clearwater.git`",
+    "directory": "packages/importers"
+  },
   "scripts": {
-    "importers:arcgisToMapbox": "node arcgisToMapbox/index.js"
+    "importers:arcgisToMapbox:parcels": "node arcgisToMapbox/index.js --job=parcels",
+    "importers:arcgisToMapbox:streets": "node arcgisToMapbox/index.js --job=streets"
   },
   "devDependencies": {},
   "dependencies": {
