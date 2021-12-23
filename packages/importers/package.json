@@ -15,13 +15,15 @@
     "importers:arcgisToMapbox:parcels": "node arcgisToMapbox/index.js --job=parcels",
     "importers:arcgisToMapbox:streets": "node arcgisToMapbox/index.js --job=streets",
     "importers:arcgisToMapbox:pluggingReports": "node arcgisToMapbox/index.js --job=twdb_plugging_reports",
-    "importers:arcgisToMapbox:groundwaterDatabase": "node arcgisToMapbox/index.js --job=twdb_groundwater_database"
+    "importers:arcgisToMapbox:groundwaterDatabase": "node arcgisToMapbox/index.js --job=twdb_groundwater_database",
+    "importers:arcgisToMapbox:wellReports": "node arcgisToMapbox/index.js --job=twdb_well_reports"
   },
   "devDependencies": {},
   "dependencies": {
     "@mapbox/mapbox-sdk": "^0.13.2",
     "axios": "^0.24.0",
     "dotenv": "^10.0.0",
-    "geojson-stream": "^0.1.0"
+    "geojson-stream": "^0.1.0",
+    "stream-concat": "^1.0.0"
   }
 }

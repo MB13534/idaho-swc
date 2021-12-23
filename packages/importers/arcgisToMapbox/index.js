@@ -19,11 +19,10 @@ const mts = require('@mapbox/mapbox-sdk/services/tilesets');
 const fs = require('fs');
 const geojsonStream = require('geojson-stream');
 const path = require('path');
-const EventEmitter = require('events');
+const StreamConcat = require('stream-concat');
 require('dotenv').config({path: path.join(__dirname, '/../.env')});
 
-// ee.setMaxListeners(30);
-
+// cleanup and remove any temp files
 if (fs.existsSync(path.join(__dirname, '/temp'))) {
   fs.rmdirSync(path.join(__dirname, '/temp'), {recursive: true});
 }
@@ -38,11 +37,7 @@ fs.mkdirSync(path.join(__dirname, '/temp'));
  * request 1000 records at a time until no more records are
  * returned
  * We use recursion to accomplish this.
- * Each batch of 1000 records is then pushed to the `features`
- * property on our geojson variable
- * When all the records have been returned, we write the contents
- * of the geojson variable to a file that we can read from
- * later
+ * Each batch of 1000 records is written to a temporary geojson file
  * @param {string} options.url API endpoint to hit
  * @param {number} options.offset Number of records that
  * request should be offset by
@@ -67,79 +62,62 @@ async function fetch({url, offset, limit, jobName}) {
     fs.mkdirSync(path.join(__dirname, '/temp', jobName));
   }
 
+  const filePath = path.join(
+    __dirname,
+    'temp',
+    jobName,
+    `file_${offset}.geojson`
+  );
+  fs.writeFileSync(filePath, JSON.stringify(data));
+
   if (data?.features?.length > 0 && !!limit) {
-    // geojson.features = [...geojson.features, ...data?.features];
-    const filePath = path.join(
-      __dirname,
-      'temp',
-      jobName,
-      `file_${offset}.geojson`
-    );
-    fs.writeFileSync(filePath, JSON.stringify(data));
     return fetch({url, offset: offset + 1000, limit, jobName});
-  } else {
-    const filePath = path.join(
-      __dirname,
-      'temp',
-      jobName,
-      `file_${offset}.geojson`
-    );
-    fs.writeFileSync(filePath, JSON.stringify(data));
-    // fs.writeFileSync(jobName, JSON.stringify(geojson));
-    return data;
   }
+  return data;
+}
+
+/**
+ * Utility used to read and parse the generated geojson files
+ * @param {string[]} inputs array of file path names
+ * @returns
+ */
+function mergeFeatureCollectionStream(inputs) {
+  const out = geojsonStream.stringify();
+  const streams = inputs.map((file) => fs.createReadStream(file));
+  new StreamConcat(streams)
+    .pipe(
+      geojsonStream.parse((row) => {
+        if (row.geometry.coordinates === null) {
+          return null;
+        }
+        return JSON.stringify(row) + '\r\n';
+      })
+    )
+    .pipe(out);
+  return out;
 }
 
 /**
  * Function used to read a geojson file and convert its
  * contents to the GeoJSON-LD format that is required by
  * the Mapbox Tiling Service
- * @param {string} readPath
  * @param {string} writePath
  */
-async function convert(readPath, writePath) {
+async function convert({jobName, writePath}) {
   try {
     const ldgeojson = fs.createWriteStream(writePath);
     console.log('Converting GeoJSON file...');
     const filePaths = fs
-      .readdirSync(path.join(__dirname, 'temp', 'parcels'))
+      .readdirSync(path.join(__dirname, 'temp', jobName))
       .map((file) => {
-        return path.join(__dirname, 'temp', 'parcels', file);
+        return path.join(__dirname, 'temp', jobName, file);
       });
 
-    function mergeGeoJSON(filePaths) {
-      // const out = geojsonStream.stringify();
-      // const transform = geojsonStream.parse((row) => {
-      //   if (row.geometry.coordinates === null) {
-      //     return null;
-      //   }
-      //   return JSON.stringify(row) + '\r\n';
-      // });
-      const out = geojsonStream.stringify();
-      for (const file of filePaths) {
-        fs.createReadStream(file)
-          .pipe(
-            geojsonStream.parse((row) => {
-              if (row.geometry.coordinates === null) {
-                return null;
-              }
-              // return row;
-              return JSON.stringify(row) + '\r\n';
-            })
-          )
-          .pipe(out);
-      }
-      return out;
-    }
     return new Promise((resolve, reject) => {
-      const mergedGeoJSON = mergeGeoJSON(filePaths);
+      const mergedGeoJSON = mergeFeatureCollectionStream(filePaths);
       mergedGeoJSON
         .pipe(geojsonStream.parse())
         .pipe(ldgeojson)
-        // console.log(mergedGeoJSON);
-        // mergedGeoJSON;
-        // .pipe(ldgeojson)
-        // fs.createReadStream(geojson)
         .on('finish', () => {
           console.log('Finished writing file...');
           resolve(true);
@@ -324,15 +302,10 @@ const checkStatus = async function (tilesetId) {
 
 async function runJob({name, config}) {
   try {
-    const readPath = path.join(
-      __dirname,
-      `/temp/${config.tilesetSourceId}.geojson`
-    );
     const writePath = path.join(
       __dirname,
       `/temp/${config.tilesetSourceId}.geojson.ld`
     );
-    fs.writeFileSync(readPath, '');
     fs.writeFileSync(writePath, '');
     await fetch({
       url: config.url,
@@ -340,7 +313,7 @@ async function runJob({name, config}) {
       limit: 1000,
       jobName: name,
     });
-    await convert(readPath, writePath);
+    await convert({jobName: name, writePath});
     await deleteTilesetSource(config.tilesetSourceId);
     await createTilesetSource(config.tilesetSourceId, writePath);
     await validateRecipe(config.recipe);
