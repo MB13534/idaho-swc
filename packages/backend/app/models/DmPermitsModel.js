@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT, UUID, NUMBER, DATE, BOOLEAN} = DataTypes;
+  const {INTEGER, TEXT, UUID, NUMBER, DATE, BOOLEAN, ARRAY} = DataTypes;
   const DmPermits = sequelize.define(
     'dm_permits',
     {
@@ -49,9 +49,12 @@ module.exports = (sequelize, DataTypes) => {
         type: INTEGER,
       },
       assoc_wells: {
-        type: TEXT,
+        type: ARRAY(TEXT),
       },
       assoc_well_ndx: {
+        type: ARRAY(INTEGER),
+      },
+      rolo_ndx: {
         type: INTEGER,
       },
       id: {

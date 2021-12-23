@@ -9,6 +9,7 @@ import EditFormSectionHeader from "./fields/EditFormSectionHeader";
 import EditFormDivider from "./fields/EditFormDivider";
 import EditFormSplitStringDropdown from "./fields/EditFormSplitStringDropdown";
 import EditFormReadOnlyArrayOfLinks from "./fields/EditFormReadOnlyArrayOfLinks";
+import EditFormReadOnlyArrayOfStrings from "./fields/EditFormReadOnlyArrayOfStrings";
 
 export function EditFormFieldList({
   data,
@@ -73,6 +74,10 @@ export function EditFormFieldList({
 
     if (type === CRUD_FIELD_TYPES.READ_ONLY_ARRAY_OF_LINKS) {
       FieldComponent = EditFormReadOnlyArrayOfLinks;
+    }
+
+    if (type === CRUD_FIELD_TYPES.READ_ONLY_ARRAY_OF_STRINGS) {
+      FieldComponent = EditFormReadOnlyArrayOfStrings;
     }
 
     if (type === CRUD_FIELD_TYPES.DIVIDER) {

@@ -147,7 +147,7 @@ export function columns(modelName) {
     {
       field: "construction_notes",
       headerName: "Construction Notes",
-      width: 150,
+      width: 220,
     },
     {
       field: "owner_rolo_ndx",

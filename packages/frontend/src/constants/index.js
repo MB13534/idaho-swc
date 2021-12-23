@@ -40,10 +40,14 @@ export const CRUD_MODELS = [
 ];
 
 export const CRUD_LOOKUP_TABLES = [
+  "ui_list_permit_holders",
+  "list_aggregate_systems",
   "list_aquifers",
   "list_water_uses",
   "list_well_statuses",
   "list_booleans",
+  "list_permit_types",
+  "list_permit_terms",
   "current_wells_to_rolodex_owners_texts",
   "current_wells_to_rolodex_contacts_texts",
 ];
@@ -134,6 +138,7 @@ export const CRUD_FIELD_TYPES = {
   SECTION_HEADER: "SECTION_HEADER",
   SPLIT_STRING_DROPDOWN: "SPLIT_STRING_DROPDOWN",
   READ_ONLY_ARRAY_OF_LINKS: "READ_ONLY_ARRAY_OF_LINKS",
+  READ_ONLY_ARRAY_OF_STRINGS: "READ_ONLY_ARRAY_OF_STRINGS",
 };
 
 export const CRUD_DISPLAY_MODES = {

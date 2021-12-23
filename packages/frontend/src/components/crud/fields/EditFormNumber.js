@@ -92,15 +92,17 @@ function EditFormNumber({
   const newValue = { ...valueCache };
 
   const config = field.typeConfig ?? {};
-
   useEffect(() => {
     if (
       field.defaultValue !== null &&
-      typeof field.defaultValue !== "undefined"
+      typeof field.defaultValue !== "undefined" &&
+      (data[field.key] === null ||
+        typeof data[field.key] === "undefined" ||
+        data[field.key] === "")
     ) {
       setFieldValue(field.key, field.defaultValue);
     }
-  }, [field.defaultValue, setFieldValue, field.key]);
+  }, [field.defaultValue, setFieldValue, field.key, data]);
 
   return (
     <EditFormFieldWrap

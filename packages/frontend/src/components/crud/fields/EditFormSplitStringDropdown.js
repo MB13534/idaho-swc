@@ -176,7 +176,7 @@ function EditFormSplitStringDropdown({
                     {typeof item[tableValueName] === "string"
                       ? item[tableValueName]
                           .split("; ")
-                          .map((item) => <p key={item}>{item}</p>)
+                          .map((item, i) => <p key={i}>{item}</p>)
                       : item[tableValueName]}
                   </MenuItem>
                 );

@@ -68,11 +68,14 @@ function EditFormTextField({
   useEffect(() => {
     if (
       field.defaultValue !== null &&
-      typeof field.defaultValue !== "undefined"
+      typeof field.defaultValue !== "undefined" &&
+      (data[field.key] === null ||
+        typeof data[field.key] === "undefined" ||
+        data[field.key] === "")
     ) {
       setFieldValue(field.key, field.defaultValue);
     }
-  }, [field.defaultValue, setFieldValue, field.key]);
+  }, [field.defaultValue, setFieldValue, field.key, data]);
 
   return (
     <EditFormFieldWrap
@@ -103,6 +106,7 @@ function EditFormTextField({
         }
         variant={variant}
         my={2}
+        disabled={field?.typeConfig?.disabled || false}
       />
 
       {touched[field.key] && (
@@ -161,7 +165,7 @@ function EditFormTextField({
                   setFieldValue(field.key, newValue[field.key].join("\n"));
                 }*/
 
-              console.log(lineId);
+              // console.log(lineId);
             }}
           />
         </DiffWrap>
