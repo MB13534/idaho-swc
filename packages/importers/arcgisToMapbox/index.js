@@ -21,6 +21,11 @@ const geojsonStream = require('geojson-stream');
 const path = require('path');
 require('dotenv').config({path: path.join(__dirname, '/../.env')});
 
+if (fs.existsSync(path.join(__dirname, '/temp'))) {
+  fs.rmdirSync(path.join(__dirname, '/temp'), {recursive: true});
+}
+fs.mkdirSync(path.join(__dirname, '/temp'));
+
 // base geojson that we will be building up in the script
 let geojson = {
   type: 'FeatureCollection',
