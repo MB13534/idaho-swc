@@ -66,7 +66,7 @@ async function fetch({url, offset, limit, filePath}) {
   console.log(fetchMessage);
   const {data} = await axios.get(finalUrl);
 
-  if (data?.features?.length > 0 && !!limit && offset < 1000) {
+  if (data?.features?.length > 0 && !!limit) {
     geojson.features = [...geojson.features, ...data?.features];
     return fetch({url, offset: offset + 1000, limit, filePath});
   } else {
