@@ -1,0 +1,25 @@
+{
+  "name": "importers",
+  "version": "0.0.0",
+  "description": "Package that houses all importers and extract, transform, and load (ETL) logic for bringing data into the Clearwater platform",
+  "main": "index.js",
+  "author": "tylerben <tylerben14@gmail.com>",
+  "license": "MIT",
+  "private": true,
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/lre-up/clearwater.git`",
+    "directory": "packages/importers"
+  },
+  "scripts": {
+    "importers:arcgisToMapbox:parcels": "node arcgisToMapbox/index.js --job=parcels",
+    "importers:arcgisToMapbox:streets": "node arcgisToMapbox/index.js --job=streets"
+  },
+  "devDependencies": {},
+  "dependencies": {
+    "@mapbox/mapbox-sdk": "^0.13.2",
+    "axios": "^0.24.0",
+    "dotenv": "^10.0.0",
+    "geojson-stream": "^0.1.0"
+  }
+}

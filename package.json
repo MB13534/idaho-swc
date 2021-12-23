@@ -23,7 +23,9 @@
     "prepare": "husky install",
     "add:model": "cd packages/backend && npm run add:model",
     "add:page": "cd packages/backend && npm run add:page",
-    "lint-staged": "lint-staged --allow-empty"
+    "lint-staged": "lint-staged --allow-empty",
+    "importers:arcgisToMapbox:parcels": "node packages/importers/arcgisToMapbox/index.js --job=parcels",
+    "importers:arcgisToMapbox:streets": "node packages/importers/arcgisToMapbox/index.js --job=streets"
   },
   "devDependencies": {
     "@commitlint/cli": "^13.1.0",
