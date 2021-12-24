@@ -27,7 +27,8 @@
     "importers:arcgisToMapbox:parcels": "node packages/importers/arcgisToMapbox/index.js --job=parcels --max-old-space-size=500",
     "importers:arcgisToMapbox:streets": "node packages/importers/arcgisToMapbox/index.js --job=streets",
     "importers:arcgisToMapbox:pluggingReports": "node packages/importers/arcgisToMapbox/index.js --job=twdb_plugging_reports",
-    "importers:arcgisToMapbox:groundwaterDatabase": "node packages/importers/arcgisToMapbox/index.js --job=twdb_groundwater_database"
+    "importers:arcgisToMapbox:groundwaterDatabase": "node packages/importers/arcgisToMapbox/index.js --job=twdb_groundwater_database",
+    "importers:arcgisToMapbox:wellReports": "node packages/importers/arcgisToMapbox/index.js --job=twdb_well_reports"
   },
   "devDependencies": {
     "@commitlint/cli": "^13.1.0",
