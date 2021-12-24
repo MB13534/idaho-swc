@@ -1,5 +1,5 @@
 #public-map .mapboxgl-popup-content {
-  height: 300px;
+  height: auto;
   width: 375px;
   overflow-x: hidden;
   overflow-y: scroll;

@@ -48,8 +48,8 @@ const LayersInnerContainer = styled.div`
   overflow-y: auto;
   max-height: 500px;
   min-height: 0px;
-  overflow: hidden;
-  height: ${(props) => props.height}px;
+  overflow-y: auto;
+  height: ${(props) => (props.open ? props.height : 0)}px;
   transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
   transition-duration: 300ms;
 `;

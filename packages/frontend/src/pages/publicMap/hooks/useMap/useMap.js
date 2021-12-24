@@ -26,6 +26,7 @@ mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
  */
 const useMap = (ref, mapConfig) => {
   const [map, setMap] = useState(null);
+  const [zoomLevel, setZoomLevel] = useState(0);
   const [dataAdded, setDataAdded] = useState(false);
   const [eventsRegistered, setEventsRegistered] = useState(false);
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
@@ -53,6 +54,12 @@ const useMap = (ref, mapConfig) => {
         setMap(mapInstance);
         mapLogger.log("Map loaded");
       });
+
+      if (process.env.NODE_ENV === "development") {
+        mapInstance.on("zoom", () => {
+          setZoomLevel(mapInstance?.getZoom());
+        });
+      }
     }
   }, [ref, mapConfig, map]);
 
@@ -97,14 +104,13 @@ const useMap = (ref, mapConfig) => {
 
     if (shouldAddClickEvent && !eventsRegistered) {
       map.on("click", (e) => {
-        const features = map.queryRenderedFeatures(e.point, {
-          layers: ["clearwater-wells-circle"],
-        });
+        const features = map.queryRenderedFeatures(e.point);
         if (features.length > 0) {
           const feature = features[0];
-          const { popup } = layers.find(
-            ({ id }) => id === feature?.layer?.id
-          )?.lreProperties;
+          // const popup = {};
+          const popup = layers?.find(
+            (layer) => layer?.id === feature?.layer?.id
+          )?.lreProperties?.popup;
           // create popup node
           const popupNode = document.createElement("div");
           ReactDOM.render(
@@ -277,6 +283,7 @@ const useMap = (ref, mapConfig) => {
     layers,
     map,
     sources,
+    zoomLevel,
     updateLayerFilters,
     updateLayerStyles,
     updateLayerVisibility,

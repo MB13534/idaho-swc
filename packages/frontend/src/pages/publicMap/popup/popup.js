@@ -9,7 +9,8 @@ const Popup = ({ excludeFields, feature, titleField }) => {
         }
         return acc;
       }, [])
-    : feature?.properties;
+    : Object.entries(feature?.properties);
+  if (!popupData) return null;
   return (
     <Box maxHeight={150}>
       {popupData?.map(([key, value]) => (

@@ -6,6 +6,7 @@ import AppBar from "../../components/AppBar";
 import Map from "./map";
 import LayersControl from "./controls/layersControl";
 import WellStylesControl from "./controls/wellStylesControl";
+import ZoomInfo from "./controls/zoomInfo";
 import Search from "./filters/search";
 import FilterControl from "./filters/filterControl";
 import Filter from "./filters/filter";
@@ -51,6 +52,7 @@ const PublicMap = () => {
   const {
     layers,
     map,
+    zoomLevel,
     updateLayerFilters,
     updateLayerStyles,
     updateLayerVisibility,
@@ -211,6 +213,9 @@ const PublicMap = () => {
       </FiltersBar>
       <Map ref={mapContainer}>
         <LayersControl items={layers} onLayerChange={updateLayerVisibility} />
+        {process.env.NODE_ENV === "development" && (
+          <ZoomInfo zoomLevel={zoomLevel} />
+        )}
       </Map>
     </>
   );
