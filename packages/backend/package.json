@@ -46,6 +46,7 @@
     "morgan": "^1.9.1",
     "pg": "^8.7.1",
     "pg-hstore": "^2.3.3",
+    "require-dir": "^1.2.0",
     "rxjs": "^7.3.0",
     "semver": "^7.3.5",
     "sequelize": "^5.16.0",

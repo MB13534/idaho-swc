@@ -4,213 +4,15 @@ const {
   list_aquifers,
   list_aggregate_systems,
 } = require('../../core/models');
+const sourceData = require('../data/sources');
+const layersData = require('../data/layers');
 
 const router = express.Router();
 
-const sources = [
-  {
-    id: 'clearwater-wells',
-    type: 'geojson',
-    data: [],
-  },
-  {
-    id: 'major-aquifers',
-    type: 'vector',
-    url: 'mapbox://txclearwater.1zpxkpma',
-  },
-  {
-    id: 'fema-flood-hazard',
-    type: 'vector',
-    url: 'mapbox://txclearwater.0tvqpsja',
-  },
-  {
-    id: 'ccn-water-gcs',
-    type: 'vector',
-    url: 'mapbox://txclearwater.8v5dou5d',
-  },
-  {
-    id: 'bell-parcels',
-    type: 'vector',
-    url: 'mapbox://txclearwater.6b5qr6h3',
-  },
-];
+const sources = Object.values(sourceData);
+const layers = Object.values(layersData);
 
-const layers = [
-  {
-    id: 'major-aquifers-fill',
-    name: 'Major Aquifers',
-    type: 'fill',
-    source: 'major-aquifers',
-    'source-layer': 'Aquifers_major_dd-1n355v',
-    paint: {
-      'fill-opacity': 0.75,
-      'fill-color': [
-        'match',
-        ['get', 'AQ_NAME'],
-        ['CARRIZO'],
-        '#a6cee3',
-        ['SEYMOUR'],
-        '#1f78b4',
-        ['TRINITY'],
-        '#b2df8a',
-        ['OGALLALA'],
-        '#33a02c',
-        ['PECOS VALLEY'],
-        '#fb9a99',
-        ['HUECO_BOLSON'],
-        '#e31a1c',
-        ['EDWARDS-TRINITY'],
-        '#fdbf6f',
-        ['EDWARDS'],
-        '#cab2d6',
-        ['GULF_COAST'],
-        '#ff7f00',
-        '#000000',
-      ],
-    },
-    layout: {
-      visibility: 'none',
-    },
-    lreProperties: {
-      layerGroup: 'major-aquifers',
-    },
-  },
-  {
-    id: 'major-aquifers-line',
-    name: 'Major Aquifers',
-    type: 'line',
-    source: 'major-aquifers',
-    'source-layer': 'Aquifers_major_dd-1n355v',
-    paint: {
-      'line-color': 'hsla(0, 3%, 25%, 0.56)',
-      'line-width': 0.4,
-    },
-    layout: {
-      visibility: 'none',
-    },
-    lreProperties: {
-      layerGroup: 'major-aquifers',
-    },
-  },
-  {
-    id: 'ccn-water-gcs-fill',
-    name: 'CCN Water GCS',
-    type: 'fill',
-    source: 'ccn-water-gcs',
-    'source-layer': 'CCN_WATER_GCS_PUC-7ukl7v',
-    paint: {
-      'fill-opacity': 0.5,
-      'fill-color': '#ffff00',
-    },
-    layout: {
-      visibility: 'none',
-    },
-    lreProperties: {
-      layerGroup: 'ccn-water-gcs',
-    },
-  },
-  {
-    id: 'ccn-water-gcs-line',
-    name: 'CCN Water GCS',
-    type: 'line',
-    source: 'ccn-water-gcs',
-    'source-layer': 'CCN_WATER_GCS_PUC-7ukl7v',
-    paint: {
-      'line-color': '#444',
-    },
-    layout: {
-      visibility: 'none',
-    },
-    lreProperties: {
-      layerGroup: 'ccn-water-gcs',
-    },
-  },
-  {
-    id: 'bell-parcels-line',
-    name: 'Bell Parcels',
-    type: 'line',
-    source: 'bell-parcels',
-    'source-layer': 'output-5axzun',
-    paint: {
-      'line-color': '#9a184e',
-    },
-    layout: {
-      visibility: 'visible',
-    },
-    lreProperties: {
-      layerGroup: 'bell-parcels',
-    },
-  },
-  {
-    id: 'bell-parcels-symbol',
-    name: 'Bell Parcels',
-    type: 'symbol',
-    source: 'bell-parcels',
-    'source-layer': 'output-5axzun',
-    paint: {
-      // 'line-color': '#444',
-      'text-color': '#9a184e',
-    },
-    layout: {
-      'text-field': ['get', 'PROP_ID'],
-      'text-size': 14,
-      visibility: 'visible',
-    },
-    lreProperties: {
-      layerGroup: 'bell-parcels',
-    },
-  },
-  {
-    id: 'clearwater-wells-circle',
-    name: 'Clearwater Wells',
-    type: 'circle',
-    source: 'clearwater-wells',
-    paint: {
-      'circle-color': '#1e8dd2',
-      'circle-radius': [
-        'interpolate',
-        ['exponential', 1.16],
-        ['zoom'],
-        0, // min zoom level
-        3, // circle radius at min zoom
-        22, // max zoom level
-        24, // circle radius at max zoom
-      ],
-      'circle-stroke-width': [
-        'interpolate',
-        ['exponential', 1.16],
-        ['zoom'],
-        0, // min zoom level
-        1, // stroke width at min zoom
-        22, // max zoom level
-        4, // stroke width at max zoom
-      ],
-      'circle-stroke-color': '#fff',
-    },
-    layout: {
-      visibility: 'visible',
-    },
-    lreProperties: {
-      popup: {
-        titleField: 'cucwcd_well_number',
-        excludeFields: [
-          'well_ndx',
-          'longitude_dd',
-          'latitude_dd',
-          'location_geometry',
-          'has_production',
-          'has_waterlevels',
-          'has_wqdata',
-          'count_waterlevels',
-          'well_type',
-          'count_',
-          'id',
-        ],
-      },
-    },
-  },
-];
-
+// TODO move to DB and key off of index instead
 const wellUsesData = [
   'Ag/Irrigation',
   'Domestic',
@@ -223,6 +25,7 @@ const wellUsesData = [
   'Testing',
 ];
 
+// TODO move to DB and key off of index instead
 const wellStatusesData = [
   'Abandoned',
   'Active',
@@ -249,6 +52,7 @@ const toGeoJSON = ({data, geometryField}) => {
   };
 };
 
+// TODO look at creating indexes for fields that are filtered on in wells data source
 router.get('/sources', async (req, res, next) => {
   try {
     const wellsData = await ui_list_wells_table.findAll();
