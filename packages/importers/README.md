@@ -21,7 +21,21 @@ Put very simply, the importer runs through the following steps:
 3. Read the GeoJSON file and convert it to the [GeoJSON-LD](https://geojson.org/geojson-ld/) format that is required by Mapbox
 4. Upload the GeoJSON-LD to Mapbox and execute logic responsible for converting the GeoJSON to a Mapbox Tileset and publishing it
 
-### How Do I Configure an Importer Job for a New Layer?
+### How Do I Create a New Importer Job for a New Layer?
+
+First, open up the `package.json` file in the root of the repo and add in a new entry to the `scripts` object that looks like the following, replacing job name with name of configuration file you created (minus the file extension). Take a look at the existing scripts for guidance.
+
+```
+"importers:arcgisToMapbox:[JOB_NAME]": "node packages/importers/arcgisToMapbox/index.js --job=[JOB_NAME]"
+```
+
+Next, open up the `package.json` located at `packages/importers` and add a new entry to the `scripts` object that looks like the following, replacing job name with name of configuration file you created (minus the file extension). Take a look at the existing scripts for guidance.
+
+```
+"importers:arcgisToMapbox:[JOB_NAME]": "node arcgisToMapbox/index.js --job=[JOB_NAME]"
+```
+
+Setting up the script will then allow you to run commands like `yarn importers:arcgisToMapbox:parcels` from the command line or from Heroku.
 
 Open up the `packages/importers/arcgisToMapbox/jobs` directory and create a new file following the `[LAYER_NAME].json` convention. This file is a configuration file for the importer job - each layer should have their own config. Here is an example of the configuration for the job responsible for importing the Bell CAD Parcels.
 
