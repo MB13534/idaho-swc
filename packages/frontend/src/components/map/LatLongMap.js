@@ -194,7 +194,7 @@ const Map = ({ config }) => {
 
       marker.on("dragend", onDragEnd);
     }
-  }, [mapIsLoaded, map, config]); //eslint-disable-line
+  }, [mapIsLoaded, map]); //eslint-disable-line
 
   return (
     <>
