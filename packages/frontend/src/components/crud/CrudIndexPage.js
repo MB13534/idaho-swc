@@ -32,7 +32,6 @@ function CrudIndexPage({ config, width, modelName }) {
         open={app.confirmDialogOpen}
         setOpen={app.setConfirmDialogOpen}
         afterDelete={() => {
-          console.log("push");
           history.push(`${crud.getModelBasePath()}`);
         }}
       />

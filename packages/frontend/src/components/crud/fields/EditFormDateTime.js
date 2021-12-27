@@ -107,7 +107,7 @@ function EditFormDateTime({
       {type === CRUD_FIELD_TYPES.DATE && (
         <DateComponent
           name={field.key}
-          value={values[field.key] ?? null}
+          value={values[field.key] || null}
           error={hasError}
           fullWidth
           inputProps={{ tabIndex: index + 1 }}
@@ -142,7 +142,7 @@ function EditFormDateTime({
       {type === CRUD_FIELD_TYPES.TIME && (
         <TimeComponent
           name={field.key}
-          value={values[field.key] ?? null}
+          value={values[field.key] || null}
           error={hasError}
           fullWidth
           inputProps={{ tabIndex: index + 1 }}
@@ -178,7 +178,7 @@ function EditFormDateTime({
       {type === CRUD_FIELD_TYPES.DATETIME && (
         <DateTimeComponent
           name={field.key}
-          value={values[field.key] ?? null}
+          value={values[field.key] || null}
           error={hasError}
           fullWidth
           inputProps={{ tabIndex: index + 1 }}

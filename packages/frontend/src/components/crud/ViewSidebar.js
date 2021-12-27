@@ -67,7 +67,7 @@ export function ViewSidebar({
   width,
 }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(
-    JSON.parse(localStorage.getItem("isCrudViewSidebarOpen")) ?? true
+    JSON.parse(localStorage.getItem("isCrudViewSidebarOpen")) ?? false
   );
 
   const toggleOpen = () => {

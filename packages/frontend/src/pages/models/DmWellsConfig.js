@@ -24,18 +24,18 @@ export function columns(modelName) {
         return Renderers.ActionsRenderer(params, modelName);
       },
     },
-    {
-      field: "content_node_statuses.name",
-      renderHeader: Renderers.StatusHelpIconRenderer,
-      width: 20,
-      sortable: false,
-      disableColumnMenu: true,
-      disableReorder: true,
-      filterable: false,
-      resizeable: false,
-      align: "center",
-      renderCell: Renderers.StatusDotRenderer,
-    },
+    // {
+    //   field: "content_node_statuses.name",
+    //   renderHeader: Renderers.StatusHelpIconRenderer,
+    //   width: 20,
+    //   sortable: false,
+    //   disableColumnMenu: true,
+    //   disableReorder: true,
+    //   filterable: false,
+    //   resizeable: false,
+    //   align: "center",
+    //   renderCell: Renderers.StatusDotRenderer,
+    // },
     {
       field: "cuwcd_well_number",
       headerName: "CUWCD Well Number",
@@ -324,7 +324,7 @@ export const fields = [
     required: false,
     type: CRUD_FIELD_TYPES.NUMBER,
     typeConfig: {
-      decimalScale: 2,
+      decimalScale: 5,
       moreThan: 0,
     },
     cols: 4,
@@ -332,9 +332,9 @@ export const fields = [
   },
   {
     type: CRUD_FIELD_TYPES.CUSTOM,
-    component: () => (
+    component: (config) => (
       <Grid item xs={12} style={{ paddingTop: "0" }}>
-        <LatLongMap />
+        <LatLongMap config={config} />
       </Grid>
     ),
   },
@@ -345,7 +345,7 @@ export const fields = [
   {
     name: "Primary Well Use",
     key: "primary_well_use_ndx",
-    required: false,
+    required: true,
     type: CRUD_FIELD_TYPES.DROPDOWN,
     typeConfig: {
       table: "list_water_uses",
@@ -385,7 +385,7 @@ export const fields = [
   {
     name: "Aquifer",
     key: "aquifer_ndx",
-    required: false,
+    required: true,
     type: CRUD_FIELD_TYPES.DROPDOWN,
     typeConfig: {
       table: "list_aquifers",
@@ -457,7 +457,7 @@ export const fields = [
   {
     name: "Construction Notes",
     key: "construction_notes",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.MULTILINE_TEXT,
     cols: 12,
     isOpen: true,
@@ -469,7 +469,7 @@ export const fields = [
   {
     name: "Well Owner",
     key: "owner_rolo_ndx",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.SPLIT_STRING_DROPDOWN,
     typeConfig: {
       table: "current_wells_to_rolodex_owners_texts",
@@ -483,7 +483,7 @@ export const fields = [
   {
     name: "Well Contact",
     key: "contact_rolo_ndx",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.SPLIT_STRING_DROPDOWN,
     typeConfig: {
       table: "current_wells_to_rolodex_contacts_texts",
@@ -502,14 +502,14 @@ export const fields = [
     cols: 12,
     isOpen: true,
   },
-  {
-    name: "Well Index",
-    key: "well_ndx",
-    required: true,
-    type: CRUD_FIELD_TYPES.TEXT,
-    cols: 12,
-    isOpen: true,
-  },
+  // {
+  //   name: "Well Index",
+  //   key: "well_ndx",
+  //   required: true,
+  //   type: CRUD_FIELD_TYPES.TEXT,
+  //   cols: 12,
+  //   isOpen: true,
+  // },
 ];
 
 const config = {

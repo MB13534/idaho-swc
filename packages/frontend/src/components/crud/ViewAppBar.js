@@ -14,7 +14,7 @@ import {
   withWidth,
 } from "@material-ui/core";
 import { ChevronLeft } from "@material-ui/icons";
-import SplitSaveButton from "./SplitSaveButton";
+// import SplitSaveButton from "./SplitSaveButton";
 import {
   CRUD_FORM_SUBMIT_TYPES,
   CRUD_VIEW_MODES,
@@ -24,7 +24,7 @@ import { useApp } from "../../AppProvider";
 import { useHistory } from "react-router-dom";
 import SplitPublishButton from "./SplitPublishButton";
 import { ActionsDropdown, ActionsDropdownTypes } from "./ActionsDropdown";
-import { StatusDotRenderer, StatusHelpIconRenderer } from "./ResultsRenderers";
+// import { StatusDotRenderer, StatusHelpIconRenderer } from "./ResultsRenderers";
 import { useCrud } from "../../CrudProvider";
 import * as inflector from "inflected";
 
@@ -72,7 +72,7 @@ const IconButton = styled(MuiIconButton)`
 
 function ViewAppBar({
   data,
-  isFetching,
+  // isFetching,
   modelName,
   mode,
   submitForm,
@@ -83,7 +83,7 @@ function ViewAppBar({
   formIsDirty,
   displayName,
   formIsSubmitting,
-  numMismatches,
+  // numMismatches,
   width,
 }) {
   const app = useApp();
@@ -103,7 +103,9 @@ function ViewAppBar({
 
   const afterClick = (newData) => {
     if (mode === CRUD_VIEW_MODES.ADD) {
+      triggerQueryReload();
       history.push(`${crud.getModelBasePath()}/${newData.id}`);
+      history.go(0);
     } else {
       triggerQueryReload();
     }
@@ -153,13 +155,13 @@ function ViewAppBar({
             <ContentTypeChip label={inflector.titleize(modelName)} />
           </Grid>
         )}
-        {mode === CRUD_VIEW_MODES.EDIT && (
-          <Grid item className="statusIcon">
-            <StatusHelpIconRenderer>
-              {StatusDotRenderer({ row: data }, true, theme.palette.type)}
-            </StatusHelpIconRenderer>
-          </Grid>
-        )}
+        {/*{mode === CRUD_VIEW_MODES.EDIT && (*/}
+        {/*  <Grid item className="statusIcon">*/}
+        {/*    <StatusHelpIconRenderer>*/}
+        {/*      {StatusDotRenderer({ row: data }, true, theme.palette.type)}*/}
+        {/*    </StatusHelpIconRenderer>*/}
+        {/*  </Grid>*/}
+        {/*)}*/}
         <Grid
           item
           style={{
@@ -180,7 +182,7 @@ function ViewAppBar({
         <Grid
           item
           style={{
-            flexGrow: 1,
+            // flexGrow: 1,
             marginTop: isWidthDown("xs", width) ? "8px" : 0,
             textAlign: "right",
             whiteSpace: "nowrap",
@@ -198,19 +200,19 @@ function ViewAppBar({
               triggerQueryReload();
             }}
           />
-          <SplitSaveButton
-            numMismatches={numMismatches}
-            formIsDirty={formIsDirty}
-            formIsSubmitting={submitFormMode === modes.SAVE && formIsSubmitting}
-            isFetching={isFetching}
-            onClick={() => prepareSubmit(modes.SAVE, afterClick)}
-            onCloseClick={() => prepareSubmit(modes.SAVE, afterCloseClick)}
-            onNewClick={() => prepareSubmit(modes.SAVE, afterNewClick)}
-            style={{
-              marginRight: theme.spacing(2),
-              width: isWidthDown("xs", width) ? "100%" : "auto",
-            }}
-          />
+          {/*<SplitSaveButton*/}
+          {/*  numMismatches={numMismatches}*/}
+          {/*  formIsDirty={formIsDirty}*/}
+          {/*  formIsSubmitting={submitFormMode === modes.SAVE && formIsSubmitting}*/}
+          {/*  isFetching={isFetching}*/}
+          {/*  onClick={() => prepareSubmit(modes.SAVE, afterClick)}*/}
+          {/*  onCloseClick={() => prepareSubmit(modes.SAVE, afterCloseClick)}*/}
+          {/*  onNewClick={() => prepareSubmit(modes.SAVE, afterNewClick)}*/}
+          {/*  style={{*/}
+          {/*    marginRight: theme.spacing(2),*/}
+          {/*    width: isWidthDown("xs", width) ? "100%" : "auto",*/}
+          {/*  }}*/}
+          {/*/>*/}
           <SplitPublishButton
             formIsDirty={formIsDirty}
             formIsSubmitting={
@@ -219,7 +221,10 @@ function ViewAppBar({
             onClick={() => prepareSubmit(modes.PUBLISH, afterClick)}
             onCloseClick={() => prepareSubmit(modes.PUBLISH, afterCloseClick)}
             onNewClick={() => prepareSubmit(modes.PUBLISH, afterNewClick)}
-            style={{ width: isWidthDown("xs", width) ? "100%" : "auto" }}
+            style={{
+              marginRight: theme.spacing(2),
+              width: isWidthDown("xs", width) ? "100%" : "auto",
+            }}
           />
         </Grid>
       </Grid>
