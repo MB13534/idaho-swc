@@ -2,8 +2,6 @@ import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 import styled from "styled-components/macro";
 import { STARTING_LOCATION } from "../../constants";
-import ToggleBasemapControl from "./ToggleBasemapControl";
-import ResetZoomControl from "./ResetZoomControl";
 import {
   Accordion,
   AccordionDetails,
@@ -27,7 +25,7 @@ const MapContainer = styled.div`
 `;
 
 const Coordinates = styled.pre`
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   color: #fff;
   position: absolute;
   bottom: 30px;
@@ -42,7 +40,7 @@ const Coordinates = styled.pre`
 `;
 
 const Instructions = styled.pre`
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.7);
   color: #fff;
   position: absolute;
   left: 50%;
@@ -70,12 +68,6 @@ const Map = ({ config }) => {
   const eleRef = useRef(null);
   const mapContainerRef = useRef(null); // create a reference to the map container
 
-  const DUMMY_BASEMAP_LAYERS = [
-    { url: "streets-v11", icon: "commute" },
-    { url: "outdoors-v11", icon: "park" },
-    { url: "satellite-streets-v11", icon: "satellite_alt" },
-  ];
-
   async function getElevation(transferElevation = true) {
     // Construct the API request.
 
@@ -99,33 +91,12 @@ const Map = ({ config }) => {
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
-      style: "mapbox://styles/mapbox/" + DUMMY_BASEMAP_LAYERS[0].url,
+      style: "mapbox://styles/mapbox/satellite-streets-v11",
       center:
         config.data.longitude_dd === "" || config.data.latitude_dd === ""
           ? STARTING_LOCATION
           : [config.data.longitude_dd, config.data.latitude_dd],
       zoom: 9,
-    });
-
-    map.addControl(new mapboxgl.NavigationControl(), "top-left");
-    map.addControl(
-      new mapboxgl.GeolocateControl({
-        positionOptions: {
-          enableHighAccuracy: true,
-        },
-        // When active the map will receive updates to the device's location as it changes.
-        trackUserLocation: true,
-        // Draw an arrow next to the location dot to indicate which direction the device is heading.
-        showUserHeading: true,
-      }),
-      "top-left"
-    );
-    map.addControl(new mapboxgl.FullscreenControl());
-    // Add locate control to the map.
-    map.addControl(new ResetZoomControl(), "top-left");
-
-    DUMMY_BASEMAP_LAYERS.forEach((layer) => {
-      return map.addControl(new ToggleBasemapControl(layer.url, layer.icon));
     });
 
     map.on("render", () => {
