@@ -39,12 +39,14 @@ const Coordinates = styled.pre`
   display: none;
 `;
 
-const Instructions = styled.pre`
+const Instructions = styled.div`
   background: rgba(0, 0, 0, 0.7);
   color: #fff;
   position: absolute;
+  text-align: center;
   left: 50%;
   margin-right: -50%;
+  margin-top: 10px;
   transform: translate(-50%, 0);
   padding: 5px 10px;
   font-size: 11px;
