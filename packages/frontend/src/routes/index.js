@@ -27,8 +27,6 @@ import DeveloperGuard from "../components/DeveloperGuard";
 import DeveloperVisibilityFilter from "../components/DeveloperVisibilityFilter";
 import AdminGuard from "../components/AdminGuard";
 import AdminVisibilityFilter from "../components/AdminVisibilityFilter";
-import UserVisibilityFilter from "../components/UserVisibilityFilter";
-import UserGuard from "../components/UserGuard";
 
 import Blank from "../pages/pages/Blank";
 import Changelog from "../pages/docs/Changelog";
@@ -121,12 +119,8 @@ const dataEntryRoutes = {
       path: "/data-access/well-production-data-entry",
       name: "Well Production",
       component: Production,
-      guard: UserGuard,
-      visibilityFilter: UserVisibilityFilter,
     },
   ],
-  guard: UserGuard,
-  visibilityFilter: UserVisibilityFilter,
 };
 
 const reportsRoutes = {
@@ -210,8 +204,6 @@ const publicFilesRoutes = {
   path: "/data-access/documents/public-files",
   name: "Public Files",
   component: Blank,
-  guard: UserGuard,
-  visibilityFilter: UserVisibilityFilter,
 };
 
 const clientDocsRoutes = {
@@ -274,8 +266,6 @@ const mainRoutes = {
   component: Default,
   children: null,
   containsHome: true,
-  guard: UserGuard,
-  visibilityFilter: UserVisibilityFilter,
 };
 
 const pageRoutes = {
@@ -310,8 +300,6 @@ const pageRoutes = {
       component: Blank,
     },
   ],
-  guard: UserGuard,
-  visibilityFilter: UserVisibilityFilter,
 };
 
 const documentationRoutes = {

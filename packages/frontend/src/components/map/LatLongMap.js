@@ -138,7 +138,7 @@ const Map = ({ config }) => {
         const lngLat = marker.getLngLat();
         coordinatesRef.current.style.display = "block";
         instructionsRef.current.innerHTML =
-          "Click resulting coordinate or elevation to copy individual result to clipboard";
+          "Click coordinate or elevation to copy individual result to clipboard";
 
         longRef.current.innerHTML = lngLat.lng;
         config.setFieldValue("longitude_dd", lngLat.lng);

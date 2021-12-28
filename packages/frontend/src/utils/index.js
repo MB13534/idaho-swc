@@ -184,3 +184,9 @@ export const lastOfCurrentMonth = new Date(
 );
 
 export const lastOfYear = new Date(new Date().getFullYear(), 11, 31);
+
+export const filterDataForWellOwner = (data, user) => {
+  return data
+    ? data.filter((item) => item.authorized_users?.includes(user?.sub))
+    : [];
+};

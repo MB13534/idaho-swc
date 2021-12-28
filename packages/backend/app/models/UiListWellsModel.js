@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT, NUMBER, GEOMETRY, BOOLEAN, UUID, BIGINT, DATE} =
+  const {INTEGER, TEXT, NUMBER, GEOMETRY, BOOLEAN, UUID, BIGINT, DATE, ARRAY} =
     DataTypes;
   const UiListWells = sequelize.define(
     'ui_list_wells',
@@ -145,6 +145,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       location_geometry: {
         type: GEOMETRY,
+      },
+      authorized_users: {
+        type: ARRAY(TEXT),
       },
     },
     {

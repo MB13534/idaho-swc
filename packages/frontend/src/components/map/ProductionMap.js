@@ -7,6 +7,7 @@ import ToggleBasemapControl from "./ToggleBasemapControl";
 import { makeStyles } from "@material-ui/core/styles";
 import { Tooltip } from "@material-ui/core";
 import { formatBooleanTrueFalse } from "../../utils";
+import { useApp } from "../../AppProvider";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -71,6 +72,7 @@ const ProductionMap = ({
   latRef,
   setRadioValue,
 }) => {
+  const { currentUser } = useApp();
   const classes = useStyles();
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
 
@@ -298,13 +300,17 @@ const ProductionMap = ({
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
           }
 
+          const canUserEdit = currentUser.isUser
+            ? ""
+            : `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${data.id}">Link</a></td></tr>`;
+
           const html =
             '<div class="' +
             classes.popupWrap +
             '"><h3>Properties</h3><table class="' +
             classes.propTable +
             '"><tbody>' +
-            `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${data.id}">Link</a></td></tr>` +
+            canUserEdit +
             Object.entries(data)
               .map(([k, v]) => {
                 if (

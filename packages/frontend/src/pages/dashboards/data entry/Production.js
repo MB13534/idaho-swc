@@ -44,6 +44,7 @@ import {
   firstOfYear,
   lastOfYear,
   lastOfJanuary,
+  filterDataForWellOwner,
 } from "../../../utils";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
@@ -243,7 +244,12 @@ function Production() {
       editor_name: "Editor",
       last_edited_date: "Last Edited Date",
       list_of_attachments: "List of Attachments",
+      authorized_users: "Authorized Users",
     };
+
+    const canUserEdit = currentUser.isUser
+      ? ""
+      : `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${pointFeatures.id}">Link</a></td></tr>`;
 
     const html =
       '<div class="' +
@@ -251,7 +257,7 @@ function Production() {
       '"><h3>Properties</h3><table class="' +
       classes.propTable +
       '"><tbody>' +
-      `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${pointFeatures.id}">Link</a></td></tr>` +
+      canUserEdit +
       Object.entries(pointFeatures)
         .map(([k, v]) => {
           if (
@@ -267,6 +273,7 @@ function Production() {
               "is_exempt",
               "is_monitoring",
               "well_type",
+              "authorized_users",
             ].includes(k)
           )
             return null;
@@ -285,10 +292,15 @@ function Production() {
   const { data, isLoading, error } = useQuery(
     ["UiListWells", currentUser],
     async () => {
+      if (!currentUser) return;
       try {
         const response = await service([findRawRecords, ["UiListWells"]]);
+        let userData = [...response];
+        if (currentUser.isUser) {
+          userData = filterDataForWellOwner(userData, currentUser);
+        }
         //filters out any well that does not have geometry data
-        const filterData = response.filter(
+        const filterData = userData.filter(
           (location) => location.location_geometry
         );
         setFilteredData(filterData);
@@ -1129,20 +1141,21 @@ function Production() {
                           handlePointInteractions(rowData);
                         },
                       }),
-                      (rowData) => ({
-                        icon: () => {
-                          return (
-                            <Link
-                              component={NavLink}
-                              exact
-                              to={"/models/dm-wells/" + rowData.id}
-                            >
-                              <Edit />
-                            </Link>
-                          );
+                      (rowData) =>
+                        !currentUser.isUser && {
+                          icon: () => {
+                            return (
+                              <Link
+                                component={NavLink}
+                                exact
+                                to={"/models/dm-wells/" + rowData.id}
+                              >
+                                <Edit />
+                              </Link>
+                            );
+                          },
+                          tooltip: "Edit Well",
                         },
-                        tooltip: "Edit Well",
-                      }),
                       () => ({
                         icon: "near_me",
                         tooltip: "Fly to on Map",
