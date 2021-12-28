@@ -42,7 +42,7 @@ import {
   lineColors,
   renderStatusChip,
   lastOfJanuary,
-  filterDataForWellOwner,
+  // filterDataForWellOwner,
 } from "../../../utils";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
@@ -292,15 +292,15 @@ function Default() {
 
   const [filteredData, setFilteredData] = React.useState([]);
   const { data, isLoading, error } = useQuery(
-    ["UiListWells", currentUser],
+    ["UiListWellsAllWells", currentUser],
     async () => {
       if (!currentUser) return;
       try {
         const response = await service([findRawRecords, ["UiListWells"]]);
         let userData = [...response];
-        if (currentUser.isUser) {
-          userData = filterDataForWellOwner(userData, currentUser);
-        }
+        // if (currentUser.isUser) {
+        //   userData = filterDataForWellOwner(userData, currentUser);
+        // }
         //filters out any well that does not have geometry data
         const filterData = userData.filter(
           (location) => location.location_geometry
