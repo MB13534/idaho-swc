@@ -1,5 +1,7 @@
 import React from "react";
 import { Droplet, CheckSquare, CreditCard } from "react-feather";
+import CallMerge from "@material-ui/icons/CallMerge";
+import PermContactCalendar from "@material-ui/icons/PermContactCalendar";
 import AdminGuard from "../components/AdminGuard";
 import AdminVisibilityFilter from "../components/AdminVisibilityFilter";
 import DeveloperGuard from "../components/DeveloperGuard";
@@ -10,9 +12,9 @@ export const STARTING_LOCATION = [-97.4718189239502, 31.050691282461912];
 // Configuration
 export const CRUD_MODELS = [
   {
+    header: "Data Management",
     name: "DmPermits",
     sidebarName: "Permits",
-    header: "Data Management",
     icon: <CheckSquare />,
     guard: AdminGuard,
     visibilityFilter: AdminVisibilityFilter,
@@ -28,6 +30,20 @@ export const CRUD_MODELS = [
     name: "ListRolodexes",
     sidebarName: "Rolodex",
     icon: <CreditCard />,
+    guard: AdminGuard,
+    visibilityFilter: AdminVisibilityFilter,
+  },
+  {
+    name: "DmPermitHolders",
+    sidebarName: "Permit Holders",
+    icon: <PermContactCalendar />,
+    guard: AdminGuard,
+    visibilityFilter: AdminVisibilityFilter,
+  },
+  {
+    name: "DmAggregateSystems",
+    sidebarName: "Aggregated Systems",
+    icon: <CallMerge />,
     guard: AdminGuard,
     visibilityFilter: AdminVisibilityFilter,
   },
