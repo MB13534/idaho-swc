@@ -68,6 +68,7 @@ function Results({ config, modelName, width, displayMode }) {
             {displayMode === CRUD_DISPLAY_MODES.TABLE && (
               <ResultsTable
                 configColumns={config.columns}
+                sortBy={config.sortBy}
                 modelName={modelName}
                 data={data.data}
                 endpoint={endpoint}

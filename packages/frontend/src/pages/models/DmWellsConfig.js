@@ -8,6 +8,11 @@ export const displayName = (row) => {
   return `${row.cuwcd_well_number}`;
 };
 
+// export const sortBy = {
+//   field: "created_at",
+//   sort: "asc",
+// };
+
 export function columns(modelName) {
   return [
     {
@@ -186,17 +191,17 @@ export function columns(modelName) {
     {
       field: "editor_name",
       headerName: "Updated By",
-      width: 150,
+      width: 170,
     },
     {
       field: "registration_date ",
       headerName: "Original Registration Date",
-      width: 150,
+      width: 270,
     },
     {
       field: "registration_notes ",
       headerName: "Original Registration Notes",
-      width: 150,
+      width: 270,
     },
     // {
     //   field: "well_ndx",
@@ -209,18 +214,18 @@ export function columns(modelName) {
     //   width: 100,
     //   renderCell: Renderers.IdRenderer,
     // },
-    {
-      field: "created_at",
-      headerName: "Created At",
-      width: 250,
-      renderCell: Renderers.DateRenderer,
-    },
-    {
-      field: "updated_at",
-      headerName: "Updated At",
-      width: 200,
-      renderCell: Renderers.DateRenderer,
-    },
+    // {
+    //   field: "created_at",
+    //   headerName: "Created At",
+    //   width: 250,
+    //   renderCell: Renderers.DateRenderer,
+    // },
+    // {
+    //   field: "updated_at",
+    //   headerName: "Updated At",
+    //   width: 200,
+    //   renderCell: Renderers.DateRenderer,
+    // },
   ];
 }
 export const fields = [

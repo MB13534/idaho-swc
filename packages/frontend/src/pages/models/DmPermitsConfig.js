@@ -6,6 +6,11 @@ export const displayName = (row) => {
   return `${row.permit_ndx}`;
 };
 
+// export const sortBy = {
+//   field: "created_at",
+//   sort: "asc",
+// };
+
 export function columns(modelName) {
   return [
     {
@@ -150,24 +155,24 @@ export function columns(modelName) {
     //   headerName: "Assoc Well Index",
     //   width: 150,
     // },
-    {
-      field: "id",
-      headerName: "ID",
-      width: 100,
-      renderCell: Renderers.IdRenderer,
-    },
-    {
-      field: "created_at",
-      headerName: "Created At",
-      width: 250,
-      renderCell: Renderers.DateRenderer,
-    },
-    {
-      field: "updated_at",
-      headerName: "Updated At",
-      width: 200,
-      renderCell: Renderers.DateRenderer,
-    },
+    // {
+    //   field: "id",
+    //   headerName: "ID",
+    //   width: 100,
+    //   renderCell: Renderers.IdRenderer,
+    // },
+    // {
+    //   field: "created_at",
+    //   headerName: "Created At",
+    //   width: 250,
+    //   renderCell: Renderers.DateRenderer,
+    // },
+    // {
+    //   field: "updated_at",
+    //   headerName: "Updated At",
+    //   width: 200,
+    //   renderCell: Renderers.DateRenderer,
+    // },
   ];
 }
 

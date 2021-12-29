@@ -1,7 +1,7 @@
 const express = require('express');
 const {checkAccessToken} = require('../../core/middleware/auth.js');
 const {
-  list_rolodexes: model,
+  dm_rolodexes: model,
   content_node_statuses,
 } = require('../../core/models');
 const {buildAppCrudRoutes} = require('../../core/routes/crud/handlers');

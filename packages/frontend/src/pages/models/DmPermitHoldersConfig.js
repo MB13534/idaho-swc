@@ -5,6 +5,11 @@ export const displayName = (row) => {
   return `${row.rolo_ndx}`;
 };
 
+// export const sortBy = {
+//   field: "created_at",
+//   sort: "asc",
+// };
+
 export function columns(modelName) {
   return [
     {
@@ -33,11 +38,11 @@ export function columns(modelName) {
     //   align: "center",
     //   renderCell: Renderers.StatusDotRenderer,
     // },
-    {
-      field: "rolo_ndx",
-      headerName: "Rolodex Index",
-      width: 170,
-    },
+    // {
+    //   field: "rolo_ndx",
+    //   headerName: "Rolodex Index",
+    //   width: 170,
+    // },
     {
       field: "lastname",
       headerName: "Last Name",
@@ -98,40 +103,40 @@ export function columns(modelName) {
       headerName: "Notes",
       width: 150,
     },
-    {
-      field: "id",
-      headerName: "ID",
-      width: 100,
-      renderCell: Renderers.IdRenderer,
-    },
-    {
-      field: "created_at",
-      headerName: "Created At",
-      width: 250,
-      renderCell: Renderers.DateRenderer,
-    },
-    {
-      field: "updated_at",
-      headerName: "Updated At",
-      width: 200,
-      renderCell: Renderers.DateRenderer,
-    },
+    // {
+    //   field: "id",
+    //   headerName: "ID",
+    //   width: 100,
+    //   renderCell: Renderers.IdRenderer,
+    // },
+    // {
+    //   field: "created_at",
+    //   headerName: "Created At",
+    //   width: 250,
+    //   renderCell: Renderers.DateRenderer,
+    // },
+    // {
+    //   field: "updated_at",
+    //   headerName: "Updated At",
+    //   width: 200,
+    //   renderCell: Renderers.DateRenderer,
+    // },
   ];
 }
 
 export const fields = [
-  {
-    name: "Rolodex Index",
-    key: "rolo_ndx",
-    required: true,
-    type: CRUD_FIELD_TYPES.TEXT,
-    cols: 12,
-    isOpen: true,
-  },
+  // {
+  //   name: "Rolodex Index",
+  //   key: "rolo_ndx",
+  //   required: true,
+  //   type: CRUD_FIELD_TYPES.TEXT,
+  //   cols: 12,
+  //   isOpen: true,
+  // },
   {
     name: "Last Name",
     key: "lastname",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -139,7 +144,7 @@ export const fields = [
   {
     name: "First Name",
     key: "firstname",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -147,7 +152,7 @@ export const fields = [
   {
     name: "Organization",
     key: "organization",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -155,7 +160,7 @@ export const fields = [
   {
     name: "Address",
     key: "address",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -163,7 +168,7 @@ export const fields = [
   {
     name: "City",
     key: "city",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -171,7 +176,7 @@ export const fields = [
   {
     name: "State",
     key: "state",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -179,7 +184,7 @@ export const fields = [
   {
     name: "Zipcode",
     key: "zipcode",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -187,7 +192,7 @@ export const fields = [
   {
     name: "Email 1",
     key: "email_1",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -195,7 +200,7 @@ export const fields = [
   {
     name: "Email 2",
     key: "email_2",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -203,7 +208,7 @@ export const fields = [
   {
     name: "Phone 1",
     key: "phone_1",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -211,7 +216,7 @@ export const fields = [
   {
     name: "Phone 2",
     key: "phone_2",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -219,7 +224,7 @@ export const fields = [
   {
     name: "Notes",
     key: "notes",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,

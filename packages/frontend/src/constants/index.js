@@ -27,7 +27,7 @@ export const CRUD_MODELS = [
     visibilityFilter: AdminVisibilityFilter,
   },
   {
-    name: "ListRolodexes",
+    name: "DmRolodexes",
     sidebarName: "Rolodex",
     icon: <CreditCard />,
     guard: AdminGuard,

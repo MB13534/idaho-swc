@@ -192,6 +192,10 @@ const DashboardMap = ({
                   has_wqdata: location.has_wqdata,
                   well_ndx: location.well_ndx,
                   location_geometry: location.location_geometry,
+                  authorized_users: location.authorized_users,
+                  well_owner: location?.authorized_users?.includes(
+                    currentUser.sub
+                  ),
                 },
                 geometry: {
                   type: location.location_geometry.type,
@@ -213,6 +217,8 @@ const DashboardMap = ({
                 "case",
                 ["boolean", ["feature-state", "clicked"], false],
                 "yellow",
+                ["boolean", ["get", "well_owner"], false],
+                "red",
                 "#74E0FF",
               ],
               "circle-stroke-width": [
@@ -320,6 +326,8 @@ const DashboardMap = ({
                     "has_wqdata",
                     "well_ndx",
                     "location_geometry",
+                    "authorized_users",
+                    "well_owner",
                   ].includes(k)
                 )
                   return null;

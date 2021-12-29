@@ -5,6 +5,11 @@ export const displayName = (row) => {
   return `${row.permit_type_ndx}`;
 };
 
+// export const sortBy = {
+//   field: "created_at",
+//   sort: "asc",
+// };
+
 export function columns(modelName) {
   return [
     {
@@ -36,17 +41,17 @@ export function columns(modelName) {
     {
       field: "permit_type_ndx",
       headerName: "Permit Type Index",
-      width: 150,
+      width: 220,
     },
     {
       field: "permit_type_desc",
       headerName: "Permit Type Description",
-      width: 150,
+      width: 250,
     },
     {
       field: "permit_type_notes",
       headerName: "Permit Type Notes",
-      width: 150,
+      width: 250,
     },
     {
       field: "removed",
@@ -57,26 +62,26 @@ export function columns(modelName) {
     {
       field: "display_order",
       headerName: "Display Order",
-      width: 150,
-    },
-    {
-      field: "id",
-      headerName: "ID",
-      width: 100,
-      renderCell: Renderers.IdRenderer,
-    },
-    {
-      field: "created_at",
-      headerName: "Created At",
-      width: 250,
-      renderCell: Renderers.DateRenderer,
-    },
-    {
-      field: "updated_at",
-      headerName: "Updated At",
       width: 200,
-      renderCell: Renderers.DateRenderer,
     },
+    // {
+    //   field: "id",
+    //   headerName: "ID",
+    //   width: 100,
+    //   renderCell: Renderers.IdRenderer,
+    // },
+    // {
+    //   field: "created_at",
+    //   headerName: "Created At",
+    //   width: 250,
+    //   renderCell: Renderers.DateRenderer,
+    // },
+    // {
+    //   field: "updated_at",
+    //   headerName: "Updated At",
+    //   width: 200,
+    //   renderCell: Renderers.DateRenderer,
+    // },
   ];
 }
 

@@ -68,21 +68,19 @@ const DataTable = styled(MuiDataGrid)`
 
 export function ResultsTable({
   configColumns,
+  sortBy = {
+    field: "",
+    sort: "",
+  },
   modelName,
   data,
   endpoint,
   width,
 }) {
   const history = useHistory();
-
   const [columns] = useState(configColumns(modelName));
   const [pageSize] = useState(isWidthDown("xs", width) ? 5 : 25);
-  const [sortModel, setSortModel] = useState([
-    {
-      field: "created_at",
-      sort: "asc",
-    },
-  ]);
+  const [sortModel, setSortModel] = useState([sortBy]);
 
   const onRowClick = (params) => {
     if (actionsPopupIsOpen()) return;

@@ -5,6 +5,11 @@ export const displayName = (row) => {
   return `${row.agg_system_name}`;
 };
 
+// export const sortBy = {
+//   field: "created_at",
+//   sort: "asc",
+// };
+
 export function columns(modelName) {
   return [
     {
@@ -33,11 +38,11 @@ export function columns(modelName) {
     //   align: "center",
     //   renderCell: Renderers.StatusDotRenderer,
     // },
-    {
-      field: "agg_system_ndx",
-      headerName: "Aggregated System Index",
-      width: 250,
-    },
+    // {
+    //   field: "agg_system_ndx",
+    //   headerName: "Aggregated System Index",
+    //   width: 250,
+    // },
     {
       field: "agg_system_name",
       headerName: "Aggregated System Name",
@@ -54,36 +59,36 @@ export function columns(modelName) {
       renderCell: Renderers.FormatBooleanTrueFalse,
       width: 150,
     },
-    {
-      field: "id",
-      headerName: "ID",
-      width: 100,
-      renderCell: Renderers.IdRenderer,
-    },
-    {
-      field: "created_at",
-      headerName: "Created At",
-      width: 250,
-      renderCell: Renderers.DateRenderer,
-    },
-    {
-      field: "updated_at",
-      headerName: "Updated At",
-      width: 200,
-      renderCell: Renderers.DateRenderer,
-    },
+    // {
+    //   field: "id",
+    //   headerName: "ID",
+    //   width: 100,
+    //   renderCell: Renderers.IdRenderer,
+    // },
+    // {
+    //   field: "created_at",
+    //   headerName: "Created At",
+    //   width: 250,
+    //   renderCell: Renderers.DateRenderer,
+    // },
+    // {
+    //   field: "updated_at",
+    //   headerName: "Updated At",
+    //   width: 200,
+    //   renderCell: Renderers.DateRenderer,
+    // },
   ];
 }
 
 export const fields = [
-  {
-    name: "Aggregated System Index",
-    key: "agg_system_ndx",
-    required: true,
-    type: CRUD_FIELD_TYPES.TEXT,
-    cols: 12,
-    isOpen: true,
-  },
+  // {
+  //   name: "Aggregated System Index",
+  //   key: "agg_system_ndx",
+  //   required: true,
+  //   type: CRUD_FIELD_TYPES.TEXT,
+  //   cols: 12,
+  //   isOpen: true,
+  // },
   {
     name: "Aggregated System Name",
     key: "agg_system_name",
@@ -95,7 +100,7 @@ export const fields = [
   {
     name: "Notes",
     key: "agg_system_notes",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.TEXT,
     cols: 12,
     isOpen: true,
@@ -103,7 +108,7 @@ export const fields = [
   {
     name: "Inactive?",
     key: "inactive",
-    required: true,
+    required: false,
     type: CRUD_FIELD_TYPES.DROPDOWN,
     typeConfig: {
       table: "list_booleans",

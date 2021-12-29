@@ -1,10 +1,16 @@
 module.exports = (sequelize, DataTypes) => {
   const {INTEGER, TEXT, UUID, DATE, BOOLEAN} = DataTypes;
-  const ListRolodexes = sequelize.define(
-    'list_rolodexes',
+  const DmRolodexes = sequelize.define(
+    'dm_rolodexes',
     {
       rolo_ndx: {
         type: INTEGER,
+      },
+      permit_holder: {
+        type: BOOLEAN,
+      },
+      well_contact: {
+        type: BOOLEAN,
       },
       lastname: {
         type: TEXT,
@@ -36,26 +42,8 @@ module.exports = (sequelize, DataTypes) => {
       phone_2: {
         type: TEXT,
       },
-      removed: {
-        type: BOOLEAN,
-      },
       notes: {
         type: TEXT,
-      },
-      createdby: {
-        type: TEXT,
-      },
-      createddate: {
-        type: DATE,
-      },
-      modifiedby: {
-        type: TEXT,
-      },
-      modifiedtimestamp: {
-        type: DATE,
-      },
-      orig_owner_ndx_akas: {
-        type: INTEGER,
       },
       id: {
         type: UUID,
@@ -98,22 +86,22 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  ListRolodexes.associate = function (models) {
+  DmRolodexes.associate = function (models) {
     /* Core Associations */
-    ListRolodexes.belongsTo(models.content_node_statuses, {
+    DmRolodexes.belongsTo(models.content_node_statuses, {
       foreignKey: 'status_id',
       as: 'content_node_statuses',
     });
-    ListRolodexes.hasMany(models.list_rolodexes, {
+    DmRolodexes.hasMany(models.dm_rolodexes, {
       foreignKey: 'parent_id',
       as: 'versions',
     });
-    ListRolodexes.belongsTo(models.list_rolodexes, {
+    DmRolodexes.belongsTo(models.dm_rolodexes, {
       foreignKey: 'parent_id',
       as: 'parent',
     });
     /* App Associations */
   };
 
-  return ListRolodexes;
+  return DmRolodexes;
 };
