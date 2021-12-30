@@ -1,6 +1,7 @@
 #public-map .mapboxgl-popup-content {
   height: auto;
   width: 375px;
-  overflow-x: hidden;
+  /*MJB change overflow x from hidden to scroll*/
+  overflow-x: scroll;
   overflow-y: scroll;
 }

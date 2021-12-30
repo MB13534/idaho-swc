@@ -6,6 +6,8 @@ import Popup from "../../popup";
 import useSources from "../useSources";
 import useLayers from "../useLayers";
 import { MapLogger } from "./mapUtils";
+import ToggleBasemapControl from "../../../../components/map/ToggleBasemapControl";
+import { DUMMY_BASEMAP_LAYERS } from "../../constants";
 
 const mapLogger = new MapLogger({
   enabled: process.env.NODE_ENV === "development",
@@ -49,6 +51,13 @@ const useMap = (ref, mapConfig) => {
 
       const nav = new mapboxgl.NavigationControl();
       mapInstance.addControl(nav, "top-right");
+
+      //MJB 3 toggles for 3 different base layers
+      DUMMY_BASEMAP_LAYERS.forEach((layer) => {
+        return mapInstance.addControl(
+          new ToggleBasemapControl(layer.url, layer.icon)
+        );
+      });
 
       mapInstance.on("load", () => {
         setMap(mapInstance);
@@ -101,11 +110,30 @@ const useMap = (ref, mapConfig) => {
 
   const addMapEvents = useCallback(() => {
     const shouldAddClickEvent = map && layers?.length > 0 && dataAdded;
-
     if (shouldAddClickEvent && !eventsRegistered) {
+      //MJB add event listener for all circle and symbol layers
+      // pointer on mouseover
+      const cursorPointerLayerIds = layers
+        .filter((layer) => ["circle", "symbol"].includes(layer.type))
+        .map((layer) => layer.id);
+      cursorPointerLayerIds.forEach((layerId) => {
+        map.on("mouseenter", layerId, () => {
+          map.getCanvas().style.cursor = "pointer";
+
+          map.on("mouseleave", layerId, () => {
+            map.getCanvas().style.cursor = "";
+          });
+        });
+      });
+
       map.on("click", (e) => {
         const features = map.queryRenderedFeatures(e.point);
-        if (features.length > 0) {
+        //MJB add check for popups so they only appear on our dynamic layers
+        const popupLayerIds = layers.map((layer) => layer.id);
+        if (
+          features.length > 0 &&
+          popupLayerIds.includes(features[0].layer.id)
+        ) {
           const feature = features[0];
           // const popup = {};
           const popup = layers?.find(
@@ -166,11 +194,15 @@ const useMap = (ref, mapConfig) => {
             false,
           ]);
         } else if (filter.type === "boolean") {
-          mapFilterExpression.push([
-            "==",
-            ["get", filter.layerFieldName],
-            filter.value,
-          ]);
+          //MJB only apply filter if toggle is true
+          //MJB no filter applied if toggle is false
+          if (filter.value) {
+            mapFilterExpression.push([
+              "==",
+              ["get", filter.layerFieldName],
+              filter.value,
+            ]);
+          }
         }
       });
       map.setFilter("clearwater-wells-circle", mapFilterExpression);

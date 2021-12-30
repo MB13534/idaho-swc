@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import React, { useRef } from "react";
 import styled from "styled-components/macro";
 import { Box, Paper, Typography } from "@material-ui/core";
 
@@ -15,6 +15,8 @@ import { useMap } from "./hooks/useMap";
 import useFilters from "./hooks/useFilters";
 import useLayerStyles from "./hooks/useLayerStyles";
 import { INIT_MAP_CONFIG } from "./constants";
+
+import DisclaimerDialog from "./components/DisclaimerDialog";
 
 const FiltersBar = styled(Paper)`
   align-items: flex-start;
@@ -73,6 +75,8 @@ const PublicMap = () => {
 
   return (
     <>
+      {/*MJB popup dialog with disclaimer if the user is not logged in (public)*/}
+      <DisclaimerDialog />
       <AppBar />
       <FiltersBar>
         <FiltersSection>
@@ -127,21 +131,22 @@ const PublicMap = () => {
                 value={filterValues?.wellStatus?.value}
               />
             </FilterControl>
-            <FilterControl
-              appliedCount={filterValues?.aggregatedSystems?.value?.length}
-              label="Aggregated System"
-            >
-              <Filter
-                label="Aggregated System"
-                name="aggregatedSystems"
-                onChange={handleFilterValues}
-                onSelectAll={handleSelectAll}
-                onSelectNone={handleSelectNone}
-                options={filterValues?.aggregatedSystems?.options}
-                type={filterValues?.aggregatedSystems?.type}
-                value={filterValues?.aggregatedSystems?.value}
-              />
-            </FilterControl>
+            {/*MJB hide aggregated system control per client (probably temporary)*/}
+            {/*<FilterControl*/}
+            {/*  appliedCount={filterValues?.aggregatedSystems?.value?.length}*/}
+            {/*  label="Aggregated System"*/}
+            {/*>*/}
+            {/*  <Filter*/}
+            {/*    label="Aggregated System"*/}
+            {/*    name="aggregatedSystems"*/}
+            {/*    onChange={handleFilterValues}*/}
+            {/*    onSelectAll={handleSelectAll}*/}
+            {/*    onSelectNone={handleSelectNone}*/}
+            {/*    options={filterValues?.aggregatedSystems?.options}*/}
+            {/*    type={filterValues?.aggregatedSystems?.type}*/}
+            {/*    value={filterValues?.aggregatedSystems?.value}*/}
+            {/*  />*/}
+            {/*</FilterControl>*/}
             <FilterControl
               appliedCount={getMoreFiltersCount(filterValues)}
               label="More Filters"

@@ -131,7 +131,7 @@ function Default() {
   const service = useService({ toast: false });
   const { currentUser } = useApp();
   const currentlyPaintedPointRef = useRef(null);
-  const coordinatesRef = useRef(null);
+  const coordinatesContainerRef = useRef(null);
   const longRef = useRef(null);
   const latRef = useRef(null);
 
@@ -192,7 +192,7 @@ function Default() {
     );
 
     let popup = new mapboxgl.Popup({ maxWidth: "300px" });
-    coordinatesRef.current.style.display = "block";
+    coordinatesContainerRef.current.style.display = "block";
     longRef.current.innerHTML = pointFeatures.location_geometry.coordinates[0];
     latRef.current.innerHTML = pointFeatures.location_geometry.coordinates[1];
 
@@ -847,7 +847,7 @@ function Default() {
                   setCurrentSelectedPoint={setCurrentSelectedPoint}
                   radioValue={radioValue}
                   currentlyPaintedPointRef={currentlyPaintedPointRef}
-                  coordinatesRef={coordinatesRef}
+                  coordinatesContainerRef={coordinatesContainerRef}
                   longRef={longRef}
                   latRef={latRef}
                 />

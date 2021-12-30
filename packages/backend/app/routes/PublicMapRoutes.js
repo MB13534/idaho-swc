@@ -2,7 +2,8 @@ const express = require('express');
 const {
   ui_list_wells_table,
   list_aquifers,
-  list_aggregate_systems,
+  /*MJB hide aggregated system control per client (probably temporary)*/
+  // list_aggregate_systems,
 } = require('../../core/models');
 const sourceData = require('../data/sources');
 const layersData = require('../data/layers');
@@ -99,20 +100,22 @@ router.get('/filters', async (req, res, next) => {
       display: use,
       value: use,
     }));
-    const aggregatedSystems = await list_aggregate_systems
-      .findAll({
-        order: [['agg_system_name', 'asc']],
-      })
-      .map(({agg_system_name}) => ({
-        display: agg_system_name,
-        value: agg_system_name,
-      }));
+    /*MJB hide aggregated system control per client (probably temporary)*/
+    // const aggregatedSystems = await list_aggregate_systems
+    //   .findAll({
+    //     order: [['agg_system_name', 'asc']],
+    //   })
+    //   .map(({agg_system_name}) => ({
+    //     display: agg_system_name,
+    //     value: agg_system_name,
+    //   }));
     res.json({
       aquifers: aquifers || [],
       primaryUses,
       wellStatus,
-      aggregatedSystems:
-        [...aggregatedSystems, {display: '--', value: '--'}] || [],
+      /*MJB hide aggregated system control per client (probably temporary)*/
+      // aggregatedSystems:
+      //   [...aggregatedSystems, {display: '--', value: '--'}] || [],
     });
   } catch (err) {
     next(err);

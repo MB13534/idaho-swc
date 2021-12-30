@@ -1,5 +1,7 @@
 import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
+import MapboxDraw from "mapbox-gl-draw";
+import area from "@turf/area";
 import styled from "styled-components/macro";
 import ResetZoomControl from "./ResetZoomControl";
 import { STARTING_LOCATION } from "../../constants";
@@ -17,7 +19,7 @@ const MapContainer = styled.div`
   height: 100%;
 `;
 
-const Coordinates = styled.pre`
+const CoordinatesContainer = styled.pre`
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
   position: absolute;
@@ -31,6 +33,36 @@ const Coordinates = styled.pre`
   z-index: 1000;
   display: none;
 `;
+
+const PolygonContainer = styled.pre`
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  position: absolute;
+  bottom: 40px;
+  right: 10px;
+  padding: 5px 10px;
+  margin: 0;
+  font-size: 11px;
+  line-height: 18px;
+  border-radius: 3px;
+  z-index: 1000;
+  display: none;
+`;
+
+// const DistanceContainer = styled.pre`
+//   background: rgba(0, 0, 0, 0.5);
+//   color: #fff;
+//   position: absolute;
+//   bottom: 100px;
+//   right: 10px;
+//   padding: 5px 10px;
+//   margin: 0;
+//   font-size: 11px;
+//   line-height: 18px;
+//   border-radius: 3px;
+//   z-index: 1000;
+//   display: block;
+// `;
 
 const Coord = styled.span`
   cursor: copy;
@@ -67,14 +99,15 @@ const DashboardMap = ({
   map,
   setMap,
   currentlyPaintedPointRef,
-  coordinatesRef,
+  coordinatesContainerRef,
   longRef,
   latRef,
 }) => {
   const { currentUser } = useApp();
   const classes = useStyles();
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
-
+  const polygonRef = useRef(null);
+  const polygonContainerRef = useRef(null);
   const mapContainerRef = useRef(null); // create a reference to the map container
 
   const DUMMY_BASEMAP_LAYERS = [
@@ -93,7 +126,7 @@ const DashboardMap = ({
   };
 
   function onPointClick(e) {
-    coordinatesRef.current.style.display = "block";
+    coordinatesContainerRef.current.style.display = "block";
     longRef.current.innerHTML = e.features[0].properties["Longitude (dd)"];
     latRef.current.innerHTML = e.features[0].properties["Latitude (dd)"];
   }
@@ -105,6 +138,39 @@ const DashboardMap = ({
       center: STARTING_LOCATION,
       zoom: 9,
     });
+
+    const draw = new MapboxDraw({
+      displayControlsDefault: false,
+      // Select which mapbox-gl-draw control buttons to add to the map.
+      controls: {
+        polygon: true,
+        trash: true,
+      },
+      // Set mapbox-gl-draw to draw by default.
+      // The user does not have to click the polygon control button first.
+      defaultMode: "draw_polygon",
+    });
+    map.addControl(draw);
+
+    map.on("draw.create", updateArea);
+    map.on("draw.delete", updateArea);
+    map.on("draw.update", updateArea);
+
+    function updateArea(e) {
+      polygonContainerRef.current.style.display = "block";
+      const data = draw.getAll();
+      const answer = polygonRef.current;
+      if (data.features.length > 0) {
+        const exactArea = area(data);
+        // Restrict the area to 2 decimal points.
+        const rounded_area = Math.round(exactArea * 100) / 100;
+        answer.innerHTML = rounded_area;
+      } else {
+        answer.innerHTML = "";
+        polygonContainerRef.current.style.display = "none";
+        if (e.type !== "draw.delete") alert("Click the map to draw a polygon.");
+      }
+    }
 
     map.addControl(new mapboxgl.NavigationControl(), "top-left");
     map.addControl(
@@ -351,6 +417,9 @@ const DashboardMap = ({
         latRef.current.addEventListener("click", (e) =>
           handleCopyCoords(e.target.innerHTML)
         );
+        polygonRef.current.addEventListener("click", (e) =>
+          handleCopyCoords(e.target.innerHTML)
+        );
 
         // Change the cursor to a pointer when the mouse is over the places layer.
         map.on("mouseenter", "locations", () => {
@@ -430,17 +499,35 @@ const DashboardMap = ({
   return (
     <>
       <MapContainer ref={mapContainerRef}>
-        <Coordinates ref={coordinatesRef}>
-          Longitude:
+        <CoordinatesContainer ref={coordinatesContainerRef}>
+          Longitude:{" "}
           <Tooltip title="Copy Longitude to Clipboard">
             <Coord ref={longRef} />
           </Tooltip>
           <br />
-          Latitude:
+          Latitude:{" "}
           <Tooltip title="Copy Latitude to Clipboard" placement="bottom-start">
             <Coord ref={latRef} />
           </Tooltip>
-        </Coordinates>
+        </CoordinatesContainer>
+        {/*<DistanceContainer>*/}
+        {/*  Click the map to measure the distance between points*/}
+        {/*  <br />*/}
+        {/*  <Tooltip title="Copy Distance to Clipboard" placement="bottom-start">*/}
+        {/*    <Coord ref={polygonRef} />*/}
+        {/*  </Tooltip>*/}
+        {/*</DistanceContainer>*/}
+        <PolygonContainer ref={polygonContainerRef}>
+          Total polygon area:
+          <br />
+          <Tooltip
+            title="Copy Measurement to Clipboard"
+            placement="bottom-start"
+          >
+            <Coord ref={polygonRef} />
+          </Tooltip>{" "}
+          square meters
+        </PolygonContainer>
       </MapContainer>
     </>
   );

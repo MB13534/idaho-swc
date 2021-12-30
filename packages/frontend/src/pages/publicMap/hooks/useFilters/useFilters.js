@@ -53,11 +53,12 @@ const useFilters = ({ onFilterChange }) => {
         options: data?.data?.wellStatus || [],
         value: data?.data?.wellStatus.map(({ value }) => value) || [],
       },
-      aggregatedSystems: {
-        ...prevState.aggregatedSystems,
-        options: data?.data?.aggregatedSystems || [],
-        value: data?.data?.aggregatedSystems.map(({ value }) => value) || [],
-      },
+      /*MJB hide aggregated system control per client (probably temporary)*/
+      // aggregatedSystems: {
+      //     ...prevState.aggregatedSystems,
+      //     options: data?.data?.aggregatedSystems || [],
+      //     value: data?.data?.aggregatedSystems.map(({ value }) => value) || [],
+      //   },
     }));
   }, [data?.data]);
 
