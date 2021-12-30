@@ -151,7 +151,7 @@ const DataAdminTable = ({
           setSelectedRow(selectedRow);
         }}
         editable={{
-          onRowAdd: userAuthorizedToEdit ? handleAdd : null,
+          onRowAdd: handleAdd,
           isEditHidden: () => !userAuthorizedToEdit,
           onRowUpdate: handleUpdate,
           isDeleteHidden: () => !userAuthorizedToEdit,
