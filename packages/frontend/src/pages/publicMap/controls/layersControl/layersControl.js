@@ -47,7 +47,7 @@ const LayersInnerContainer = styled.div`
   margin-top: 43px;
   overflow-y: auto;
   // change max-height from 500 to 535 to eliminate a scroll when all layers are shown
-  max-height: 535px;
+  max-height: 540px;
   min-height: 0px;
   overflow-y: auto;
   height: ${(props) => (props.open ? props.height : 0)}px;
