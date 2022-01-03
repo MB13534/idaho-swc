@@ -16,8 +16,9 @@ const FilterAvatar = styled("span")(({ theme }) => ({
   display: "flex",
   fontSize: "12px!important",
   justifyContent: "center",
-  height: theme.spacing(5),
-  width: theme.spacing(5),
+  //MJB change size from 5 to 4
+  height: theme.spacing(4),
+  width: theme.spacing(4),
 }));
 
 const FilterContainer = styled(Paper)(({ theme }) => ({
@@ -43,7 +44,8 @@ const FilterControl = ({ appliedCount, children, label }) => {
     <div>
       <Button
         color={active ? "primary" : "inherit"}
-        size="large"
+        //MJB change size from large to small
+        size="small"
         variant={active ? "contained" : "outlined"}
         startIcon={
           active ? <FilterAvatar>{appliedCount}</FilterAvatar> : undefined

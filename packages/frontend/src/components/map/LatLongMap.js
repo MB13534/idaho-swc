@@ -10,6 +10,7 @@ import {
 } from "@material-ui/core";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
+import debounce from "lodash.debounce";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -101,6 +102,8 @@ const Map = ({ config }) => {
       zoom: 9,
     });
 
+    map.addControl(new mapboxgl.FullscreenControl());
+
     map.on("render", () => {
       map.resize();
     });
@@ -110,6 +113,16 @@ const Map = ({ config }) => {
       setMap(map);
     });
   }, []); // eslint-disable-line
+
+  useEffect(() => {
+    if (map) {
+      const resizer = new ResizeObserver(debounce(() => map.resize(), 100));
+      resizer.observe(mapContainerRef.current);
+      return () => {
+        resizer.disconnect();
+      };
+    }
+  }, [map]);
 
   useEffect(() => {
     if (mapIsLoaded && typeof map != "undefined") {

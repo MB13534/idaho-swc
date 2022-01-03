@@ -1,14 +1,20 @@
 import React from "react";
-import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import Loader from "./Loader";
+import { useAuth0 } from "@auth0/auth0-react";
 
 // For routes that can only be accessed by admin users
 const UserVisibilityFilter = ({ children }) => {
   const { user, isAuthenticated } = useAuth0();
 
+  if (!user) return <React.Fragment />;
+
   const roles = user[`${process.env.REACT_APP_AUDIENCE}/roles`];
   let isUser = false;
-  if (roles && roles.filter((x) => x === "Well Owner").length > 0) {
+  if (
+    roles &&
+    roles.filter((x) =>
+      ["Well Owner", "Administrator", "Developer"].includes(x)
+    ).length > 0
+  ) {
     isUser = true;
   }
 
@@ -19,6 +25,4 @@ const UserVisibilityFilter = ({ children }) => {
   return children;
 };
 
-export default withAuthenticationRequired(UserVisibilityFilter, {
-  onRedirecting: () => <Loader />,
-});
+export default UserVisibilityFilter;

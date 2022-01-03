@@ -43,8 +43,8 @@ import {
   renderStatusChip,
   firstOfYear,
   lastOfYear,
-  lastOfJanuary,
   filterDataForWellOwner,
+  oneYearAgo,
 } from "../../../utils";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
@@ -140,7 +140,8 @@ function Production() {
 
   //date filter defaults
   const defaultFilterValues = {
-    startDate: lastOfJanuary,
+    // startDate: lastOfJanuary,
+    startDate: oneYearAgo,
     endDate: null,
   };
   const [filterValues, setFilterValues] = useState(defaultFilterValues);
@@ -161,13 +162,16 @@ function Production() {
   const handleRadioChange = (event) => {
     setRadioValue(event.target.value);
     map.fire("closeAllPopups");
-    map.setFeatureState(
-      {
-        source: "locations",
-        id: currentlyPaintedPointRef.current,
-      },
-      { clicked: false }
-    );
+    if (map.getLayer("locations")) {
+      map.setFeatureState(
+        {
+          source: "locations",
+          id: currentlyPaintedPointRef.current,
+        },
+        { clicked: false }
+      );
+    }
+
     setCurrentSelectedTimeseriesData(null);
     setCurrentSelectedEditTableData(null);
     setCurrentSelectedPoint(null);

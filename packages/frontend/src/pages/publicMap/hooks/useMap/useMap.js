@@ -8,6 +8,16 @@ import useLayers from "../useLayers";
 import { MapLogger } from "./mapUtils";
 import ToggleBasemapControl from "../../../../components/map/ToggleBasemapControl";
 import { DUMMY_BASEMAP_LAYERS } from "../../constants";
+import debounce from "lodash.debounce";
+import createTheme from "../../../../theme";
+import { ThemeProvider } from "styled-components/macro";
+import { useSelector } from "react-redux";
+import {
+  jssPreset,
+  StylesProvider,
+  ThemeProvider as MuiThemeProvider,
+} from "@material-ui/core/styles";
+import { create } from "jss";
 
 const mapLogger = new MapLogger({
   enabled: process.env.NODE_ENV === "development",
@@ -15,6 +25,11 @@ const mapLogger = new MapLogger({
 });
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
+
+const jss = create({
+  ...jssPreset(),
+  insertionPoint: document.getElementById("jss-insertion-point"),
+});
 
 /**
  * The `useMap` hook controls all of the Mapbox functionality. It controls
@@ -27,6 +42,7 @@ mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
  * see https://docs.mapbox.com/mapbox-gl-js/api/map/
  */
 const useMap = (ref, mapConfig) => {
+  const theme = useSelector((state) => state.themeReducer);
   const [map, setMap] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(0);
   const [dataAdded, setDataAdded] = useState(false);
@@ -71,6 +87,19 @@ const useMap = (ref, mapConfig) => {
       }
     }
   }, [ref, mapConfig, map]);
+
+  //MJB adding some logic to resize the map when the map container ref size changes
+  //ResizeObserver watches for changes in bounding box for ref
+  //debounce delays the resize function by 100ms
+  useEffect(() => {
+    if (map) {
+      const resizer = new ResizeObserver(debounce(() => map.resize(), 100));
+      resizer.observe(ref.current);
+      return () => {
+        resizer.disconnect();
+      };
+    }
+  }, [map, ref]);
 
   /**
    * Function responsible for adding sources and layers to the map
@@ -142,11 +171,18 @@ const useMap = (ref, mapConfig) => {
           // create popup node
           const popupNode = document.createElement("div");
           ReactDOM.render(
-            <Popup
-              excludeFields={popup?.excludeFields}
-              feature={feature}
-              titleField={popup?.titleField}
-            />,
+            //MJB adding style providers to the popup
+            <StylesProvider jss={jss}>
+              <MuiThemeProvider theme={createTheme(theme.currentTheme)}>
+                <ThemeProvider theme={createTheme(theme.currentTheme)}>
+                  <Popup
+                    excludeFields={popup?.excludeFields}
+                    feature={feature}
+                    titleField={popup?.titleField}
+                  />
+                </ThemeProvider>
+              </MuiThemeProvider>
+            </StylesProvider>,
             popupNode
           );
           popUpRef.current
@@ -158,7 +194,7 @@ const useMap = (ref, mapConfig) => {
       setEventsRegistered(true);
       mapLogger.log("Event handlers attached to map");
     }
-  }, [map, layers, dataAdded, eventsRegistered]);
+  }, [map, layers, dataAdded, eventsRegistered, theme.currentTheme]);
 
   /**
    * Handler used to apply user's filter values to the map instance

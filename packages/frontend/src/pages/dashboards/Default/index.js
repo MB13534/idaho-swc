@@ -41,8 +41,7 @@ import {
   lastOfYear,
   lineColors,
   renderStatusChip,
-  lastOfJanuary,
-  // filterDataForWellOwner,
+  oneYearAgo,
 } from "../../../utils";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
@@ -109,7 +108,7 @@ const useStyles = makeStyles(() => ({
       margin: 0,
     },
     "& tr:nth-child(even)": {
-      backgroundColor: "#eee",
+      backgroundColor: lineColors.lightGray,
     },
     "& tr": {
       borderRadius: "5px",
@@ -137,7 +136,8 @@ function Default() {
 
   //date filter defaults
   const defaultFilterValues = {
-    startDate: lastOfJanuary,
+    // startDate: lastOfJanuary,
+    startDate: oneYearAgo,
     endDate: null,
   };
   const [filterValues, setFilterValues] = useState(defaultFilterValues);
@@ -164,13 +164,15 @@ function Default() {
       yRLabel: "Annual Production and Allocations, Gallons",
     });
     map.fire("closeAllPopups");
-    map.setFeatureState(
-      {
-        source: "locations",
-        id: currentlyPaintedPointRef.current,
-      },
-      { clicked: false }
-    );
+    if (map.getLayer("locations")) {
+      map.setFeatureState(
+        {
+          source: "locations",
+          id: currentlyPaintedPointRef.current,
+        },
+        { clicked: false }
+      );
+    }
     setCurrentSelectedTimeseriesData(null);
     setCurrentSelectedPoint(null);
   };

@@ -48,6 +48,8 @@ import UiPermitsExpiringsReport from "../pages/dataAccess/reports/UiPermitsExpir
 // TODO MAYBE LAZY IMPORT
 import PublicMap from "../pages/publicMap";
 import Production from "../pages/dashboards/data entry/Production";
+import UserVisibilityFilter from "../components/UserVisibilityFilter";
+import UserGuard from "../components/UserGuard";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -111,16 +113,19 @@ const crudSidebarMenu = [...getSidebarMenu(CRUD_MODELS)];
 const modelCrudRoutes = [...getCrudRoutes(CRUD_MODELS)];
 
 const dataEntryRoutes = {
-  id: "Data Entry",
   header: "Data Access",
+  id: "Data Entry",
   icon: <Share2 />,
   children: [
     {
       path: "/data-access/well-production-data-entry",
       name: "Well Production",
       component: Production,
+      guard: AuthGuard,
     },
   ],
+  guard: AuthGuard,
+  visibilityFilter: UserVisibilityFilter,
 };
 
 const reportsRoutes = {
@@ -158,16 +163,19 @@ const reportsRoutes = {
   visibilityFilter: AdminVisibilityFilter,
 };
 
-const mapRoutes = {
-  link: "external",
-  id: "Map",
-  icon: <Map />,
-  path: "/public-map",
-  name: "Map",
-};
+// const mapRoutes = {
+//   header: "Public Resources",
+//   link: "external",
+//   id: "Map",
+//   icon: <Map />,
+//   path: "/public-map",
+//   name: "Map",
+// };
 
 const publicMapRoutes = {
+  header: "Public Resources",
   id: "Public Map",
+  icon: <Map />,
   path: ROUTES.PUBLIC_MAP,
   name: "Public Map",
   component: PublicMap,
@@ -248,6 +256,7 @@ const accountRoutes = {
       },
     },
   ],
+  guard: AuthGuard,
 };
 
 const landingRoutes = {
@@ -266,6 +275,8 @@ const mainRoutes = {
   component: Default,
   children: null,
   containsHome: true,
+  guard: UserGuard,
+  visibilityFilter: UserVisibilityFilter,
 };
 
 const pageRoutes = {
@@ -424,7 +435,7 @@ export const dashboardLayoutRoutes = [
   changelogRoutes,
   dataEntryRoutes,
   reportsRoutes,
-  mapRoutes,
+  // mapRoutes,
   timeseriesRoutes,
   publicFilesRoutes,
   clientDocsRoutes,
@@ -438,6 +449,7 @@ export const dashboardLayoutRoutes = [
 export const dashboardMaxContentLayoutRoutes = [
   ...crudSidebarMenu,
   ...modelCrudRoutes,
+  publicMapRoutes,
 ];
 
 // Routes using the Auth layout
@@ -447,7 +459,7 @@ export const authLayoutRoutes = [accountRoutes];
 export const presentationLayoutRoutes = [landingRoutes];
 
 // Routes using the full screen map layout
-export const fullscreenMapRoutes = [publicMapRoutes];
+export const fullscreenMapRoutes = [];
 
 // Routes that are protected
 export const protectedRoutes = [protectedPageRoutes];
@@ -458,7 +470,7 @@ export const sidebarRoutes = [
   ...crudSidebarMenu,
   dataEntryRoutes,
   reportsRoutes,
-  mapRoutes,
+  publicMapRoutes,
   timeseriesRoutes,
   publicFilesRoutes,
   clientDocsRoutes,

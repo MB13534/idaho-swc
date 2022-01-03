@@ -2,7 +2,7 @@ import React, { useRef } from "react";
 import styled from "styled-components/macro";
 import { Box, Paper, Typography } from "@material-ui/core";
 
-import AppBar from "../../components/AppBar";
+// import AppBar from "../../components/AppBar";
 import Map from "./map";
 import LayersControl from "./controls/layersControl";
 import WellStylesControl from "./controls/wellStylesControl";
@@ -19,11 +19,11 @@ import { INIT_MAP_CONFIG } from "./constants";
 import DisclaimerDialog from "./components/DisclaimerDialog";
 
 const FiltersBar = styled(Paper)`
-  align-items: flex-start;
+  align-items: center;
   border-bottom: 1px solid #ddd;
   display: flex;
   gap: ${({ theme }) => theme.spacing(12)}px;
-  padding: 12px 16px;
+  padding: 12px 16px 12px 32px;
 `;
 
 const FiltersSection = styled.div`
@@ -34,6 +34,7 @@ const FiltersSection = styled.div`
 
 const FiltersContainer = styled.div`
   display: flex;
+  align-items: center;
   gap: ${({ theme }) => theme.spacing(2)}px;
 `;
 
@@ -77,14 +78,14 @@ const PublicMap = () => {
     <>
       {/*MJB popup dialog with disclaimer if the user is not logged in (public)*/}
       <DisclaimerDialog />
-      <AppBar />
+      {/*<AppBar />*/}
       <FiltersBar>
         <FiltersSection>
-          <Typography variant="subtitle1">Search Wells</Typography>
+          {/*<Typography variant="subtitle1">Search Wells</Typography>*/}
           <Search onSelect={handleSearchSelect} />
         </FiltersSection>
         <FiltersSection>
-          <Typography variant="subtitle1">Filters</Typography>
+          {/*<Typography variant="subtitle1">Filters</Typography>*/}
           <FiltersContainer>
             <FilterControl
               appliedCount={filterValues?.aquifers?.value?.length}
@@ -199,7 +200,7 @@ const PublicMap = () => {
           </FiltersContainer>
         </FiltersSection>
         <FiltersSection>
-          <Typography variant="subtitle1">Layer Styling</Typography>
+          {/*<Typography variant="subtitle1">Layer Styling</Typography>*/}
           <FiltersContainer>
             <FilterControl label={`Color wells by ${activeStyle.name}`}>
               <Typography variant="subtitle1" gutterBottom>

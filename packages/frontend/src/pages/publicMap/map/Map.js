@@ -1,7 +1,7 @@
 import React from "react";
 
 const mapStyles = {
-  height: "calc(100vh - 176px)",
+  height: "calc(100vh - 64px - 78px - 62px)",
   overflow: "none",
   position: "relative",
   width: "100%",

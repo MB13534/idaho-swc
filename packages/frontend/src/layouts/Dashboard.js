@@ -249,10 +249,6 @@ const ComponentBody = ({ children, routes, width, contentWidth }) => {
       setAppContentWidth("calc(100% - 258px)");
     }
   }, [width]); // eslint-disable-line
-  //
-  // useEffect(() => {
-  //   console.log(appContentWidth);
-  // }, [appContentWidth]);
 
   const toggleOpen = () => {
     localStorage.setItem("isMainSidebarOpen", (!drawerOpen).toString());

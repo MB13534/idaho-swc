@@ -6,8 +6,9 @@ import { STARTING_LOCATION } from "../../constants";
 import ToggleBasemapControl from "./ToggleBasemapControl";
 import { makeStyles } from "@material-ui/core/styles";
 import { Tooltip } from "@material-ui/core";
-import { formatBooleanTrueFalse } from "../../utils";
+import { formatBooleanTrueFalse, lineColors } from "../../utils";
 import { useApp } from "../../AppProvider";
+import debounce from "lodash.debounce";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -139,6 +140,16 @@ const ProductionMap = ({
   }, []); // eslint-disable-line
 
   useEffect(() => {
+    if (map) {
+      const resizer = new ResizeObserver(debounce(() => map.resize(), 100));
+      resizer.observe(mapContainerRef.current);
+      return () => {
+        resizer.disconnect();
+      };
+    }
+  }, [map]);
+
+  useEffect(() => {
     if (mapIsLoaded && data?.length > 0 && typeof map != "undefined") {
       if (!map.getSource("locations")) {
         map.addSource("locations", {
@@ -193,6 +204,9 @@ const ProductionMap = ({
                   has_wqdata: location.has_wqdata,
                   well_ndx: location.well_ndx,
                   location_geometry: location.location_geometry,
+                  well_owner: location?.authorized_users?.includes(
+                    currentUser.sub
+                  ),
                 },
                 geometry: {
                   type: location.location_geometry.type,
@@ -213,8 +227,10 @@ const ProductionMap = ({
               "circle-color": [
                 "case",
                 ["boolean", ["feature-state", "clicked"], false],
-                "yellow",
-                "#74E0FF",
+                lineColors.yellow,
+                ["boolean", ["get", "well_owner"], false],
+                lineColors.orange,
+                lineColors.lightBlue,
               ],
               "circle-stroke-width": [
                 "case",
@@ -225,7 +241,7 @@ const ProductionMap = ({
               "circle-stroke-color": [
                 "case",
                 ["boolean", ["feature-state", "hover"], false],
-                "yellow",
+                lineColors.yellow,
                 "black",
               ],
             },
@@ -321,6 +337,7 @@ const ProductionMap = ({
                     "has_wqdata",
                     "well_ndx",
                     "location_geometry",
+                    "well_owner",
                   ].includes(k)
                 )
                   return null;
@@ -407,7 +424,7 @@ const ProductionMap = ({
   }, [isLoading, mapIsLoaded, map, data]); // eslint-disable-line
 
   useEffect(() => {
-    if (map !== undefined) {
+    if (map !== undefined && map.getLayer("locations")) {
       if (radioValue === "all") {
         map.setFilter("locations", null);
         map.setFilter("locations-labels", null);

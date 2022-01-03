@@ -1,11 +1,12 @@
 import React from "react";
-import { useAuth0, withAuthenticationRequired } from "@auth0/auth0-react";
-import Loader from "./Loader";
+import { useAuth0 } from "@auth0/auth0-react";
 import Unauthorized from "./Unauthorized";
 
 // For routes that can only be accessed by admin users
 const DeveloperGuard = ({ children }) => {
   const { user, isAuthenticated } = useAuth0();
+
+  if (!user) return <Unauthorized />;
 
   const roles = user[`${process.env.REACT_APP_AUDIENCE}/roles`];
   let isDeveloper = false;
@@ -20,6 +21,4 @@ const DeveloperGuard = ({ children }) => {
   return children;
 };
 
-export default withAuthenticationRequired(DeveloperGuard, {
-  onRedirecting: () => <Loader />,
-});
+export default DeveloperGuard;

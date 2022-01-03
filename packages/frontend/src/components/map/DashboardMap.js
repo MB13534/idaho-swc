@@ -8,8 +8,9 @@ import { STARTING_LOCATION } from "../../constants";
 import ToggleBasemapControl from "./ToggleBasemapControl";
 import { makeStyles } from "@material-ui/core/styles";
 import { Tooltip } from "@material-ui/core";
-import { formatBooleanTrueFalse } from "../../utils";
+import { formatBooleanTrueFalse, lineColors } from "../../utils";
 import { useApp } from "../../AppProvider";
+import debounce from "lodash.debounce";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -204,6 +205,16 @@ const DashboardMap = ({
   }, []); // eslint-disable-line
 
   useEffect(() => {
+    if (map) {
+      const resizer = new ResizeObserver(debounce(() => map.resize(), 100));
+      resizer.observe(mapContainerRef.current);
+      return () => {
+        resizer.disconnect();
+      };
+    }
+  }, [map]);
+
+  useEffect(() => {
     if (mapIsLoaded && data?.length > 0 && typeof map != "undefined") {
       if (!map.getSource("locations")) {
         map.addSource("locations", {
@@ -282,10 +293,10 @@ const DashboardMap = ({
               "circle-color": [
                 "case",
                 ["boolean", ["feature-state", "clicked"], false],
-                "yellow",
+                lineColors.yellow,
                 ["boolean", ["get", "well_owner"], false],
-                "red",
-                "#74E0FF",
+                lineColors.orange,
+                lineColors.lightBlue,
               ],
               "circle-stroke-width": [
                 "case",
@@ -296,7 +307,7 @@ const DashboardMap = ({
               "circle-stroke-color": [
                 "case",
                 ["boolean", ["feature-state", "hover"], false],
-                "yellow",
+                lineColors.yellow,
                 "black",
               ],
             },
@@ -483,7 +494,7 @@ const DashboardMap = ({
   }, [isLoading, mapIsLoaded, map, data]); // eslint-disable-line
 
   useEffect(() => {
-    if (map !== undefined) {
+    if (map !== undefined && map.getLayer("locations")) {
       if (radioValue === "all") {
         map.setFilter("locations", null);
         map.setFilter("locations-labels", null);

@@ -59,7 +59,7 @@ const TimeseriesLineChart = forwardRef(
           } = chart;
           if (chart.options.plugins.zoom.zoom.wheel.enabled) {
             ctx.save();
-            ctx.strokeStyle = "#800000";
+            ctx.strokeStyle = lineColors.maroon;
             ctx.lineWidth = 3;
             ctx.strokeRect(left, top, width, height);
             ctx.restore();

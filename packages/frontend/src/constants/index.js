@@ -101,6 +101,7 @@ export const ROUTES = {
   PAGE_DOCS_DEPLOY: "/documentation/deploy",
   PAGE_DOCS_STATE_MANAGEMENT: "/documentation/state-management",
   PAGE_DOCS_SUPPORT: "/documentation/support",
+  PUBLIC_MAP: "/public-map",
 };
 
 export const CONTENT_NODE_STATUS_IDS = {

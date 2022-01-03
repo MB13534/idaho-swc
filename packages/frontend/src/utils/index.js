@@ -6,6 +6,7 @@ import styled from "styled-components/macro";
 import { Chip as MuiChip } from "@material-ui/core";
 import { spacing } from "@material-ui/system";
 import html2canvas from "html2canvas";
+import { add } from "date-fns";
 
 export const scrollWindowToTop = (smooth = true) => {
   window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
@@ -124,6 +125,7 @@ export const lineColors = {
   olive: "#808000",
   tan: "#ffd8b1",
   royalBlue: "#000075",
+  lightBlue: "#74E0FF",
   gray: "#8D9093",
   lightGray: "#eee",
   darkGray: "#222",
@@ -184,6 +186,8 @@ export const lastOfCurrentMonth = new Date(
 );
 
 export const lastOfYear = new Date(new Date().getFullYear(), 11, 31);
+
+export const oneYearAgo = add(new Date(), { years: -1 });
 
 export const filterDataForWellOwner = (data, user) => {
   return data
