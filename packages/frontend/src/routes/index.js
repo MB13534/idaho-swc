@@ -50,6 +50,7 @@ import PublicMap from "../pages/publicMap";
 import Production from "../pages/dashboards/data entry/Production";
 import UserVisibilityFilter from "../components/UserVisibilityFilter";
 import UserGuard from "../components/UserGuard";
+import PDI from "../pages/dataAccess/reports/PDI";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -136,6 +137,11 @@ const reportsRoutes = {
       path: "/data-access/reports/expiring-permits",
       name: "Expiring Permits",
       component: UiPermitsExpiringsReport,
+    },
+    {
+      path: "/data-access/pdi",
+      name: "PDI",
+      component: PDI,
     },
     {
       path: "/data-access/reports/production",
