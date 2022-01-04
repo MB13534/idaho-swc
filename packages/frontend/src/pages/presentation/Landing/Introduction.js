@@ -17,7 +17,7 @@ const Wrapper = styled.div`
   position: relative;
   text-align: center;
   overflow: hidden;
-  height: 450px;
+  height: 470px;
 
   color: ${(props) =>
     props.theme.palette.type === "dark"
@@ -47,6 +47,7 @@ const BrandLogo = styled.img`
   vertical-align: middle;
   max-height: 100%;
   max-width: 100%;
+  margin-bottom: 20px;
 `;
 
 function Introduction() {
