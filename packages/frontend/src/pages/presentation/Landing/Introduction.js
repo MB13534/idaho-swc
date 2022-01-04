@@ -9,6 +9,7 @@ import {
 
 import { spacing } from "@material-ui/system";
 import { BackgroundVideo } from "../../../components/BackgroundVideo";
+import Link from "@material-ui/core/Link";
 
 const Typography = styled(MuiTypography)(spacing);
 
@@ -58,7 +59,16 @@ function Introduction() {
           <Grid item xs={10} sm={9} md={8} lg={7}>
             <BackgroundVideo mp4={"/static/video/1048072384-preview.mp4"} />
             <Content>
-              <BrandLogo src="/static/img/clearwater-logo-full.png" />
+              <Link
+                href="https://cuwcd.org/"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <BrandLogo
+                  src="/static/img/clearwater-logo-full.png"
+                  alt="Clearwater Logo"
+                />
+              </Link>
               <Grid container justify="center" spacing={4}>
                 <Grid item xs={12} lg={10}>
                   <Subtitle color="textSecondary">

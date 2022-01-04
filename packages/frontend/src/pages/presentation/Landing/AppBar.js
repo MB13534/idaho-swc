@@ -9,22 +9,20 @@ import {
   Grid,
   isWidthDown,
   Toolbar,
+  Tooltip,
   withWidth,
 } from "@material-ui/core";
 
 import ThemesToggle from "../../../components/ThemesToggle";
 import { ROUTES } from "../../../constants";
+import Link from "@material-ui/core/Link";
 
 const Button = styled(MuiButton)(spacing);
 
-const Brand = styled.div`
-  font-size: ${(props) => props.theme.typography.h5.fontSize};
-  font-weight: ${(props) => props.theme.typography.fontWeightMedium};
-  font-family: ${(props) => props.theme.typography.fontFamily};
-`;
-
 const BrandIcon = styled.img`
   margin-right: ${(props) => props.theme.spacing(2)}px;
+  display: flex;
+  align-items: center;
 `;
 
 function AppBarComponent({ width }) {
@@ -35,15 +33,22 @@ function AppBarComponent({ width }) {
         <Container>
           <Grid container alignItems="center">
             <Grid item>
-              <Brand style={{ display: "flex", alignItems: "center" }}>
-                <BrandIcon
-                  src={`/static/img/lrewater-logo-simple.svg`}
-                  width={isWidthDown("xs", width) ? "125" : "150"}
-                  height={isWidthDown("xs", width) ? "40" : "48"}
-                  alt="Clearwater Icon"
-                />{" "}
-              </Brand>
+              <Link
+                href="https://lrewater.com"
+                target="_blank"
+                rel="noreferrer noopener"
+              >
+                <Tooltip title="Built by LRE Water">
+                  <BrandIcon
+                    src={`/static/img/lrewater-logo-simple.svg`}
+                    width={isWidthDown("xs", width) ? "125" : "150"}
+                    height={isWidthDown("xs", width) ? "40" : "48"}
+                    alt={"LREWater.com"}
+                  />
+                </Tooltip>
+              </Link>
             </Grid>
+
             <Grid item xs />
             <Grid item>
               <ThemesToggle />
