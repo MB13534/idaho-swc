@@ -104,6 +104,8 @@ const Map = ({ config }) => {
 
     map.addControl(new mapboxgl.FullscreenControl());
 
+    map.addControl(new mapboxgl.ScaleControl({ unit: "imperial" }));
+
     map.on("render", () => {
       map.resize();
     });

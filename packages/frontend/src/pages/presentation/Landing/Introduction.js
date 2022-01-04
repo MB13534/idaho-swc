@@ -57,7 +57,7 @@ function Introduction() {
       <Container>
         <Grid container alignItems="center" justify="center" spacing={4}>
           <Grid item xs={10} sm={9} md={8} lg={7}>
-            <BackgroundVideo mp4={"/static/video/1048072384-preview.mp4"} />
+            <BackgroundVideo mp4={"/static/video/water.mp4"} />
             <Content>
               <Link
                 href="https://cuwcd.org/"

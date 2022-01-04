@@ -20,13 +20,13 @@ module.exports = (sequelize, DataTypes) => {
         type: TEXT,
       },
       created_by: {
-        type: UUID,
+        type: TEXT,
       },
       updated_by: {
-        type: UUID,
+        type: TEXT,
       },
       deleted_by: {
-        type: UUID,
+        type: TEXT,
       },
     },
     {

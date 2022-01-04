@@ -18,19 +18,19 @@ alter table client_clearwater.dm_rolodexes
   add column created_at timestamp default CURRENT_TIMESTAMP;
 -- SPLITTER: DO NOT REMOVE --
 alter table client_clearwater.dm_rolodexes
-  add column created_by uuid;
+  add column created_by text;
 -- SPLITTER: DO NOT REMOVE --
 alter table client_clearwater.dm_rolodexes
   add column updated_at timestamp;
 -- SPLITTER: DO NOT REMOVE --
 alter table client_clearwater.dm_rolodexes
-  add column updated_by uuid;
+  add column updated_by text;
 -- SPLITTER: DO NOT REMOVE --
 alter table client_clearwater.dm_rolodexes
   add column deleted_at timestamp;
 -- SPLITTER: DO NOT REMOVE --
 alter table client_clearwater.dm_rolodexes
-  add column deleted_by uuid;
+  add column deleted_by text;
 -- SPLITTER: DO NOT REMOVE --
 -- alter table client_clearwater.dm_rolodexes
 --   owner to web_admin;

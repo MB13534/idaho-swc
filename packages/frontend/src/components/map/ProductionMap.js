@@ -122,6 +122,9 @@ const ProductionMap = ({
       "top-left"
     );
     map.addControl(new mapboxgl.FullscreenControl());
+
+    map.addControl(new mapboxgl.ScaleControl({ unit: "imperial" }));
+
     // Add locate control to the map.
     map.addControl(new ResetZoomControl(), "top-left");
 

@@ -9,11 +9,11 @@ create table TOKEN_SCHEMA.TOKEN_TABLE_NAME
     constraint TOKEN_TABLE_NAME_content_node_statuses_id_fk
       references core.content_node_statuses,
   created_at timestamp default CURRENT_TIMESTAMP,
-  created_by uuid,
+  created_by text,
   updated_at timestamp,
-  updated_by uuid,
+  updated_by text,
   deleted_at timestamp,
-  deleted_by uuid,
+  deleted_by text,
   TOKEN_DISPLAY_COLUMN_NAME text
 );
 

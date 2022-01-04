@@ -68,6 +68,8 @@ const useMap = (ref, mapConfig) => {
       const nav = new mapboxgl.NavigationControl();
       mapInstance.addControl(nav, "top-right");
 
+      mapInstance.addControl(new mapboxgl.ScaleControl({ unit: "imperial" }));
+
       //MJB 3 toggles for 3 different base layers
       DUMMY_BASEMAP_LAYERS.forEach((layer) => {
         return mapInstance.addControl(

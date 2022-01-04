@@ -168,24 +168,6 @@ const reportsRoutes = {
   visibilityFilter: AdminVisibilityFilter,
 };
 
-// const mapRoutes = {
-//   header: "Public Resources",
-//   link: "external",
-//   id: "Map",
-//   icon: <Map />,
-//   path: "/public-map",
-//   name: "Map",
-// };
-
-const publicMapRoutes = {
-  header: "Public Resources",
-  id: "Public Map",
-  icon: <Map />,
-  path: ROUTES.PUBLIC_MAP,
-  name: "Public Map",
-  component: PublicMap,
-};
-
 const timeseriesRoutes = {
   id: "Time Series",
   icon: <Activity />,
@@ -208,6 +190,24 @@ const timeseriesRoutes = {
   ],
   guard: DeveloperGuard,
   visibilityFilter: DeveloperVisibilityFilter,
+};
+
+// const mapRoutes = {
+//   header: "Public Resources",
+//   link: "external",
+//   id: "Map",
+//   icon: <Map />,
+//   path: "/public-map",
+//   name: "Map",
+// };
+
+const publicMapRoutes = {
+  header: "Public Resources",
+  id: "Public Map",
+  icon: <Map />,
+  path: ROUTES.PUBLIC_MAP,
+  name: "Public Map",
+  component: PublicMap,
 };
 
 const publicFilesRoutes = {
@@ -475,8 +475,8 @@ export const sidebarRoutes = [
   ...crudSidebarMenu,
   dataEntryRoutes,
   reportsRoutes,
-  publicMapRoutes,
   timeseriesRoutes,
+  publicMapRoutes,
   publicFilesRoutes,
   clientDocsRoutes,
   DeveloperDocsRoutes,
