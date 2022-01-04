@@ -92,6 +92,7 @@ export const ROUTES = {
   USER_LOGOUT: "/account/logout",
   MODELS: "/models",
   PRIVATE: "/private",
+  PAGE_PRODUCTION: "/data-access/well-production-data-entry",
   NOTFOUND: "/404",
   PAGE_BLANK: "/coming-soon",
   PAGE_DASHBOARD: "/dashboard",

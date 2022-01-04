@@ -37,9 +37,9 @@ function AppBarComponent({ width }) {
             <Grid item>
               <Brand style={{ display: "flex", alignItems: "center" }}>
                 <BrandIcon
-                  src={`/static/img/clearwater-logo-simple.png`}
-                  width="150"
-                  height="48"
+                  src={`/static/img/lrewater-logo-simple.svg`}
+                  width={isWidthDown("xs", width) ? "125" : "150"}
+                  height={isWidthDown("xs", width) ? "40" : "48"}
                   alt="Clearwater Icon"
                 />{" "}
               </Brand>
@@ -57,7 +57,7 @@ function AppBarComponent({ width }) {
                   })
                 }
               >
-                Log in to{isWidthDown("xs", width) ? "" : " Dashboard"}
+                {isWidthDown("xs", width) ? "Login" : "Log in to Dashboard"}
               </Button>
             </Grid>
           </Grid>

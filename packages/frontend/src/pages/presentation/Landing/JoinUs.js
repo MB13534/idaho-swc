@@ -42,11 +42,10 @@ function JoinUs() {
         <Grid container alignItems="center" justify="center">
           <Grid item xs={12} md={6} lg={6} xl={6}>
             <Typography variant="h2" gutterBottom>
-              Try it now
+              Access the Platform
             </Typography>
             <Subtitle variant="h5" gutterBottom>
-              LRE Water Unified Platform is fast, extendable and fully
-              customizable.
+              Log in with user profile:
             </Subtitle>
             <Spacer mb={4} />
 
@@ -59,9 +58,25 @@ function JoinUs() {
                 })
               }
             >
-              Log in to Dashboard
+              View Dashboard
             </Button>
             <SpanSpacer ml={4} />
+            <Button
+              color="primary"
+              variant="outlined"
+              onClick={() =>
+                loginWithRedirect({
+                  appState: { returnTo: ROUTES.PAGE_PRODUCTION },
+                })
+              }
+            >
+              Enter Production Data
+            </Button>
+            <Spacer mb={10} />
+            <Subtitle variant="h5" gutterBottom>
+              View public resources:
+            </Subtitle>
+            <Spacer mb={4} />
             <Button
               color="primary"
               variant="outlined"

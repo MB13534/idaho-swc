@@ -49,7 +49,6 @@ import UiPermitsExpiringsReport from "../pages/dataAccess/reports/UiPermitsExpir
 import PublicMap from "../pages/publicMap";
 import Production from "../pages/dashboards/data entry/Production";
 import UserVisibilityFilter from "../components/UserVisibilityFilter";
-import UserGuard from "../components/UserGuard";
 import PDI from "../pages/dataAccess/reports/PDI";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
@@ -281,7 +280,7 @@ const mainRoutes = {
   component: Default,
   children: null,
   containsHome: true,
-  guard: UserGuard,
+  guard: AuthGuard,
   visibilityFilter: UserVisibilityFilter,
 };
 
