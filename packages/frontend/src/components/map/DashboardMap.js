@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
+import { RulerControl } from "mapbox-gl-controls";
 import MapboxDraw from "mapbox-gl-draw";
 import area from "@turf/area";
 import styled from "styled-components/macro";
@@ -11,6 +12,8 @@ import { Tooltip } from "@material-ui/core";
 import { formatBooleanTrueFalse, lineColors } from "../../utils";
 import { useApp } from "../../AppProvider";
 import debounce from "lodash.debounce";
+
+import "mapbox-gl-controls/lib/controls.css";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -24,8 +27,8 @@ const CoordinatesContainer = styled.pre`
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
   position: absolute;
-  bottom: 40px;
-  left: 10px;
+  bottom: 30px;
+  left: 120px;
   padding: 5px 10px;
   margin: 0;
   font-size: 11px;
@@ -39,8 +42,8 @@ const PolygonContainer = styled.pre`
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
   position: absolute;
-  bottom: 40px;
-  right: 10px;
+  bottom: 30px;
+  right: 49px;
   padding: 5px 10px;
   margin: 0;
   font-size: 11px;
@@ -151,7 +154,7 @@ const DashboardMap = ({
       // The user does not have to click the polygon control button first.
       defaultMode: "draw_polygon",
     });
-    map.addControl(draw);
+    map.addControl(draw, "bottom-right");
 
     map.on("draw.create", updateArea);
     map.on("draw.delete", updateArea);
@@ -162,9 +165,12 @@ const DashboardMap = ({
       const data = draw.getAll();
       const answer = polygonRef.current;
       if (data.features.length > 0) {
-        const exactArea = area(data);
+        const exactAreaMeters = area(data);
+        console.log(area(data));
+        const exactAreaFeet = exactAreaMeters * 10.7639;
+        console.log(exactAreaFeet);
         // Restrict the area to 2 decimal points.
-        const rounded_area = Math.round(exactArea * 100) / 100;
+        const rounded_area = Math.round(exactAreaFeet * 100) / 100;
         answer.innerHTML = rounded_area;
       } else {
         answer.innerHTML = "";
@@ -172,6 +178,14 @@ const DashboardMap = ({
         if (e.type !== "draw.delete") alert("Click the map to draw a polygon.");
       }
     }
+
+    map.addControl(
+      new RulerControl({
+        units: "feet",
+        labelFormat: (n) => `${n.toFixed(2)} ft`,
+      }),
+      "bottom-right"
+    );
 
     map.addControl(new mapboxgl.NavigationControl(), "top-left");
     map.addControl(
@@ -540,7 +554,7 @@ const DashboardMap = ({
           >
             <Coord ref={polygonRef} />
           </Tooltip>{" "}
-          square meters
+          square feet
         </PolygonContainer>
       </MapContainer>
     </>
