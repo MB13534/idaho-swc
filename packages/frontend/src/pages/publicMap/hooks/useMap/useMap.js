@@ -7,7 +7,7 @@ import useSources from "../useSources";
 import useLayers from "../useLayers";
 import { MapLogger } from "./mapUtils";
 import ToggleBasemapControl from "../../../../components/map/ToggleBasemapControl";
-import { DUMMY_BASEMAP_LAYERS } from "../../constants";
+import { BASEMAP_STYLES, DUMMY_BASEMAP_LAYERS } from "../../constants";
 import debounce from "lodash.debounce";
 import createTheme from "../../../../theme";
 import { ThemeProvider } from "styled-components/macro";
@@ -350,6 +350,7 @@ const useMap = (ref, mapConfig) => {
   }, [addMapEvents]);
 
   return {
+    basemaps: BASEMAP_STYLES,
     layers,
     map,
     sources,

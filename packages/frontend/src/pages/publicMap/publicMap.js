@@ -5,6 +5,7 @@ import { Box, Paper, Typography } from "@material-ui/core";
 // import AppBar from "../../components/AppBar";
 import Map from "./map";
 import LayersControl from "./controls/layersControl";
+import BasemapsControl from "./controls/basemapsControl";
 import WellStylesControl from "./controls/wellStylesControl";
 import ZoomInfo from "./controls/zoomInfo";
 import Search from "./filters/search";
@@ -53,6 +54,7 @@ const getMoreFiltersCount = (filterValues) => {
 const PublicMap = () => {
   const mapContainer = useRef(null);
   const {
+    basemaps,
     layers,
     map,
     zoomLevel,
@@ -77,7 +79,7 @@ const PublicMap = () => {
   return (
     <>
       {/*MJB popup dialog with disclaimer if the user is not logged in (public)*/}
-      <DisclaimerDialog />
+      {process.env.NODE_ENV !== "development" && <DisclaimerDialog />}
       {/*<AppBar />*/}
       <FiltersBar>
         <FiltersSection>
@@ -222,6 +224,7 @@ const PublicMap = () => {
         {process.env.NODE_ENV === "development" && (
           <ZoomInfo zoomLevel={zoomLevel} />
         )}
+        <BasemapsControl items={basemaps} />
       </Map>
     </>
   );

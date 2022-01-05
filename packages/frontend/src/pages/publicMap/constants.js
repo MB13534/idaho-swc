@@ -11,6 +11,12 @@ export const DUMMY_BASEMAP_LAYERS = [
   { url: "satellite-streets-v11", icon: "satellite_alt" },
 ];
 
+export const BASEMAP_STYLES = [
+  { style: "outdoors-v11", name: "Outdoors" },
+  { style: "streets-v11", name: "Streets" },
+  { style: "satellite-streets-v11", name: "Satellite" },
+];
+
 export const WELLS_LAYER_ID = "clearwater-wells-circle";
 export const INIT_FILTER_VALUES = {
   aquifers: {
