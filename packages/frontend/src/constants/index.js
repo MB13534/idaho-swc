@@ -49,7 +49,7 @@ export const CRUD_MODELS = [
   },
   {
     name: "ListPermitTypes",
-    sidebarName: "List Permit Types",
+    sidebarName: "Permit Types",
     guard: DeveloperGuard,
     visibilityFilter: DeveloperVisibilityFilter,
   },

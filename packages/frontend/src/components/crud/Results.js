@@ -24,7 +24,13 @@ const Root = styled(Grid)`
   }
 `;
 
-function Results({ config, modelName, width, displayMode }) {
+function Results({
+  config,
+  modelName,
+  width,
+  displayMode,
+  crudModelNameLabels,
+}) {
   const { doToast, lookupTableCache } = useApp();
   const dev = useDev();
   const service = useService({ toast: false });
@@ -59,7 +65,11 @@ function Results({ config, modelName, width, displayMode }) {
             title="No Records Found"
             subtitle="There were no results for your query."
             actions={
-              <CreateModelButton fullWidth={false} modelName={modelName} />
+              <CreateModelButton
+                fullWidth={false}
+                crudModelNameLabels={crudModelNameLabels}
+                modelName={modelName}
+              />
             }
           />
         )}

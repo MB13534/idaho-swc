@@ -45,6 +45,7 @@ import {
   lastOfYear,
   filterDataForWellOwner,
   oneYearAgo,
+  getElevation,
 } from "../../../utils";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
@@ -134,9 +135,10 @@ function Production() {
   const service = useService({ toast: false });
   const { currentUser } = useApp();
   const currentlyPaintedPointRef = useRef(null);
-  const coordinatesRef = useRef(null);
+  const coordinatesContainerRef = useRef(null);
   const longRef = useRef(null);
   const latRef = useRef(null);
+  const eleRef = useRef(null);
 
   //date filter defaults
   const defaultFilterValues = {
@@ -194,9 +196,15 @@ function Production() {
     );
 
     let popup = new mapboxgl.Popup({ maxWidth: "300px" });
-    coordinatesRef.current.style.display = "block";
+    coordinatesContainerRef.current.style.display = "block";
     longRef.current.innerHTML = pointFeatures.location_geometry.coordinates[0];
     latRef.current.innerHTML = pointFeatures.location_geometry.coordinates[1];
+    (async function () {
+      eleRef.current.innerHTML = await getElevation(
+        pointFeatures.location_geometry.coordinates[0],
+        pointFeatures.location_geometry.coordinates[1]
+      );
+    })();
 
     // Copy coordinates array.
     const coordinates = pointFeatures.location_geometry.coordinates.slice();
@@ -831,9 +839,10 @@ function Production() {
                   setCurrentSelectedPoint={setCurrentSelectedPoint}
                   radioValue={radioValue}
                   currentlyPaintedPointRef={currentlyPaintedPointRef}
-                  coordinatesRef={coordinatesRef}
+                  coordinatesContainerRef={coordinatesContainerRef}
                   longRef={longRef}
                   latRef={latRef}
+                  eleRef={eleRef}
                   setRadioValue={setRadioValue}
                 />
               </MapContainer>

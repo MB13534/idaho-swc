@@ -10,6 +10,10 @@ export const displayName = (row) => {
 //   sort: "asc",
 // };
 
+export const crudModelNameLabels = {
+  standard: "Aggregated Systems",
+};
+
 export function columns(modelName) {
   return [
     {

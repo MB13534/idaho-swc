@@ -47,7 +47,9 @@ const useMap = (ref, mapConfig) => {
   const [zoomLevel, setZoomLevel] = useState(0);
   const [dataAdded, setDataAdded] = useState(false);
   const [eventsRegistered, setEventsRegistered] = useState(false);
-  const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
+  const popUpRef = useRef(
+    new mapboxgl.Popup({ offset: 15, focusAfterOpen: false })
+  );
 
   // Fetch a list of sources  and layers to add to the map
   const { sources } = useSources();

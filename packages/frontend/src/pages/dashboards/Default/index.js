@@ -42,6 +42,7 @@ import {
   lineColors,
   renderStatusChip,
   oneYearAgo,
+  getElevation,
 } from "../../../utils";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
@@ -133,6 +134,7 @@ function Default() {
   const coordinatesContainerRef = useRef(null);
   const longRef = useRef(null);
   const latRef = useRef(null);
+  const eleRef = useRef(null);
 
   //date filter defaults
   const defaultFilterValues = {
@@ -197,6 +199,12 @@ function Default() {
     coordinatesContainerRef.current.style.display = "block";
     longRef.current.innerHTML = pointFeatures.location_geometry.coordinates[0];
     latRef.current.innerHTML = pointFeatures.location_geometry.coordinates[1];
+    (async function () {
+      eleRef.current.innerHTML = await getElevation(
+        pointFeatures.location_geometry.coordinates[0],
+        pointFeatures.location_geometry.coordinates[1]
+      );
+    })();
 
     // Copy coordinates array.
     const coordinates = pointFeatures.location_geometry.coordinates.slice();
@@ -852,6 +860,7 @@ function Default() {
                   coordinatesContainerRef={coordinatesContainerRef}
                   longRef={longRef}
                   latRef={latRef}
+                  eleRef={eleRef}
                 />
               </MapContainer>
             </AccordionDetails>

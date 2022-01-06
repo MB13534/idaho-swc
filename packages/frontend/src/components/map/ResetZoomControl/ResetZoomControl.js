@@ -7,6 +7,7 @@ class ResetZoomControl {
     this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
 
     const icon = document.createElement("button");
+    icon.type = "button";
     icon.className = "material-icons";
     icon.style.verticalAlign = "middle";
     icon.style.cursor = "pointer";

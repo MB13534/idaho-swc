@@ -10,6 +10,12 @@ export const displayName = (row) => {
 //   field: "created_at",
 //   sort: "asc",
 // };
+//
+export const crudModelNameLabels = {
+  standard: "Permits",
+  indexHeader: "Active Permits",
+  newHeader: "Permit (Not a Renewal)",
+};
 
 export function columns(modelName) {
   return [

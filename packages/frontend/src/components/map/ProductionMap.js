@@ -1,12 +1,16 @@
 import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import * as MapboxDrawGeodesic from "mapbox-gl-draw-geodesic";
+import { RulerControl } from "mapbox-gl-controls";
+import area from "@turf/area";
 import styled from "styled-components/macro";
 import ResetZoomControl from "./ResetZoomControl";
 import { STARTING_LOCATION } from "../../constants";
 import ToggleBasemapControl from "./ToggleBasemapControl";
 import { makeStyles } from "@material-ui/core/styles";
 import { Tooltip } from "@material-ui/core";
-import { formatBooleanTrueFalse, lineColors } from "../../utils";
+import { formatBooleanTrueFalse, lineColors, getElevation } from "../../utils";
 import { useApp } from "../../AppProvider";
 import debounce from "lodash.debounce";
 
@@ -18,12 +22,27 @@ const MapContainer = styled.div`
   height: 100%;
 `;
 
-const Coordinates = styled.pre`
+const CoordinatesContainer = styled.pre`
   background: rgba(0, 0, 0, 0.5);
   color: #fff;
   position: absolute;
-  bottom: 40px;
-  left: 10px;
+  top: 10px;
+  left: 49px;
+  padding: 5px 10px;
+  margin: 0;
+  font-size: 11px;
+  line-height: 18px;
+  border-radius: 3px;
+  z-index: 1000;
+  display: none;
+`;
+
+const MeasurementsContainer = styled.pre`
+  background: rgba(0, 0, 0, 0.5);
+  color: #fff;
+  position: absolute;
+  bottom: 30px;
+  right: 49px;
   padding: 5px 10px;
   margin: 0;
   font-size: 11px;
@@ -35,6 +54,15 @@ const Coordinates = styled.pre`
 
 const Coord = styled.span`
   cursor: copy;
+`;
+
+const Measurement = styled.div`
+  cursor: copy;
+  margin-left: 10px;
+`;
+
+const MarginLeft = styled.span`
+  margin-left: 10px;
 `;
 
 const useStyles = makeStyles(() => ({
@@ -68,15 +96,19 @@ const ProductionMap = ({
   map,
   setMap,
   currentlyPaintedPointRef,
-  coordinatesRef,
+  coordinatesContainerRef,
   longRef,
   latRef,
   setRadioValue,
+  eleRef,
 }) => {
   const { currentUser } = useApp();
   const classes = useStyles();
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
-
+  const polygonRef = useRef(null);
+  const radiusRef = useRef(null);
+  const pointRef = useRef(null);
+  const measurementContainerRef = useRef(null);
   const mapContainerRef = useRef(null); // create a reference to the map container
 
   const DUMMY_BASEMAP_LAYERS = [
@@ -95,9 +127,15 @@ const ProductionMap = ({
   };
 
   function onPointClick(e) {
-    coordinatesRef.current.style.display = "block";
+    coordinatesContainerRef.current.style.display = "block";
     longRef.current.innerHTML = e.features[0].properties["Longitude (dd)"];
     latRef.current.innerHTML = e.features[0].properties["Latitude (dd)"];
+    (async function () {
+      eleRef.current.innerHTML = await getElevation(
+        e.features[0].properties["Longitude (dd)"],
+        e.features[0].properties["Latitude (dd)"]
+      );
+    })();
   }
 
   useEffect(() => {
@@ -107,6 +145,112 @@ const ProductionMap = ({
       center: STARTING_LOCATION,
       zoom: 9,
     });
+
+    let modes = MapboxDraw.modes;
+    modes = MapboxDrawGeodesic.enable(modes);
+    const draw = new MapboxDraw({
+      modes,
+      controls: {
+        polygon: true,
+        point: true,
+        trash: true,
+      },
+      displayControlsDefault: false,
+      userProperties: true,
+    });
+
+    class CircleDraw {
+      onAdd() {
+        this._container = document.createElement("div");
+        this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
+
+        const icon = document.createElement("button");
+        icon.className = "material-icons";
+        icon.style.verticalAlign = "middle";
+        icon.style.cursor = "pointer";
+        icon.textContent = "trip_origin";
+        this._container.appendChild(icon);
+        this._container.addEventListener("click", () => {
+          draw.changeMode("draw_circle");
+        });
+        return this._container;
+      }
+
+      onRemove() {
+        this._container.parentNode.removeChild(this._container);
+      }
+    }
+    map.addControl(draw, "bottom-right");
+
+    map.on("draw.create", (event) => {
+      const geojson = event.features[0];
+      updateArea(geojson, event.type);
+    });
+    map.on("draw.update", (event) => {
+      const geojson = event.features[0];
+      updateArea(geojson, event.type);
+    });
+
+    map.on("draw.delete", (event) => {
+      const geojson = event.features[0];
+      updateArea(geojson, event.type);
+    });
+
+    function updateArea(geojson, type) {
+      const data = draw.getAll();
+      measurementContainerRef.current.style.display = "block";
+
+      const answerArea = polygonRef.current;
+      const answerRadius = radiusRef.current;
+      const answerPoint = pointRef.current;
+
+      if (geojson.properties.circleRadius && type !== "draw.delete") {
+        const exactRadiusKm = geojson.properties.circleRadius;
+        const exactRadiusFeet = exactRadiusKm * 3280.84;
+        const roundedRadius = exactRadiusFeet.toFixed(2);
+        answerRadius.innerHTML = roundedRadius + " ft";
+      }
+
+      if (geojson.geometry.type === "Point" && type !== "draw.delete") {
+        answerPoint.innerHTML = `<strong>lat:</strong> ${geojson.geometry.coordinates[1]}<br /><strong>long:</strong> ${geojson.geometry.coordinates[0]}`;
+      }
+
+      if (
+        data.features.filter((item) => item.geometry.type === "Point")
+          .length === 0
+      ) {
+        answerPoint.innerHTML = "--";
+      }
+      if (
+        data.features.filter((item) => item.properties.circleRadius).length ===
+        0
+      ) {
+        answerRadius.innerHTML = "--";
+      }
+
+      if (data.features.length > 0) {
+        const exactAreaMeters = area(data);
+        const exactAreaFeet = exactAreaMeters * 10.7639;
+        const roundedArea = exactAreaFeet.toFixed(2);
+        answerArea.innerHTML = roundedArea + " sq ft";
+      } else {
+        answerArea.innerHTML = "";
+        answerRadius.innerHTML = "";
+        answerPoint.innerHTML = "";
+        measurementContainerRef.current.style.display = "none";
+        // if (e.type !== "draw.delete") alert("Click the map to draw a polygon.");
+      }
+    }
+
+    map.addControl(new CircleDraw(), "bottom-right");
+
+    map.addControl(
+      new RulerControl({
+        units: "feet",
+        labelFormat: (n) => `${n.toFixed(2)} ft`,
+      }),
+      "bottom-right"
+    );
 
     map.addControl(new mapboxgl.NavigationControl(), "top-left");
     map.addControl(
@@ -364,7 +508,18 @@ const ProductionMap = ({
         latRef.current.addEventListener("click", (e) =>
           handleCopyCoords(e.target.innerHTML)
         );
-
+        eleRef.current.addEventListener("click", (e) =>
+          handleCopyCoords(e.target.innerHTML)
+        );
+        polygonRef.current.addEventListener("click", (e) =>
+          handleCopyCoords(e.target.innerHTML)
+        );
+        radiusRef.current.addEventListener("click", (e) =>
+          handleCopyCoords(e.target.innerHTML)
+        );
+        pointRef.current.addEventListener("click", (e) =>
+          handleCopyCoords(e.target.innerHTML)
+        );
         // Change the cursor to a pointer when the mouse is over the places layer.
         map.on("mouseenter", "locations", () => {
           map.getCanvas().style.cursor = "pointer";
@@ -443,17 +598,57 @@ const ProductionMap = ({
   return (
     <>
       <MapContainer ref={mapContainerRef}>
-        <Coordinates ref={coordinatesRef}>
-          Longitude:
-          <Tooltip title="Copy Longitude to Clipboard">
-            <Coord ref={longRef} />
-          </Tooltip>
+        <CoordinatesContainer ref={coordinatesContainerRef}>
+          <strong>Most recently selected well: </strong>
+          <div>
+            <MarginLeft>
+              <strong>Longitude: </strong>
+            </MarginLeft>
+            <Tooltip title="Copy Longitude to Clipboard">
+              <Coord ref={longRef} />
+            </Tooltip>
+          </div>
+          <div>
+            <MarginLeft>
+              <strong>Latitude: </strong>
+            </MarginLeft>
+            <Tooltip
+              title="Copy Latitude to Clipboard"
+              placement="bottom-start"
+            >
+              <Coord ref={latRef} />
+            </Tooltip>
+          </div>
+          <div>
+            <MarginLeft>
+              <strong>Elevation: </strong>
+            </MarginLeft>
+            <Tooltip
+              title="Copy Elevation to Clipboard"
+              placement="bottom-start"
+            >
+              <Coord ref={eleRef} />
+            </Tooltip>{" "}
+            ft
+          </div>
+        </CoordinatesContainer>
+        <MeasurementsContainer ref={measurementContainerRef}>
+          <strong>Most recently edited circle radius:</strong>
           <br />
-          Latitude:
-          <Tooltip title="Copy Latitude to Clipboard" placement="bottom-start">
-            <Coord ref={latRef} />
+          <Tooltip title="Copy Radius to Clipboard" placement="left-start">
+            <Measurement ref={radiusRef} />
           </Tooltip>
-        </Coordinates>
+          <strong>Total polygon area:</strong>
+          <br />
+          <Tooltip title="Copy Area to Clipboard" placement="left-start">
+            <Measurement ref={polygonRef} />
+          </Tooltip>
+          <strong>Most recently edited point coordinates:</strong>
+          <br />
+          <Tooltip title="Copy Coordinates to Clipboard" placement="left-start">
+            <Measurement ref={pointRef} />
+          </Tooltip>
+        </MeasurementsContainer>
       </MapContainer>
     </>
   );
