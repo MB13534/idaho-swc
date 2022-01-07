@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import styled from "styled-components/macro";
+import styled, { ThemeProvider } from "styled-components/macro";
 import { NavLink } from "react-router-dom";
 
 import { Helmet } from "react-helmet-async";
@@ -37,23 +37,33 @@ import axios from "axios";
 import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart";
 import {
   firstOfYear,
-  formatBooleanTrueFalse,
   lastOfYear,
   lineColors,
   renderStatusChip,
   oneYearAgo,
-  getElevation,
 } from "../../../utils";
+import { onPointClickSetCoordinateRefs } from "../../../utils/map";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import ExportDataButton from "../../../components/graphs/ExportDataButton";
 import OptionsPicker from "../../../components/pickers/OptionsPicker";
 import Link from "@material-ui/core/Link";
 import { Edit } from "@material-ui/icons";
 import mapboxgl from "mapbox-gl";
-import { makeStyles } from "@material-ui/core/styles";
+import { jssPreset, StylesProvider } from "@material-ui/core/styles";
 import DatePicker from "../../../components/pickers/DatePicker";
 import { customSecondary } from "../../../theme/variants";
 import Button from "@material-ui/core/Button";
+import ReactDOM from "react-dom";
+import { ThemeProvider as MuiThemeProvider } from "@material-ui/styles";
+import createTheme from "../../../theme";
+import MainPopup from "../../../components/map/components/MainPopup";
+import { create } from "jss";
+import { useSelector } from "react-redux";
+
+const jss = create({
+  ...jssPreset(),
+  insertionPoint: document.getElementById("jss-insertion-point"),
+});
 
 const Divider = styled(MuiDivider)(spacing);
 
@@ -99,39 +109,22 @@ const TimeseriesWrapper = styled.div`
 
 const Grid = styled(MuiGrid)(spacing);
 
-const useStyles = makeStyles(() => ({
-  propTable: {
-    borderRadius: "5px",
-    borderCollapse: "collapse",
-    border: "1px solid #ccc",
-    "& td": {
-      padding: "3px 6px",
-      margin: 0,
-    },
-    "& tr:nth-child(even)": {
-      backgroundColor: lineColors.lightGray,
-    },
-    "& tr": {
-      borderRadius: "5px",
-    },
-  },
-  popupWrap: {
-    maxHeight: 200,
-    overflowY: "scroll",
-  },
-}));
-
 function Default() {
-  const classes = useStyles();
-  const [map, setMap] = useState();
-  const [currentTableLabel, setCurrentTableLabel] = useState();
-  const divSaveRef = useRef(null);
-  const graphSaveRef = useRef(null);
+  const theme = useSelector((state) => state.themeReducer);
   const { user, getAccessTokenSilently } = useAuth0();
   const service = useService({ toast: false });
   const { currentUser } = useApp();
+
+  const [map, setMap] = useState();
+  const [currentTableLabel, setCurrentTableLabel] = useState();
+
+  const divSaveRef = useRef(null);
+  const graphSaveRef = useRef(null);
   const currentlyPaintedPointRef = useRef(null);
   const coordinatesContainerRef = useRef(null);
+  const popUpRef = useRef(
+    new mapboxgl.Popup({ maxWidth: "310px", focusAfterOpen: false })
+  );
   const longRef = useRef(null);
   const latRef = useRef(null);
   const eleRef = useRef(null);
@@ -182,6 +175,15 @@ function Default() {
   const handlePointInteractions = (pointFeatures) => {
     map.fire("closeAllPopups");
 
+    const coordinates = pointFeatures.location_geometry.coordinates;
+
+    map.flyTo({
+      center: coordinates,
+      zoom: 14,
+      padding: { bottom: 250 },
+    });
+
+    //uncolor previously painted/selected point
     map.setFeatureState(
       {
         source: "locations",
@@ -189,115 +191,65 @@ function Default() {
       },
       { clicked: false }
     );
+
+    //set the id to color the point yellow
     currentlyPaintedPointRef.current = pointFeatures.well_ndx;
     map.setFeatureState(
       { source: "locations", id: pointFeatures.well_ndx },
       { clicked: true }
     );
 
-    let popup = new mapboxgl.Popup({ maxWidth: "300px" });
+    //sets ref.current.innerHTMLs for coordinates popup
     coordinatesContainerRef.current.style.display = "block";
-    longRef.current.innerHTML = pointFeatures.location_geometry.coordinates[0];
-    latRef.current.innerHTML = pointFeatures.location_geometry.coordinates[1];
-    (async function () {
-      eleRef.current.innerHTML = await getElevation(
-        pointFeatures.location_geometry.coordinates[0],
-        pointFeatures.location_geometry.coordinates[1]
-      );
-    })();
+    onPointClickSetCoordinateRefs(
+      coordinatesContainerRef,
+      longRef,
+      latRef,
+      eleRef,
+      pointFeatures.latitude_dd,
+      pointFeatures.longitude_dd
+    );
 
-    // Copy coordinates array.
-    const coordinates = pointFeatures.location_geometry.coordinates.slice();
+    //handles main point click popup
+    const excludedPopupFields = [
+      "id",
+      "has_production",
+      "has_waterlevels",
+      "has_wqdata",
+      "well_ndx",
+      "location_geometry",
+      "authorized_users",
+      "is_well_owner",
+      "tableData",
+      "is_permitted",
+      "is_exempt",
+      "is_monitoring",
+      "well_type",
+      "tableData",
+    ];
+
+    const popupNode = document.createElement("div");
+    ReactDOM.render(
+      //MJB adding style providers to the popup
+      <StylesProvider jss={jss}>
+        <MuiThemeProvider theme={createTheme(theme.currentTheme)}>
+          <ThemeProvider theme={createTheme(theme.currentTheme)}>
+            <MainPopup
+              excludeFields={excludedPopupFields}
+              feature={pointFeatures}
+              currentUser={currentUser}
+            />
+          </ThemeProvider>
+        </MuiThemeProvider>
+      </StylesProvider>,
+      popupNode
+    );
+
+    popUpRef.current.setLngLat(coordinates).setDOMContent(popupNode).addTo(map);
 
     map.on("closeAllPopups", () => {
-      popup.remove();
+      popUpRef.current.remove();
     });
-
-    map.flyTo({
-      center: [pointFeatures.longitude_dd, pointFeatures.latitude_dd],
-      zoom: 14,
-      padding: { bottom: 250 },
-    });
-    const titleLookup = {
-      cuwcd_well_number: "CUWCD Well #",
-      exempt: "Exempt?",
-      well_name: "Well Name",
-      state_well_number: "State Well #",
-      well_status: "Well Status",
-      source_aquifer: "Source Aquifer",
-      well_depth_ft: "Well Depth (ft)",
-      elevation_ftabmsl: "Elevation (ft msl)",
-      screen_top_depth_ft: "Screen Top Depth (ft)",
-      screen_bottom_depth_ft: "Screen Bottom Depth (ft)",
-      primary_use: "Primary Use",
-      secondary_use: "Secondary Use",
-      agg_system_name: "Aggregation System",
-      permit_number: "Permit #",
-      well_owner: "Well Owner",
-      well_owner_address: "Well Owner Address",
-      well_owner_phone: "Well Owner Phone",
-      well_owner_email: "Well Owner Email",
-      well_contact: "Well Contact",
-      well_contact_address: "Well Contact Address",
-      well_contact_phone: "Well Contact Phone",
-      well_contact_email: "Well Contact Email",
-      driller: "Driller",
-      date_drilled: "Date Drilled",
-      drillers_log: "Drillers Log?",
-      general_notes: "General Notes",
-      well_remarks: "Well Remarks",
-      count_production: "Count of Production Entries",
-      count_waterlevels: "Count of Water Levels Entries",
-      count_wqdata: "Count of WQ Data Entries",
-      longitude_dd: "Longitude (dd)",
-      latitude_dd: "Latitude (dd)",
-      registration_notes: "Registration Notes",
-      registration_date: "Registration Date",
-      editor_name: "Editor",
-      last_edited_date: "Last Edited Date",
-      list_of_attachments: "List of Attachments",
-      authorized_users: "Authorized Users",
-    };
-
-    const canUserEdit = currentUser.isUser
-      ? ""
-      : `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${pointFeatures.id}">Link</a></td></tr>`;
-
-    const html =
-      '<div class="' +
-      classes.popupWrap +
-      '"><h3>Properties</h3><table class="' +
-      classes.propTable +
-      '"><tbody>' +
-      canUserEdit +
-      Object.entries(pointFeatures)
-        .map(([k, v]) => {
-          if (
-            [
-              "id",
-              "has_production",
-              "has_waterlevels",
-              "has_wqdata",
-              "well_ndx",
-              "location_geometry",
-              "tableData",
-              "is_permitted",
-              "is_exempt",
-              "is_monitoring",
-              "well_type",
-              "authorized_users",
-            ].includes(k)
-          )
-            return null;
-          if (v === null) return null;
-          return `<tr><td><strong>${
-            titleLookup[k]
-          }</strong></td><td>${formatBooleanTrueFalse(v)}</td></tr>`;
-        })
-        .join("") +
-      "</tbody></table></div>";
-
-    popup.setLngLat(coordinates).setHTML(html).addTo(map);
   };
 
   const [filteredData, setFilteredData] = React.useState([]);

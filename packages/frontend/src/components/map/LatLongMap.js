@@ -3,18 +3,16 @@ import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-load
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import * as MapboxDrawGeodesic from "mapbox-gl-draw-geodesic";
 import { RulerControl } from "mapbox-gl-controls";
-import area from "@turf/area";
 import styled from "styled-components/macro";
 import { STARTING_LOCATION } from "../../constants";
-import {
-  Accordion,
-  AccordionDetails,
-  Tooltip,
-  Typography,
-} from "@material-ui/core";
+import { Accordion, AccordionDetails, Typography } from "@material-ui/core";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import debounce from "lodash.debounce";
+import DragCircleControl from "./DragCircleControl";
+import { onPointClickSetCoordinateRefs, updateArea } from "../../utils/map";
+import CoordinatesPopup from "./components/CoordinatesPopup";
+import MeasurementsPopup from "./components/MeasurementsPopup";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -29,44 +27,13 @@ const MapContainer = styled.div`
   height: 100%;
 `;
 
-const CoordinatesContainer = styled.pre`
-  background: rgba(0, 0, 0, 0.7);
-  color: #fff;
-  position: absolute;
-  top: 49px;
-  left: 10px;
-  padding: 5px 10px;
-  margin: 0;
-  font-size: 11px;
-  line-height: 18px;
-  border-radius: 3px;
-  z-index: 1000;
-  display: none;
-`;
-
-const MeasurementsContainer = styled.pre`
-  background: rgba(0, 0, 0, 0.7);
-  color: #fff;
-  position: absolute;
-  bottom: 30px;
-  right: 49px;
-  padding: 5px 10px;
-  margin: 0;
-  font-size: 11px;
-  line-height: 18px;
-  border-radius: 3px;
-  z-index: 1000;
-  display: none;
-`;
-
 const Instructions = styled.div`
-  background: rgba(0, 0, 0, 0.7);
+  background: rgba(0, 0, 0, 0.6);
   color: #fff;
   position: absolute;
   text-align: center;
   left: 50%;
   margin-right: -50%;
-
   transform: translate(-50%, 0);
   padding: 5px 10px;
   font-size: 11px;
@@ -74,19 +41,6 @@ const Instructions = styled.div`
   border-radius: 3px;
   z-index: 1000;
   display: block;
-`;
-
-const Coord = styled.span`
-  cursor: copy;
-`;
-
-const Measurement = styled.div`
-  cursor: copy;
-  margin-left: 10px;
-`;
-
-const MarginLeft = styled.span`
-  margin-left: 10px;
 `;
 
 const Map = ({ config }) => {
@@ -100,7 +54,7 @@ const Map = ({ config }) => {
   const polygonRef = useRef(null);
   const radiusRef = useRef(null);
   const pointRef = useRef(null);
-  const measurementContainerRef = useRef(null);
+  const measurementsContainerRef = useRef(null);
   const mapContainerRef = useRef(null); // create a reference to the map container
 
   async function getElevation(transferElevation = true) {
@@ -122,6 +76,7 @@ const Map = ({ config }) => {
     }
   }
 
+  //create map and apply all controls
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -133,6 +88,7 @@ const Map = ({ config }) => {
       zoom: 9,
     });
 
+    //adds control features as extended by MapboxDrawGeodesic (draw circle)
     let modes = MapboxDraw.modes;
     modes = MapboxDrawGeodesic.enable(modes);
     const draw = new MapboxDraw({
@@ -146,92 +102,33 @@ const Map = ({ config }) => {
       userProperties: true,
     });
 
-    class CircleDraw {
-      onAdd() {
-        this._container = document.createElement("div");
-        this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
+    //event listener to run function updateArea during each draw action to handle measurements popup
+    const drawActions = ["draw.create", "draw.update", "draw.delete"];
+    drawActions.forEach((item) => {
+      map.on(item, (event) => {
+        const geojson = event.features[0];
+        const type = event.type;
+        updateArea(
+          geojson,
+          type,
+          polygonRef,
+          radiusRef,
+          pointRef,
+          measurementsContainerRef,
+          draw
+        );
+      });
+    });
 
-        const icon = document.createElement("button");
-        icon.type = "button";
-        icon.className = "material-icons";
-        icon.style.verticalAlign = "middle";
-        icon.style.cursor = "pointer";
-        icon.textContent = "trip_origin";
-        this._container.appendChild(icon);
-        this._container.addEventListener("click", () => {
-          draw.changeMode("draw_circle");
-        });
-        return this._container;
-      }
+    //top left controls
+    //none
 
-      onRemove() {
-        this._container.parentNode.removeChild(this._container);
-      }
-    }
+    //top right controls
+    map.addControl(new mapboxgl.FullscreenControl(), "top-right");
+
+    //bottom right controls
     map.addControl(draw, "bottom-right");
-
-    map.on("draw.create", (event) => {
-      const geojson = event.features[0];
-      updateArea(geojson, event.type);
-    });
-    map.on("draw.update", (event) => {
-      const geojson = event.features[0];
-      updateArea(geojson, event.type);
-    });
-
-    map.on("draw.delete", (event) => {
-      const geojson = event.features[0];
-      updateArea(geojson, event.type);
-    });
-
-    function updateArea(geojson, type) {
-      const data = draw.getAll();
-      measurementContainerRef.current.style.display = "block";
-
-      const answerArea = polygonRef.current;
-      const answerRadius = radiusRef.current;
-      const answerPoint = pointRef.current;
-
-      if (geojson.properties.circleRadius && type !== "draw.delete") {
-        const exactRadiusKm = geojson.properties.circleRadius;
-        const exactRadiusFeet = exactRadiusKm * 3280.84;
-        const roundedRadius = exactRadiusFeet.toFixed(2);
-        answerRadius.innerHTML = roundedRadius + " ft";
-      }
-
-      if (geojson.geometry.type === "Point" && type !== "draw.delete") {
-        answerPoint.innerHTML = `<strong>lat:</strong> ${geojson.geometry.coordinates[1]}<br /><strong>long:</strong> ${geojson.geometry.coordinates[0]}`;
-      }
-
-      if (
-        data.features.filter((item) => item.geometry.type === "Point")
-          .length === 0
-      ) {
-        answerPoint.innerHTML = "--";
-      }
-      if (
-        data.features.filter((item) => item.properties.circleRadius).length ===
-        0
-      ) {
-        answerRadius.innerHTML = "--";
-      }
-
-      if (data.features.length > 0) {
-        const exactAreaMeters = area(data);
-        const exactAreaFeet = exactAreaMeters * 10.7639;
-        const roundedArea = exactAreaFeet.toFixed(2);
-        answerArea.innerHTML = roundedArea + " sq ft";
-      } else {
-        answerArea.innerHTML = "";
-        answerRadius.innerHTML = "";
-        answerPoint.innerHTML = "";
-        measurementContainerRef.current.style.display = "none";
-        // if (e.type !== "draw.delete") alert("Click the map to draw a polygon.");
-      }
-    }
-
-    map.addControl(new CircleDraw(), "bottom-right");
-
+    map.addControl(new DragCircleControl(draw), "bottom-right");
     map.addControl(
       new RulerControl({
         units: "feet",
@@ -240,20 +137,19 @@ const Map = ({ config }) => {
       "bottom-right"
     );
 
-    map.addControl(new mapboxgl.FullscreenControl());
+    //bottom left controls
+    map.addControl(
+      new mapboxgl.ScaleControl({ unit: "imperial" }),
+      "bottom-left"
+    );
 
-    map.addControl(new mapboxgl.ScaleControl({ unit: "imperial" }));
-
-    map.on("render", () => {
-      map.resize();
-    });
     map.on("load", () => {
       setMapIsLoaded(true);
-      map.resize();
       setMap(map);
     });
   }, []); // eslint-disable-line
 
+  //resizes map when mapContainerRef dimensions changes (sidebar toggle)
   useEffect(() => {
     if (map) {
       const resizer = new ResizeObserver(debounce(() => map.resize(), 100));
@@ -299,35 +195,20 @@ const Map = ({ config }) => {
         config.setFieldValue("latitude_dd", lngLat.lat);
         getElevation();
       };
-      const handleCopyCoords = (value) => {
-        const dummy = document.createElement("input");
-        document.body.appendChild(dummy);
-        dummy.value = value;
-        dummy.select();
-        document.execCommand("copy");
-        document.body.removeChild(dummy);
-      };
-
-      longRef.current.addEventListener("click", (e) =>
-        handleCopyCoords(e.target.innerHTML)
-      );
-      latRef.current.addEventListener("click", (e) =>
-        handleCopyCoords(e.target.innerHTML)
-      );
-      eleRef.current.addEventListener("click", (e) =>
-        handleCopyCoords(e.target.innerHTML)
-      );
-      polygonRef.current.addEventListener("click", (e) =>
-        handleCopyCoords(e.target.innerHTML)
-      );
-      radiusRef.current.addEventListener("click", (e) =>
-        handleCopyCoords(e.target.innerHTML)
-      );
-      pointRef.current.addEventListener("click", (e) =>
-        handleCopyCoords(e.target.innerHTML)
-      );
 
       marker.on("dragend", onDragEnd);
+
+      //sets ref.current.innerHTMLs for coordinates popup
+      map.on("click", "locations", (e) =>
+        onPointClickSetCoordinateRefs(
+          coordinatesContainerRef,
+          longRef,
+          latRef,
+          eleRef,
+          e.features[0].properties.latitude_dd,
+          e.features[0].properties.longitude_dd
+        )
+      );
     }
   }, [mapIsLoaded, map]); //eslint-disable-line
 
@@ -347,63 +228,21 @@ const Map = ({ config }) => {
         <AccordionDetails style={{ padding: "0" }}>
           <Container>
             <MapContainer ref={mapContainerRef}>
-              <CoordinatesContainer ref={coordinatesContainerRef}>
-                <strong>Blue marker: </strong>
-                <div>
-                  <MarginLeft>
-                    <strong>Longitude: </strong>
-                  </MarginLeft>
-                  <Tooltip title="Copy Longitude to Clipboard">
-                    <Coord ref={longRef} />
-                  </Tooltip>
-                </div>
-                <div>
-                  <MarginLeft>
-                    <strong>Latitude: </strong>
-                  </MarginLeft>
-                  <Tooltip
-                    title="Copy Latitude to Clipboard"
-                    placement="bottom-start"
-                  >
-                    <Coord ref={latRef} />
-                  </Tooltip>
-                </div>
-                <div>
-                  <MarginLeft>
-                    <strong>Elevation: </strong>
-                  </MarginLeft>
-                  <Tooltip
-                    title="Copy Elevation to Clipboard"
-                    placement="bottom-start"
-                  >
-                    <Coord ref={eleRef} />
-                  </Tooltip>{" "}
-                  ft
-                </div>
-              </CoordinatesContainer>
-              <MeasurementsContainer ref={measurementContainerRef}>
-                <strong>Most recently edited circle radius:</strong>
-                <br />
-                <Tooltip
-                  title="Copy Radius to Clipboard"
-                  placement="left-start"
-                >
-                  <Measurement ref={radiusRef} />
-                </Tooltip>
-                <strong>Total polygon area:</strong>
-                <br />
-                <Tooltip title="Copy Area to Clipboard" placement="left-start">
-                  <Measurement ref={polygonRef} />
-                </Tooltip>
-                <strong>Most recently edited point coordinates:</strong>
-                <br />
-                <Tooltip
-                  title="Copy Coordinates to Clipboard"
-                  placement="left-start"
-                >
-                  <Measurement ref={pointRef} />
-                </Tooltip>
-              </MeasurementsContainer>
+              <CoordinatesPopup
+                coordinatesContainerRef={coordinatesContainerRef}
+                longRef={longRef}
+                latRef={latRef}
+                eleRef={eleRef}
+                title="Blue marker:"
+                top={"49px"}
+                left={"10px"}
+              />
+              <MeasurementsPopup
+                measurementsContainerRef={measurementsContainerRef}
+                radiusRef={radiusRef}
+                polygonRef={polygonRef}
+                pointRef={pointRef}
+              />
               <Instructions ref={instructionsRef}>
                 Drag and place marker to generate coordinates and elevation
                 fields

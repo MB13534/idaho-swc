@@ -7,9 +7,6 @@ import { Chip as MuiChip } from "@material-ui/core";
 import { spacing } from "@material-ui/system";
 import html2canvas from "html2canvas";
 import { add } from "date-fns";
-import mapboxgl from "mapbox-gl";
-
-mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
 export const scrollWindowToTop = (smooth = true) => {
   window.scrollTo({ top: 0, behavior: smooth ? "smooth" : "auto" });
@@ -138,22 +135,6 @@ export const lineColors = {
 
 export const dateFormatter = (date, format) => {
   return moment(date).format(format);
-};
-
-export const getElevation = async (long, lat) => {
-  // Construct the API request.
-  const query = await fetch(
-    `https://api.mapbox.com/v4/mapbox.mapbox-terrain-v2/tilequery/${long},${lat}.json?layers=contour&limit=50&access_token=${mapboxgl.accessToken}`,
-    { method: "GET" }
-  );
-  if (query.status !== 200) return;
-  const data = await query.json();
-
-  const allFeatures = data.features;
-
-  const elevations = allFeatures.map((feature) => feature.properties.ele);
-
-  return Math.max(...elevations) * 3.28084;
 };
 
 export const renderStatusChip = (status, colors) => {
