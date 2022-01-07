@@ -19,7 +19,7 @@ import styled from "styled-components/macro";
 
 const Container = styled(Paper)`
   box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
-  left: 15px;
+  left: 49px;
   position: absolute;
   top: 10px;
   transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;

@@ -133,6 +133,8 @@ const DashboardMap = ({
     map.addControl(new ResetZoomControl(), "top-left");
 
     //top right controls
+    map.addControl(new mapboxgl.FullscreenControl(), "top-right");
+
     //loop through each base layer and add a layer toggle for that layer
     DUMMY_BASEMAP_LAYERS.forEach((layer) => {
       return map.addControl(
@@ -140,7 +142,6 @@ const DashboardMap = ({
         "top-right"
       );
     });
-    map.addControl(new mapboxgl.FullscreenControl(), "top-right");
 
     //bottom right controls
     map.addControl(draw, "bottom-right");

@@ -18,6 +18,12 @@ import {
   ThemeProvider as MuiThemeProvider,
 } from "@material-ui/core/styles";
 import { create } from "jss";
+import DragCircleControl from "../../../../components/map/DragCircleControl";
+import { RulerControl } from "mapbox-gl-controls";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import * as MapboxDrawGeodesic from "mapbox-gl-draw-geodesic";
+import { updateArea } from "../../../../utils/map";
+import ResetZoomControl from "../../../../components/map/ResetZoomControl";
 
 const mapLogger = new MapLogger({
   enabled: process.env.NODE_ENV === "development",
@@ -50,6 +56,10 @@ const useMap = (ref, mapConfig) => {
   const popUpRef = useRef(
     new mapboxgl.Popup({ offset: 15, focusAfterOpen: false })
   );
+  const polygonRef = useRef(null);
+  const radiusRef = useRef(null);
+  const pointRef = useRef(null);
+  const measurementsContainerRef = useRef(null);
 
   // Fetch a list of sources  and layers to add to the map
   const { sources } = useSources();
@@ -67,17 +77,78 @@ const useMap = (ref, mapConfig) => {
         ...mapConfig,
       });
 
-      const nav = new mapboxgl.NavigationControl();
-      mapInstance.addControl(nav, "top-right");
+      //adds control features as extended by MapboxDrawGeodesic (draw circle)
+      let modes = MapboxDraw.modes;
+      modes = MapboxDrawGeodesic.enable(modes);
+      const draw = new MapboxDraw({
+        modes,
+        controls: {
+          polygon: true,
+          point: true,
+          trash: true,
+        },
+        displayControlsDefault: false,
+        userProperties: true,
+      });
 
-      mapInstance.addControl(new mapboxgl.ScaleControl({ unit: "imperial" }));
+      //event listener to run function updateArea during each draw action to handle measurements popup
+      const drawActions = ["draw.create", "draw.update", "draw.delete"];
+      drawActions.forEach((item) => {
+        mapInstance.on(item, (event) => {
+          const geojson = event.features[0];
+          const type = event.type;
+          updateArea(
+            geojson,
+            type,
+            polygonRef,
+            radiusRef,
+            pointRef,
+            measurementsContainerRef,
+            draw
+          );
+        });
+      });
 
+      //top left controls
+      mapInstance.addControl(new mapboxgl.NavigationControl(), "top-left");
+      mapInstance.addControl(
+        new mapboxgl.GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true,
+          },
+          // When active the map will receive updates to the device's location as it changes.
+          trackUserLocation: true,
+          // Draw an arrow next to the location dot to indicate which direction the device is heading.
+          showUserHeading: true,
+        }),
+        "top-left"
+      );
+      mapInstance.addControl(new ResetZoomControl(), "top-left");
+
+      //top right controls
+      mapInstance.addControl(new mapboxgl.FullscreenControl(), "top-right");
+      //loop through each base layer and add a layer toggle for that layer
       //MJB 3 toggles for 3 different base layers
       DUMMY_BASEMAP_LAYERS.forEach((layer) => {
         return mapInstance.addControl(
-          new ToggleBasemapControl(layer.url, layer.icon)
+          new ToggleBasemapControl(layer.url, layer.icon),
+          "top-right"
         );
       });
+
+      //bottom right controls
+      mapInstance.addControl(draw, "bottom-right");
+      mapInstance.addControl(new DragCircleControl(draw), "bottom-right");
+      mapInstance.addControl(
+        new RulerControl({
+          units: "feet",
+          labelFormat: (n) => `${n.toFixed(2)} ft`,
+        }),
+        "bottom-right"
+      );
+
+      //bottom left controls
+      mapInstance.addControl(new mapboxgl.ScaleControl({ unit: "imperial" }));
 
       mapInstance.on("load", () => {
         setMap(mapInstance);
@@ -90,7 +161,8 @@ const useMap = (ref, mapConfig) => {
         });
       }
     }
-  }, [ref, mapConfig, map]);
+    //MJB removed map from dependency array because it set an endless loop
+  }, [ref, mapConfig]); //eslint-disable-line
 
   //MJB adding some logic to resize the map when the map container ref size changes
   //ResizeObserver watches for changes in bounding box for ref
@@ -359,6 +431,10 @@ const useMap = (ref, mapConfig) => {
     updateLayerFilters,
     updateLayerStyles,
     updateLayerVisibility,
+    polygonRef,
+    radiusRef,
+    pointRef,
+    measurementsContainerRef,
   };
 };
 

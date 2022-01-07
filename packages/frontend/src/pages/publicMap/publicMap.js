@@ -17,6 +17,7 @@ import useLayerStyles from "./hooks/useLayerStyles";
 import { INIT_MAP_CONFIG } from "./constants";
 
 import DisclaimerDialog from "./components/DisclaimerDialog";
+import MeasurementsPopup from "../../components/map/components/MeasurementsPopup";
 
 const FiltersBar = styled(Paper)`
   align-items: center;
@@ -59,6 +60,10 @@ const PublicMap = () => {
     updateLayerFilters,
     updateLayerStyles,
     updateLayerVisibility,
+    polygonRef,
+    radiusRef,
+    pointRef,
+    measurementsContainerRef,
   } = useMap(mapContainer, INIT_MAP_CONFIG);
   const {
     filterValues,
@@ -218,6 +223,12 @@ const PublicMap = () => {
         </FiltersSection>
       </FiltersBar>
       <Map ref={mapContainer}>
+        <MeasurementsPopup
+          measurementsContainerRef={measurementsContainerRef}
+          radiusRef={radiusRef}
+          polygonRef={polygonRef}
+          pointRef={pointRef}
+        />
         <LayersControl items={layers} onLayerChange={updateLayerVisibility} />
         {process.env.NODE_ENV === "development" && (
           <ZoomInfo zoomLevel={zoomLevel} />
