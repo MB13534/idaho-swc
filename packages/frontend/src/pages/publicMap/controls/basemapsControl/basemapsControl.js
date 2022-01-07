@@ -1,12 +1,16 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Box, Button, Grid, Paper, Typography } from "@material-ui/core";
 // import SearchIcon from "@material-ui/icons/Search";
-import LayersIcon from "@material-ui/icons/Layers";
-import ExpandMore from "@material-ui/icons/ExpandMore";
-import ChevronRight from "@material-ui/icons/ChevronRight";
+import MapIcon from "@material-ui/icons/Map";
 import styled from "styled-components/macro";
 
-const getImageUrl = (style) => {
+/**
+ * Utility function used to leverage the Mapbox static map API and return
+ * a basemap preview for the specified style
+ * @param {string} style Mapbox style name (i.e. streets)
+ * @returns {string} returns an api endpoint for an image of the specified style
+ */
+const getBasemapImage = (style) => {
   return `https://api.mapbox.com/styles/v1/mapbox/${style}/static/-97.4644,31.056,12.69,0/180x100@2x/?attribution=false&logo=false&access_token=${process.env.REACT_APP_MAPBOX_TOKEN}`;
 };
 
@@ -63,12 +67,19 @@ const BasemapPreview = styled.div`
   background: url("${({ imageUrl }) => imageUrl}");
   background-size: cover;
   border: 1px solid #ddd;
+  border-color: ${({ active, theme }) =>
+    active ? theme.palette.primary.main : "#ddd"};
   border-radius: 4px;
+  cursor: pointer;
   height: 100px;
   // width: 100%;
+
+  &:hover {
+    border-color: ${({ theme }) => theme.palette.primary.main};
+  }
 `;
 
-const BasemapsControl = ({ items }) => {
+const BasemapsControl = ({ items, onBasemapChange, value }) => {
   const [controlOpen, setControlOpen] = useState(true);
   const childRef = useRef(null);
   const [childHeight, setChildHeight] = useState(0);
@@ -92,7 +103,7 @@ const BasemapsControl = ({ items }) => {
           p={2}
           onClick={() => setControlOpen((s) => !s)}
         >
-          <LayersIcon />
+          <MapIcon />
           {controlOpen && <Typography variant="subtitle1">Basemaps</Typography>}
         </Box>
         {controlOpen && (
@@ -112,11 +123,17 @@ const BasemapsControl = ({ items }) => {
         <BasemapItems ref={childRef}>
           {items?.map((item) => {
             return (
-              <BasemapItem key={item.name}>
+              <BasemapItem
+                key={item.name}
+                onClick={() => onBasemapChange(item)}
+              >
                 <Typography variant="body2" gutterBottom>
                   {item.name}
                 </Typography>
-                <BasemapPreview imageUrl={getImageUrl(item.style)} />
+                <BasemapPreview
+                  active={item.style === value}
+                  imageUrl={getBasemapImage(item.style)}
+                />
               </BasemapItem>
             );
           })}

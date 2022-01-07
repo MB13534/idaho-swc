@@ -45,6 +45,7 @@ const useMap = (ref, mapConfig) => {
   const theme = useSelector((state) => state.themeReducer);
   const [map, setMap] = useState(null);
   const [zoomLevel, setZoomLevel] = useState(0);
+  const [activeBasemap, setActiveBasemap] = useState(BASEMAP_STYLES[0].style);
   const [dataAdded, setDataAdded] = useState(false);
   const [eventsRegistered, setEventsRegistered] = useState(false);
   const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
@@ -334,6 +335,26 @@ const useMap = (ref, mapConfig) => {
     }
   };
 
+  const updateBasemap = (style) => {
+    map?.setStyle(style.url);
+
+    /**
+     * After the map style changes we need to poll it every
+     * 100 ms to determine if the new map style has loaded
+     * After it is loaded, we add any existing sources and layers
+     * back to the map
+     */
+    const checkStyleLoaded = setInterval(() => {
+      const styleLoaded = map?.isStyleLoaded();
+      if (styleLoaded) {
+        clearInterval(checkStyleLoaded);
+        setActiveBasemap(style.style);
+        setDataAdded(false);
+        loadMapData();
+      }
+    }, 100);
+  };
+
   // initialize and render the map
   useEffect(() => {
     initializeMap();
@@ -350,11 +371,13 @@ const useMap = (ref, mapConfig) => {
   }, [addMapEvents]);
 
   return {
+    activeBasemap,
     basemaps: BASEMAP_STYLES,
     layers,
     map,
     sources,
     zoomLevel,
+    updateBasemap,
     updateLayerFilters,
     updateLayerStyles,
     updateLayerVisibility,

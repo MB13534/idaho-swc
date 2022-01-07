@@ -12,9 +12,21 @@ export const DUMMY_BASEMAP_LAYERS = [
 ];
 
 export const BASEMAP_STYLES = [
-  { style: "outdoors-v11", name: "Outdoors" },
-  { style: "streets-v11", name: "Streets" },
-  { style: "satellite-streets-v11", name: "Satellite" },
+  {
+    style: "outdoors-v11",
+    name: "Outdoors",
+    url: "mapbox://styles/mapbox/outdoors-v11",
+  },
+  {
+    style: "streets-v11",
+    name: "Streets",
+    url: "mapbox://styles/mapbox/streets-v11",
+  },
+  {
+    style: "satellite-streets-v11",
+    name: "Satellite",
+    url: "mapbox://styles/mapbox/satellite-streets-v11",
+  },
 ];
 
 export const WELLS_LAYER_ID = "clearwater-wells-circle";

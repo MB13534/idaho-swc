@@ -54,6 +54,7 @@ const getMoreFiltersCount = (filterValues) => {
 const PublicMap = () => {
   const mapContainer = useRef(null);
   const {
+    activeBasemap,
     basemaps,
     layers,
     map,
@@ -61,6 +62,7 @@ const PublicMap = () => {
     updateLayerFilters,
     updateLayerStyles,
     updateLayerVisibility,
+    updateBasemap,
   } = useMap(mapContainer, INIT_MAP_CONFIG);
   const {
     filterValues,
@@ -224,7 +226,11 @@ const PublicMap = () => {
         {process.env.NODE_ENV === "development" && (
           <ZoomInfo zoomLevel={zoomLevel} />
         )}
-        <BasemapsControl items={basemaps} />
+        <BasemapsControl
+          items={basemaps}
+          value={activeBasemap}
+          onBasemapChange={updateBasemap}
+        />
       </Map>
     </>
   );
