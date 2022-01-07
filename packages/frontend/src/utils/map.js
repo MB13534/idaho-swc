@@ -58,7 +58,7 @@ export function updateArea(
   }
 
   if (geojson.geometry.type === "Point" && type !== "draw.delete") {
-    answerPoint.innerHTML = `<strong>lat:</strong> ${geojson.geometry.coordinates[1]}<br /><strong>long:</strong> ${geojson.geometry.coordinates[0]}`;
+    answerPoint.innerHTML = `<strong>lat:</strong> ${geojson.geometry.coordinates[1]} <br /><strong>long:</strong> ${geojson.geometry.coordinates[0]}`;
   }
 
   if (

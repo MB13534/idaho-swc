@@ -38,9 +38,9 @@ export const formatBooleanTrueFalse = (value) => {
     return value;
   }
   if (value === true) {
-    return "yes";
+    return "Yes";
   }
-  return "no";
+  return "No";
 };
 
 export const downloadChartImage = (title, extension, ref) => {

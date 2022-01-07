@@ -22,7 +22,7 @@ import DragCircleControl from "../../../../components/map/DragCircleControl";
 import { RulerControl } from "mapbox-gl-controls";
 import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import * as MapboxDrawGeodesic from "mapbox-gl-draw-geodesic";
-import { updateArea } from "../../../../utils/map";
+import { handleCopyCoords, updateArea } from "../../../../utils/map";
 import ResetZoomControl from "../../../../components/map/ResetZoomControl";
 
 const mapLogger = new MapLogger({
@@ -54,7 +54,11 @@ const useMap = (ref, mapConfig) => {
   const [dataAdded, setDataAdded] = useState(false);
   const [eventsRegistered, setEventsRegistered] = useState(false);
   const popUpRef = useRef(
-    new mapboxgl.Popup({ offset: 15, focusAfterOpen: false })
+    new mapboxgl.Popup({
+      maxWidth: "375px",
+      offset: 15,
+      focusAfterOpen: false,
+    })
   );
   const polygonRef = useRef(null);
   const radiusRef = useRef(null);
@@ -233,6 +237,18 @@ const useMap = (ref, mapConfig) => {
 
       map.on("click", (e) => {
         const features = map.queryRenderedFeatures(e.point);
+
+        //Ensure that if the map is zoomed out such that multiple
+        //copies of the feature are visible, the popup appears
+        //over the copy being pointed to.
+        //only for features with the properties.lat/long field (clearwater wells)
+        const coordinates = features[0]?.properties?.latitude_dd
+          ? [
+              features[0].properties.longitude_dd,
+              features[0].properties.latitude_dd,
+            ]
+          : [e.lngLat.lng, e.lngLat.lat];
+
         //MJB add check for popups so they only appear on our dynamic layers
         const popupLayerIds = layers.map((layer) => layer.id);
         if (
@@ -262,11 +278,20 @@ const useMap = (ref, mapConfig) => {
             popupNode
           );
           popUpRef.current
-            .setLngLat(e.lngLat)
+            .setLngLat(coordinates)
             .setDOMContent(popupNode)
             .addTo(map);
         }
       });
+
+      // //handles copying coordinates and measurements to the clipboard
+      const copyableRefs = [polygonRef, radiusRef, pointRef];
+      copyableRefs.forEach((ref) => {
+        ref.current.addEventListener("click", (e) => {
+          handleCopyCoords(e.target.textContent);
+        });
+      });
+
       setEventsRegistered(true);
       mapLogger.log("Event handlers attached to map");
     }

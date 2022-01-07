@@ -72,7 +72,7 @@ const DashboardMap = ({
   const measurementsContainerRef = useRef(null);
   const mapContainerRef = useRef(null); // create a reference to the map container
   const popUpRef = useRef(
-    new mapboxgl.Popup({ maxWidth: "310px", focusAfterOpen: false })
+    new mapboxgl.Popup({ maxWidth: "310px", offset: 15, focusAfterOpen: false })
   );
 
   //create map and apply all controls
@@ -327,7 +327,7 @@ const DashboardMap = ({
         ];
         copyableRefs.forEach((ref) => {
           ref.current.addEventListener("click", (e) =>
-            handleCopyCoords(e.target.innerHTML)
+            handleCopyCoords(e.target.textContent)
           );
         });
 
