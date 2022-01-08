@@ -31,6 +31,7 @@ import MainPopup from "./components/MainPopup";
 
 import { useApp } from "../../AppProvider";
 import debounce from "lodash.debounce";
+import { isWidthDown, withWidth } from "@material-ui/core";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -60,6 +61,7 @@ const DashboardMap = ({
   eleRef,
   setRadioValue = null,
   defaultFilterValue,
+  width,
 }) => {
   const theme = useSelector((state) => state.themeReducer);
   const { currentUser } = useApp();
@@ -74,6 +76,10 @@ const DashboardMap = ({
   const popUpRef = useRef(
     new mapboxgl.Popup({ maxWidth: "310px", offset: 15, focusAfterOpen: false })
   );
+
+  const [previousWidthBreakpoint, setPreviousWidthBreakpoint] = useState(width);
+  const [drawControl, setDrawControl] = useState(null);
+  const [circleControl, setCircleControl] = useState(null);
 
   //create map and apply all controls
   useEffect(() => {
@@ -145,24 +151,27 @@ const DashboardMap = ({
 
     //bottom right controls
     map.addControl(draw, "bottom-right");
-    map.addControl(new DragCircleControl(draw), "bottom-right");
-    map.addControl(
-      new RulerControl({
-        units: "feet",
-        labelFormat: (n) => `${n.toFixed(2)} ft`,
-      }),
-      "bottom-right"
-    );
+    const circleControl = new DragCircleControl(draw);
+    map.addControl(circleControl, "bottom-right");
 
     //bottom left controls
     map.addControl(
       new mapboxgl.ScaleControl({ unit: "imperial" }),
       "bottom-left"
     );
+    map.addControl(
+      new RulerControl({
+        units: "feet",
+        labelFormat: (n) => `${n.toFixed(2)} ft`,
+      }),
+      "bottom-left"
+    );
 
     map.on("load", () => {
       setMapIsLoaded(true);
       setMap(map);
+      setCircleControl(circleControl);
+      setDrawControl(draw);
     });
   }, []); // eslint-disable-line
 
@@ -176,6 +185,31 @@ const DashboardMap = ({
       };
     }
   }, [map]);
+
+  useEffect(() => {
+    if (drawControl && circleControl) {
+      console.log("previous", previousWidthBreakpoint);
+      console.log("current", width);
+      if (isWidthDown("xs", width)) {
+        console.log("remove");
+        map.removeControl(drawControl);
+        map.removeControl(circleControl);
+        // setCircleControl(null);
+        // setDrawControl(null);
+        polygonRef.current.innerHTML = "";
+        radiusRef.current.innerHTML = "";
+        pointRef.current.innerHTML = "";
+        measurementsContainerRef.current.style.display = "none";
+      }
+      if (width !== "xs" && previousWidthBreakpoint === "xs") {
+        console.log("add");
+        map.addControl(drawControl, "bottom-right");
+        map.addControl(circleControl, "bottom-right");
+      }
+
+      setPreviousWidthBreakpoint(width);
+    }
+  }, [width, drawControl]); //eslint-disable-line
 
   //add source and layers
   //add event listeners
@@ -409,9 +443,26 @@ const DashboardMap = ({
 
   if (error) return "An error has occurred: " + error.message;
 
+  // {drawControl && (
+  //   <>
+  //     <Button
+  //       style={{ zIndex: "10000" }}
+  //       onClick={() => map.removeControl(drawControl)}
+  //     >
+  //       Remove
+  //     </Button>
+  //     <Button
+  //       style={{ zIndex: "10000" }}
+  //       onClick={() => map.addControl(drawControl)}
+  //     >
+  //       Add
+  //     </Button>
+  //   </>
+  // )}
+
   return (
     <>
-      <MapContainer data-tap-disabled="true" ref={mapContainerRef}>
+      <MapContainer ref={mapContainerRef}>
         <CoordinatesPopup
           coordinatesContainerRef={coordinatesContainerRef}
           longRef={longRef}
@@ -430,4 +481,4 @@ const DashboardMap = ({
   );
 };
 
-export default DashboardMap;
+export default withWidth()(DashboardMap);
