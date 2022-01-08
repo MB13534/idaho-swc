@@ -411,7 +411,7 @@ const DashboardMap = ({
 
   return (
     <>
-      <MapContainer ref={mapContainerRef}>
+      <MapContainer data-tap-disabled="true" ref={mapContainerRef}>
         <CoordinatesPopup
           coordinatesContainerRef={coordinatesContainerRef}
           longRef={longRef}
