@@ -194,3 +194,11 @@ export const filterDataForWellOwner = (data, user) => {
     ? data.filter((item) => item.authorized_users?.includes(user?.sub))
     : [];
 };
+
+export const isTouchScreenDevice = () => {
+  return (
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints ||
+    navigator.msMaxTouchPoints
+  );
+};

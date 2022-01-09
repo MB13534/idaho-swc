@@ -10,9 +10,10 @@ import AccordionSummary from "@material-ui/core/AccordionSummary";
 import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import debounce from "lodash.debounce";
 import DragCircleControl from "./DragCircleControl";
-import { onPointClickSetCoordinateRefs, updateArea } from "../../utils/map";
+import { handleCopyCoords, updateArea } from "../../utils/map";
 import CoordinatesPopup from "./components/CoordinatesPopup";
 import MeasurementsPopup from "./components/MeasurementsPopup";
+import { isTouchScreenDevice } from "../../utils";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -85,7 +86,10 @@ const Map = ({ config }) => {
         config.data.longitude_dd === "" || config.data.latitude_dd === ""
           ? STARTING_LOCATION
           : [config.data.longitude_dd, config.data.latitude_dd],
-      zoom: 9,
+      zoom:
+        config.data.longitude_dd === "" || config.data.latitude_dd === ""
+          ? 9
+          : 16,
     });
 
     //adds control features as extended by MapboxDrawGeodesic (draw circle)
@@ -127,20 +131,23 @@ const Map = ({ config }) => {
     map.addControl(new mapboxgl.FullscreenControl(), "top-right");
 
     //bottom right controls
-    map.addControl(draw, "bottom-right");
-    map.addControl(new DragCircleControl(draw), "bottom-right");
+    //draw controls do not work correctly on touch screens
+    !isTouchScreenDevice() &&
+      map.addControl(draw, "bottom-right") &&
+      !isTouchScreenDevice() &&
+      map.addControl(new DragCircleControl(draw), "bottom-right");
+
+    //bottom left controls
+    map.addControl(
+      new mapboxgl.ScaleControl({ unit: "imperial" }),
+      "bottom-left"
+    );
     map.addControl(
       new RulerControl({
         units: "feet",
         labelFormat: (n) => `${n.toFixed(2)} ft`,
       }),
       "bottom-right"
-    );
-
-    //bottom left controls
-    map.addControl(
-      new mapboxgl.ScaleControl({ unit: "imperial" }),
-      "bottom-left"
     );
 
     map.on("load", () => {
@@ -177,18 +184,16 @@ const Map = ({ config }) => {
         coordinatesContainerRef.current.style.display = "block";
         instructionsRef.current.innerHTML =
           "Drag and place marker to update coordinates and elevation fields";
-
         longRef.current.innerHTML = lngLat.lng;
         latRef.current.innerHTML = lngLat.lat;
         getElevation(!config.data.elevation_ftabmsl);
       }
 
-      const onDragEnd = () => {
+      const onDragEnd = (marker) => {
         const lngLat = marker.getLngLat();
         coordinatesContainerRef.current.style.display = "block";
         instructionsRef.current.innerHTML =
           "Click coordinate or elevation to copy individual result to clipboard";
-
         longRef.current.innerHTML = lngLat.lng;
         config.setFieldValue("longitude_dd", lngLat.lng);
         latRef.current.innerHTML = lngLat.lat;
@@ -196,19 +201,22 @@ const Map = ({ config }) => {
         getElevation();
       };
 
-      marker.on("dragend", onDragEnd);
+      marker.on("dragend", () => onDragEnd(marker));
 
-      //sets ref.current.innerHTMLs for coordinates popup
-      map.on("click", "locations", (e) =>
-        onPointClickSetCoordinateRefs(
-          coordinatesContainerRef,
-          longRef,
-          latRef,
-          eleRef,
-          e.features[0].properties.latitude_dd,
-          e.features[0].properties.longitude_dd
-        )
-      );
+      // //handles copying coordinates and measurements to the clipboard
+      const copyableRefs = [
+        longRef,
+        latRef,
+        eleRef,
+        polygonRef,
+        radiusRef,
+        pointRef,
+      ];
+      copyableRefs.forEach((ref) => {
+        ref.current.addEventListener("click", (e) =>
+          handleCopyCoords(e.target.textContent)
+        );
+      });
     }
   }, [mapIsLoaded, map]); //eslint-disable-line
 

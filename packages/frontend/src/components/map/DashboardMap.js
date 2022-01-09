@@ -31,7 +31,7 @@ import MainPopup from "./components/MainPopup";
 
 import { useApp } from "../../AppProvider";
 import debounce from "lodash.debounce";
-import { isWidthDown, withWidth } from "@material-ui/core";
+import { isTouchScreenDevice } from "../../utils";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -61,7 +61,6 @@ const DashboardMap = ({
   eleRef,
   setRadioValue = null,
   defaultFilterValue,
-  width,
 }) => {
   const theme = useSelector((state) => state.themeReducer);
   const { currentUser } = useApp();
@@ -76,10 +75,6 @@ const DashboardMap = ({
   const popUpRef = useRef(
     new mapboxgl.Popup({ maxWidth: "310px", offset: 15, focusAfterOpen: false })
   );
-
-  const [previousWidthBreakpoint, setPreviousWidthBreakpoint] = useState(width);
-  const [drawControl, setDrawControl] = useState(null);
-  const [circleControl, setCircleControl] = useState(null);
 
   //create map and apply all controls
   useEffect(() => {
@@ -150,9 +145,11 @@ const DashboardMap = ({
     });
 
     //bottom right controls
-    map.addControl(draw, "bottom-right");
-    const circleControl = new DragCircleControl(draw);
-    map.addControl(circleControl, "bottom-right");
+    //draw controls do not work correctly on touch screens
+    !isTouchScreenDevice() &&
+      map.addControl(draw, "bottom-right") &&
+      !isTouchScreenDevice() &&
+      map.addControl(new DragCircleControl(draw), "bottom-right");
 
     //bottom left controls
     map.addControl(
@@ -170,8 +167,6 @@ const DashboardMap = ({
     map.on("load", () => {
       setMapIsLoaded(true);
       setMap(map);
-      setCircleControl(circleControl);
-      setDrawControl(draw);
     });
   }, []); // eslint-disable-line
 
@@ -185,31 +180,6 @@ const DashboardMap = ({
       };
     }
   }, [map]);
-
-  useEffect(() => {
-    if (drawControl && circleControl) {
-      console.log("previous", previousWidthBreakpoint);
-      console.log("current", width);
-      if (isWidthDown("xs", width)) {
-        console.log("remove");
-        map.removeControl(drawControl);
-        map.removeControl(circleControl);
-        // setCircleControl(null);
-        // setDrawControl(null);
-        polygonRef.current.innerHTML = "";
-        radiusRef.current.innerHTML = "";
-        pointRef.current.innerHTML = "";
-        measurementsContainerRef.current.style.display = "none";
-      }
-      if (width !== "xs" && previousWidthBreakpoint === "xs") {
-        console.log("add");
-        map.addControl(drawControl, "bottom-right");
-        map.addControl(circleControl, "bottom-right");
-      }
-
-      setPreviousWidthBreakpoint(width);
-    }
-  }, [width, drawControl]); //eslint-disable-line
 
   //add source and layers
   //add event listeners
@@ -481,4 +451,4 @@ const DashboardMap = ({
   );
 };
 
-export default withWidth()(DashboardMap);
+export default DashboardMap;

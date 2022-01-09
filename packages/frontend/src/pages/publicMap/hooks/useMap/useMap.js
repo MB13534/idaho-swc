@@ -24,6 +24,7 @@ import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import * as MapboxDrawGeodesic from "mapbox-gl-draw-geodesic";
 import { handleCopyCoords, updateArea } from "../../../../utils/map";
 import ResetZoomControl from "../../../../components/map/ResetZoomControl";
+import { isTouchScreenDevice } from "../../../../utils";
 
 const mapLogger = new MapLogger({
   enabled: process.env.NODE_ENV === "development",
@@ -141,8 +142,17 @@ const useMap = (ref, mapConfig) => {
       });
 
       //bottom right controls
-      mapInstance.addControl(draw, "bottom-right");
-      mapInstance.addControl(new DragCircleControl(draw), "bottom-right");
+      //draw controls do not work correctly on touch screens
+      !isTouchScreenDevice() &&
+        mapInstance.addControl(draw, "bottom-right") &&
+        !isTouchScreenDevice() &&
+        mapInstance.addControl(new DragCircleControl(draw), "bottom-right");
+
+      //bottom left controls
+      mapInstance.addControl(
+        new mapboxgl.ScaleControl({ unit: "imperial" }),
+        "bottom-left"
+      );
       mapInstance.addControl(
         new RulerControl({
           units: "feet",
@@ -150,9 +160,6 @@ const useMap = (ref, mapConfig) => {
         }),
         "bottom-right"
       );
-
-      //bottom left controls
-      mapInstance.addControl(new mapboxgl.ScaleControl({ unit: "imperial" }));
 
       mapInstance.on("load", () => {
         setMap(mapInstance);
