@@ -82,56 +82,6 @@ const useMap = (ref, mapConfig) => {
         ...mapConfig,
       });
 
-      //adds control features as extended by MapboxDrawGeodesic (draw circle)
-      let modes = MapboxDraw.modes;
-      modes = MapboxDrawGeodesic.enable(modes);
-      const draw = new MapboxDraw({
-        modes,
-        controls: {
-          polygon: true,
-          point: true,
-          trash: true,
-        },
-        displayControlsDefault: false,
-        userProperties: true,
-      });
-
-      //event listener to run function updateArea during each draw action to handle measurements popup
-      const drawActions = ["draw.create", "draw.update", "draw.delete"];
-      drawActions.forEach((item) => {
-        mapInstance.on(item, (event) => {
-          const geojson = event.features[0];
-          const type = event.type;
-          updateArea(
-            geojson,
-            type,
-            polygonRef,
-            radiusRef,
-            pointRef,
-            measurementsContainerRef,
-            draw
-          );
-        });
-      });
-
-      //top left controls
-      mapInstance.addControl(new mapboxgl.NavigationControl(), "top-left");
-      mapInstance.addControl(
-        new mapboxgl.GeolocateControl({
-          positionOptions: {
-            enableHighAccuracy: true,
-          },
-          // When active the map will receive updates to the device's location as it changes.
-          trackUserLocation: true,
-          // Draw an arrow next to the location dot to indicate which direction the device is heading.
-          showUserHeading: true,
-        }),
-        "top-left"
-      );
-      mapInstance.addControl(new ResetZoomControl(), "top-left");
-
-      //top right controls
-      mapInstance.addControl(new mapboxgl.FullscreenControl(), "top-right");
       //loop through each base layer and add a layer toggle for that layer
       //MJB 3 toggles for 3 different base layers
       DUMMY_BASEMAP_LAYERS.forEach((layer) => {
@@ -140,26 +90,6 @@ const useMap = (ref, mapConfig) => {
           "top-right"
         );
       });
-
-      //bottom right controls
-      //draw controls do not work correctly on touch screens
-      !isTouchScreenDevice() &&
-        mapInstance.addControl(draw, "bottom-right") &&
-        !isTouchScreenDevice() &&
-        mapInstance.addControl(new DragCircleControl(draw), "bottom-right");
-
-      //bottom left controls
-      mapInstance.addControl(
-        new mapboxgl.ScaleControl({ unit: "imperial" }),
-        "bottom-left"
-      );
-      mapInstance.addControl(
-        new RulerControl({
-          units: "feet",
-          labelFormat: (n) => `${n.toFixed(2)} ft`,
-        }),
-        "bottom-right"
-      );
 
       mapInstance.on("load", () => {
         setMap(mapInstance);
@@ -197,7 +127,11 @@ const useMap = (ref, mapConfig) => {
    */
   const loadMapData = useCallback(() => {
     const shouldAddData =
-      map?.loaded() && sources?.length > 0 && layers?.length > 0 && !dataAdded;
+      !!map &&
+      map?.loaded() &&
+      sources?.length > 0 &&
+      layers?.length > 0 &&
+      !dataAdded;
 
     if (shouldAddData) {
       sources.forEach((source) => {
@@ -223,6 +157,82 @@ const useMap = (ref, mapConfig) => {
       setDataAdded(true);
     }
   }, [dataAdded, layers, map, sources]);
+
+  const addMapControls = useCallback(() => {
+    const shouldAddControls = !!map;
+    if (shouldAddControls) {
+      //top left controls
+      map.addControl(new mapboxgl.NavigationControl(), "top-left");
+      map.addControl(
+        new mapboxgl.GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true,
+          },
+          // When active the map will receive updates to the device's location as it changes.
+          trackUserLocation: true,
+          // Draw an arrow next to the location dot to indicate which direction the device is heading.
+          showUserHeading: true,
+        }),
+        "top-left"
+      );
+      map.addControl(new ResetZoomControl(), "top-left");
+
+      //top right controls
+      map.addControl(new mapboxgl.FullscreenControl(), "top-right");
+
+      //bottom left controls
+      map.addControl(
+        new mapboxgl.ScaleControl({ unit: "imperial" }),
+        "bottom-left"
+      );
+      map.addControl(
+        new RulerControl({
+          units: "feet",
+          labelFormat: (n) => `${n.toFixed(2)} ft`,
+        }),
+        "bottom-right"
+      );
+
+      //adds control features as extended by MapboxDrawGeodesic (draw circle)
+      let modes = MapboxDraw.modes;
+      modes = MapboxDrawGeodesic.enable(modes);
+      const draw = new MapboxDraw({
+        modes,
+        controls: {
+          polygon: true,
+          point: true,
+          trash: true,
+        },
+        displayControlsDefault: false,
+        userProperties: true,
+      });
+
+      //event listener to run function updateArea during each draw action to handle measurements popup
+      const drawActions = ["draw.create", "draw.update", "draw.delete"];
+      drawActions.forEach((item) => {
+        map.on(item, (event) => {
+          const geojson = event.features[0];
+          const type = event.type;
+          updateArea(
+            geojson,
+            type,
+            polygonRef,
+            radiusRef,
+            pointRef,
+            measurementsContainerRef,
+            draw
+          );
+        });
+      });
+
+      //bottom right controls
+      //draw controls do not work correctly on touch screens
+      !isTouchScreenDevice() &&
+        map.addControl(draw, "bottom-right") &&
+        !isTouchScreenDevice() &&
+        map.addControl(new DragCircleControl(draw), "bottom-right");
+    }
+  }, [map]);
 
   const addMapEvents = useCallback(() => {
     const shouldAddClickEvent = map && layers?.length > 0 && dataAdded;
@@ -454,6 +464,11 @@ const useMap = (ref, mapConfig) => {
   useEffect(() => {
     addMapEvents();
   }, [addMapEvents]);
+
+  // add all map controls
+  useEffect(() => {
+    addMapControls();
+  }, [addMapControls]);
 
   return {
     layers,
