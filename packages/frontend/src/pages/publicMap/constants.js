@@ -4,13 +4,6 @@ export const INIT_MAP_CONFIG = {
   zoom: 11,
 };
 
-//MJB options for layer toggle buttons
-export const DUMMY_BASEMAP_LAYERS = [
-  { url: "outdoors-v11", icon: "park" },
-  { url: "streets-v11", icon: "commute" },
-  { url: "satellite-streets-v11", icon: "satellite_alt" },
-];
-
 export const BASEMAP_STYLES = [
   {
     style: "outdoors-v11",

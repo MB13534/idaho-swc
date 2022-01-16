@@ -6,8 +6,7 @@ import Popup from "../../popup";
 import useSources from "../useSources";
 import useLayers from "../useLayers";
 import { MapLogger } from "./mapUtils";
-import ToggleBasemapControl from "../../../../components/map/ToggleBasemapControl";
-import { BASEMAP_STYLES, DUMMY_BASEMAP_LAYERS } from "../../constants";
+import { BASEMAP_STYLES } from "../../constants";
 import debounce from "lodash.debounce";
 import createTheme from "../../../../theme";
 import { ThemeProvider } from "styled-components/macro";
@@ -81,15 +80,6 @@ const useMap = (ref, mapConfig) => {
       const mapInstance = new mapboxgl.Map({
         container: ref.current,
         ...mapConfig,
-      });
-
-      //loop through each base layer and add a layer toggle for that layer
-      //MJB 3 toggles for 3 different base layers
-      DUMMY_BASEMAP_LAYERS.forEach((layer) => {
-        return mapInstance.addControl(
-          new ToggleBasemapControl(layer.url, layer.icon),
-          "top-right"
-        );
       });
 
       setMap(mapInstance);

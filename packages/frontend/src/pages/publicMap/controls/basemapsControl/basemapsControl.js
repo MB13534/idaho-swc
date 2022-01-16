@@ -80,7 +80,7 @@ const BasemapPreview = styled.div`
 `;
 
 const BasemapsControl = ({ items, onBasemapChange, value }) => {
-  const [controlOpen, setControlOpen] = useState(true);
+  const [controlOpen, setControlOpen] = useState(false);
   const childRef = useRef(null);
   const [childHeight, setChildHeight] = useState(0);
 
