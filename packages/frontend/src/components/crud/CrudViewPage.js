@@ -42,6 +42,7 @@ const Content = styled(Grid)`
 `;
 
 function CrudViewPage({ config, width, modelName }) {
+  const crudModelNameLabels = config.crudModelNameLabels;
   let { id } = useParams();
   const history = useHistory();
   const app = useApp();
@@ -223,7 +224,7 @@ function CrudViewPage({ config, width, modelName }) {
             startIcon={<ChevronLeft />}
             onClick={() => history.push(crud.getModelBasePath())}
           >
-            Back to {pluralize(modelName)}
+            Back to {crudModelNameLabels?.standard ?? modelName}
           </Button>
         }
       />
@@ -232,7 +233,7 @@ function CrudViewPage({ config, width, modelName }) {
 
   return (
     <div style={{ height: "100%" }}>
-      <Helmet title={pluralize(modelName)} />
+      <Helmet title={crudModelNameLabels?.standard ?? pluralize(modelName)} />
 
       <ConfirmUnsavedDialog
         modelName={modelName}
@@ -265,6 +266,7 @@ function CrudViewPage({ config, width, modelName }) {
         isFetching={isFetching}
         mode={mode}
         modelName={modelName}
+        crudModelNameLabels={crudModelNameLabels}
         submitForm={submitForm}
         submitFormMode={submitFormMode}
         setSubmitFormMode={setSubmitFormMode}

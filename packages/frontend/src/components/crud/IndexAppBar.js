@@ -42,7 +42,13 @@ const GridButtonWrap = styled(Grid)`
   }
 `;
 
-function IndexAppBar({ modelName, width, displayMode, setDisplayMode }) {
+function IndexAppBar({
+  modelName,
+  width,
+  displayMode,
+  setDisplayMode,
+  crudModelNameLabels = null,
+}) {
   const theme = useTheme();
 
   return (
@@ -73,7 +79,9 @@ function IndexAppBar({ modelName, width, displayMode, setDisplayMode }) {
           }}
         >
           <Typography variant="h5">
-            {inflector.titleize(inflector.pluralize(modelName))}
+            {crudModelNameLabels?.indexHeader ??
+              crudModelNameLabels?.standard ??
+              inflector.titleize(inflector.pluralize(modelName))}
           </Typography>
         </Grid>
         <Grid container item justify={"space-between"}>
@@ -88,7 +96,10 @@ function IndexAppBar({ modelName, width, displayMode, setDisplayMode }) {
               modelName={modelName}
             />
             <GridButtonWrap item>
-              <CreateModelButton modelName={modelName} />
+              <CreateModelButton
+                crudModelNameLabels={crudModelNameLabels}
+                modelName={modelName}
+              />
             </GridButtonWrap>
           </Grid>
         </Grid>

@@ -13,7 +13,7 @@ import MenuList from "@material-ui/core/MenuList";
 import Tooltip from "@material-ui/core/Tooltip";
 import { CircularProgress } from "@material-ui/core";
 
-const options = ["Publish", "Publish & Close", "Publish & Create New"];
+const options = ["Save", "Save & Close", "Save & Create New"];
 
 const GridButtonWrap = styled(Grid)`
   ${(props) => props.theme.breakpoints.down("xs")} {
@@ -72,13 +72,13 @@ export default function SplitPublishButton({
   return (
     <Grid item {...props}>
       <GridButtonWrap item xs={12}>
-        <Tooltip title={!formIsDirty ? "No changes to publish." : ""}>
+        <Tooltip title={!formIsDirty ? "No changes to save." : ""}>
           <ButtonGroup
             variant="contained"
             color="primary"
             ref={anchorRef}
-            aria-label="split publish button"
-            disabled={formIsSubmitting}
+            aria-label="split save button"
+            disabled={formIsSubmitting || !formIsDirty}
           >
             <Button
               fullWidth
@@ -99,7 +99,7 @@ export default function SplitPublishButton({
               size="small"
               aria-controls={open ? "split-button-menu" : undefined}
               aria-expanded={open ? "true" : undefined}
-              aria-label="select publish action"
+              aria-label="select save action"
               aria-haspopup="menu"
               onClick={handleToggle}
             >

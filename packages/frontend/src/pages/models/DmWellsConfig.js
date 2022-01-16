@@ -8,6 +8,10 @@ export const displayName = (row) => {
   return `${row.cuwcd_well_number}`;
 };
 
+export const crudModelNameLabels = {
+  standard: "Wells",
+};
+
 // export const sortBy = {
 //   field: "created_at",
 //   sort: "asc",

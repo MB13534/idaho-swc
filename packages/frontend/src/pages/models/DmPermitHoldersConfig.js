@@ -10,6 +10,10 @@ export const displayName = (row) => {
 //   sort: "asc",
 // };
 
+export const crudModelNameLabels = {
+  standard: "Permit Holders",
+};
+
 export function columns(modelName) {
   return [
     {

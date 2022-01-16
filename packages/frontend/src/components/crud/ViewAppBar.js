@@ -74,6 +74,7 @@ function ViewAppBar({
   data,
   // isFetching,
   modelName,
+  crudModelNameLabels,
   mode,
   submitForm,
   setSubmitFormSuccessCallback,
@@ -90,6 +91,10 @@ function ViewAppBar({
   const crud = useCrud();
   const history = useHistory();
   const theme = useTheme();
+
+  const title = inflector.singularize(
+    crudModelNameLabels?.newHeader ?? crudModelNameLabels?.standard
+  );
 
   const modes = CRUD_FORM_SUBMIT_TYPES;
 
@@ -152,7 +157,11 @@ function ViewAppBar({
         </Grid>
         {isWidthUp("md", width) && mode === CRUD_VIEW_MODES.EDIT && (
           <Grid item>
-            <ContentTypeChip label={inflector.titleize(modelName)} />
+            <ContentTypeChip
+              label={inflector.singularize(
+                crudModelNameLabels?.standard ?? inflector.titleize(modelName)
+              )}
+            />
           </Grid>
         )}
         {/*{mode === CRUD_VIEW_MODES.EDIT && (*/}
@@ -174,7 +183,10 @@ function ViewAppBar({
         >
           <Typography variant="h5" className="ellipsis">
             {mode === CRUD_VIEW_MODES.ADD && (
-              <span>New {inflector.titleize(modelName)}</span>
+              <span>
+                New{" "}
+                {title !== "undefined" ? title : inflector.titleize(modelName)}
+              </span>
             )}
             {mode === CRUD_VIEW_MODES.EDIT && <span>{displayName}</span>}
           </Typography>

@@ -1,98 +1,50 @@
 import React, { useEffect, useRef, useState } from "react";
+import ReactDOM from "react-dom";
+import { useSelector } from "react-redux";
+
+import { ThemeProvider as MuiThemeProvider } from "@material-ui/styles";
+import styled, { ThemeProvider } from "styled-components/macro";
+import { jssPreset, StylesProvider } from "@material-ui/core/styles";
+import { create } from "jss";
+import createTheme from "../../theme";
+
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
-import { RulerControl } from "mapbox-gl-controls";
-import MapboxDraw from "mapbox-gl-draw";
-import area from "@turf/area";
-import styled from "styled-components/macro";
-import ResetZoomControl from "./ResetZoomControl";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
 import { STARTING_LOCATION } from "../../constants";
+import * as MapboxDrawGeodesic from "mapbox-gl-draw-geodesic";
+import { RulerControl } from "mapbox-gl-controls";
+import ResetZoomControl from "./ResetZoomControl";
 import ToggleBasemapControl from "./ToggleBasemapControl";
-import { makeStyles } from "@material-ui/core/styles";
-import { Tooltip } from "@material-ui/core";
-import { formatBooleanTrueFalse, lineColors } from "../../utils";
+import DragCircleControl from "./DragCircleControl";
+import {
+  DUMMY_BASEMAP_LAYERS,
+  handleCopyCoords,
+  locationsLabelsLayer,
+  locationsLayer,
+  onPointClickSetCoordinateRefs,
+  updateArea,
+} from "../../utils/map";
+import "mapbox-gl-controls/lib/controls.css";
+import CoordinatesPopup from "./components/CoordinatesPopup";
+import MeasurementsPopup from "./components/MeasurementsPopup";
+import MainPopup from "./components/MainPopup";
+
 import { useApp } from "../../AppProvider";
 import debounce from "lodash.debounce";
-
-import "mapbox-gl-controls/lib/controls.css";
+import { isTouchScreenDevice } from "../../utils";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
+
+const jss = create({
+  ...jssPreset(),
+  insertionPoint: document.getElementById("jss-insertion-point"),
+});
 
 const MapContainer = styled.div`
   position: relative;
   width: 100%;
   height: 100%;
 `;
-
-const CoordinatesContainer = styled.pre`
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  position: absolute;
-  bottom: 30px;
-  left: 120px;
-  padding: 5px 10px;
-  margin: 0;
-  font-size: 11px;
-  line-height: 18px;
-  border-radius: 3px;
-  z-index: 1000;
-  display: none;
-`;
-
-const PolygonContainer = styled.pre`
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  position: absolute;
-  bottom: 30px;
-  right: 49px;
-  padding: 5px 10px;
-  margin: 0;
-  font-size: 11px;
-  line-height: 18px;
-  border-radius: 3px;
-  z-index: 1000;
-  display: none;
-`;
-
-// const DistanceContainer = styled.pre`
-//   background: rgba(0, 0, 0, 0.5);
-//   color: #fff;
-//   position: absolute;
-//   bottom: 100px;
-//   right: 10px;
-//   padding: 5px 10px;
-//   margin: 0;
-//   font-size: 11px;
-//   line-height: 18px;
-//   border-radius: 3px;
-//   z-index: 1000;
-//   display: block;
-// `;
-
-const Coord = styled.span`
-  cursor: copy;
-`;
-
-const useStyles = makeStyles(() => ({
-  propTable: {
-    borderRadius: "5px",
-    borderCollapse: "collapse",
-    border: "1px solid #ccc",
-    "& td": {
-      padding: "3px 6px",
-      margin: 0,
-    },
-    "& tr:nth-child(even)": {
-      backgroundColor: "#eee",
-    },
-    "& tr": {
-      borderRadius: "5px",
-    },
-  },
-  popupWrap: {
-    maxHeight: 200,
-    overflowY: "scroll",
-  },
-}));
 
 const DashboardMap = ({
   data,
@@ -106,35 +58,25 @@ const DashboardMap = ({
   coordinatesContainerRef,
   longRef,
   latRef,
+  eleRef,
+  setRadioValue = null,
+  defaultFilterValue,
 }) => {
+  const theme = useSelector((state) => state.themeReducer);
   const { currentUser } = useApp();
-  const classes = useStyles();
+
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
+
   const polygonRef = useRef(null);
-  const polygonContainerRef = useRef(null);
+  const radiusRef = useRef(null);
+  const pointRef = useRef(null);
+  const measurementsContainerRef = useRef(null);
   const mapContainerRef = useRef(null); // create a reference to the map container
+  const popUpRef = useRef(
+    new mapboxgl.Popup({ maxWidth: "310px", offset: 15, focusAfterOpen: false })
+  );
 
-  const DUMMY_BASEMAP_LAYERS = [
-    { url: "streets-v11", icon: "commute" },
-    { url: "outdoors-v11", icon: "park" },
-    { url: "satellite-streets-v11", icon: "satellite_alt" },
-  ];
-
-  const handleCopyCoords = (value) => {
-    const dummy = document.createElement("input");
-    document.body.appendChild(dummy);
-    dummy.value = value;
-    dummy.select();
-    document.execCommand("copy");
-    document.body.removeChild(dummy);
-  };
-
-  function onPointClick(e) {
-    coordinatesContainerRef.current.style.display = "block";
-    longRef.current.innerHTML = e.features[0].properties["Longitude (dd)"];
-    latRef.current.innerHTML = e.features[0].properties["Latitude (dd)"];
-  }
-
+  //create map and apply all controls
   useEffect(() => {
     const map = new mapboxgl.Map({
       container: mapContainerRef.current,
@@ -143,50 +85,39 @@ const DashboardMap = ({
       zoom: 9,
     });
 
+    //adds control features as extended by MapboxDrawGeodesic (draw circle)
+    let modes = MapboxDraw.modes;
+    modes = MapboxDrawGeodesic.enable(modes);
     const draw = new MapboxDraw({
-      displayControlsDefault: false,
-      // Select which mapbox-gl-draw control buttons to add to the map.
+      modes,
       controls: {
         polygon: true,
+        point: true,
         trash: true,
       },
-      // Set mapbox-gl-draw to draw by default.
-      // The user does not have to click the polygon control button first.
-      defaultMode: "draw_polygon",
+      displayControlsDefault: false,
+      userProperties: true,
     });
-    map.addControl(draw, "bottom-right");
 
-    map.on("draw.create", updateArea);
-    map.on("draw.delete", updateArea);
-    map.on("draw.update", updateArea);
+    //event listener to run function updateArea during each draw action to handle measurements popup
+    const drawActions = ["draw.create", "draw.update", "draw.delete"];
+    drawActions.forEach((item) => {
+      map.on(item, (event) => {
+        const geojson = event.features[0];
+        const type = event.type;
+        updateArea(
+          geojson,
+          type,
+          polygonRef,
+          radiusRef,
+          pointRef,
+          measurementsContainerRef,
+          draw
+        );
+      });
+    });
 
-    function updateArea(e) {
-      polygonContainerRef.current.style.display = "block";
-      const data = draw.getAll();
-      const answer = polygonRef.current;
-      if (data.features.length > 0) {
-        const exactAreaMeters = area(data);
-        console.log(area(data));
-        const exactAreaFeet = exactAreaMeters * 10.7639;
-        console.log(exactAreaFeet);
-        // Restrict the area to 2 decimal points.
-        const rounded_area = Math.round(exactAreaFeet * 100) / 100;
-        answer.innerHTML = rounded_area;
-      } else {
-        answer.innerHTML = "";
-        polygonContainerRef.current.style.display = "none";
-        if (e.type !== "draw.delete") alert("Click the map to draw a polygon.");
-      }
-    }
-
-    map.addControl(
-      new RulerControl({
-        units: "feet",
-        labelFormat: (n) => `${n.toFixed(2)} ft`,
-      }),
-      "bottom-right"
-    );
-
+    //top left controls
     map.addControl(new mapboxgl.NavigationControl(), "top-left");
     map.addControl(
       new mapboxgl.GeolocateControl({
@@ -200,27 +131,46 @@ const DashboardMap = ({
       }),
       "top-left"
     );
-    map.addControl(new mapboxgl.FullscreenControl());
-
-    map.addControl(new mapboxgl.ScaleControl({ unit: "imperial" }));
-
-    // Add locate control to the map.
     map.addControl(new ResetZoomControl(), "top-left");
 
+    //top right controls
+    map.addControl(new mapboxgl.FullscreenControl(), "top-right");
+
+    //loop through each base layer and add a layer toggle for that layer
     DUMMY_BASEMAP_LAYERS.forEach((layer) => {
-      return map.addControl(new ToggleBasemapControl(layer.url, layer.icon));
+      return map.addControl(
+        new ToggleBasemapControl(layer.url, layer.icon),
+        "top-right"
+      );
     });
 
-    map.on("render", () => {
-      map.resize();
-    });
+    //bottom right controls
+    //draw controls do not work correctly on touch screens
+    !isTouchScreenDevice() &&
+      map.addControl(draw, "bottom-right") &&
+      !isTouchScreenDevice() &&
+      map.addControl(new DragCircleControl(draw), "bottom-right");
+
+    //bottom left controls
+    map.addControl(
+      new mapboxgl.ScaleControl({ unit: "imperial" }),
+      "bottom-left"
+    );
+    map.addControl(
+      new RulerControl({
+        units: "feet",
+        labelFormat: (n) => `${n.toFixed(2)} ft`,
+      }),
+      "bottom-left"
+    );
+
     map.on("load", () => {
       setMapIsLoaded(true);
-      map.resize();
       setMap(map);
     });
   }, []); // eslint-disable-line
 
+  //resizes map when mapContainerRef dimensions changes (sidebar toggle)
   useEffect(() => {
     if (map) {
       const resizer = new ResizeObserver(debounce(() => map.resize(), 100));
@@ -231,6 +181,8 @@ const DashboardMap = ({
     }
   }, [map]);
 
+  //add source and layers
+  //add event listeners
   useEffect(() => {
     if (mapIsLoaded && data?.length > 0 && typeof map != "undefined") {
       if (!map.getSource("locations")) {
@@ -242,54 +194,14 @@ const DashboardMap = ({
               return {
                 type: "Feature",
                 id: location.well_ndx,
+                //no loop to create properties to customize the keys for a pretty popup
                 properties: {
-                  "CUWCD Well #": location.cuwcd_well_number,
-                  "Exempt?": location.exempt,
-                  "Well Name": location.well_name,
-                  "State Well #": location.state_well_number,
-                  "Well Status": location.well_status,
-                  "Source Aquifer": location.source_aquifer,
-                  "Well Depth (ft)": location.well_depth_ft,
-                  "Elevation (ft msl)": location.elevation_ftabmsl,
-                  "Screen Top Depth (ft)": location.screen_top_depth_ft,
-                  "Screen Bottom Depth (ft)": location.screen_bottom_depth_ft,
-                  "Primary Use": location.primary_use,
-                  "Secondary Use": location.secondary_use,
-                  "Aggregation System": location.agg_system_name,
-                  "Permit #": location.permit_number,
-                  "Well Owner": location.well_owner,
-                  "Well Owner Address": location.well_owner_address,
-                  "Well Owner Phone": location.well_owner_phone,
-                  "Well Owner Email": location.well_owner_email,
-                  "Well Contact": location.well_contact,
-                  "Well Contact Address": location.well_contact_address,
-                  "Well Contact Phone": location.well_contact_phone,
-                  "Well Contact Email": location.well_contact_email,
-                  Driller: location.driller,
-                  "Date Drilled": location.date_drilled,
-                  "Drillers Log?": location.drillers_log,
-                  "General Notes": location.general_notes,
-                  "Well Remarks": location.well_remarks,
-                  "Count of Production Entries": location.count_production,
-                  "Count of Water Levels Entries": location.count_waterlevels,
-                  "Count of WQ Data Entries": location.count_wqdata,
-                  "Longitude (dd)": location.longitude_dd,
-                  "Latitude (dd)": location.latitude_dd,
-                  "Registration Notes": location.registration_notes,
-                  "Registration Date": location.registration_date,
-                  Editor: location.editor_name,
-                  "Last Edited Date": location.last_edited_date,
-                  "List of Attachments": location.list_of_attachments,
-                  id: location.id,
-                  has_production: location.has_production,
-                  has_waterlevels: location.has_waterlevels,
-                  has_wqdata: location.has_wqdata,
-                  well_ndx: location.well_ndx,
-                  location_geometry: location.location_geometry,
-                  authorized_users: location.authorized_users,
-                  well_owner: location?.authorized_users?.includes(
-                    currentUser.sub
-                  ),
+                  ...location,
+                  ...{
+                    is_well_owner: location?.authorized_users?.includes(
+                      currentUser.sub
+                    ),
+                  },
                 },
                 geometry: {
                   type: location.location_geometry.type,
@@ -299,52 +211,13 @@ const DashboardMap = ({
             }),
           },
         });
-        // Add a layer showing the places.
+        //add a layer showing the blue points, yellow/thick border when hovered.
+        //if the user matches the id, the point is orange
         if (!map.getLayer("locations")) {
-          map.addLayer({
-            id: "locations",
-            type: "circle",
-            source: "locations",
-            paint: {
-              "circle-radius": 8,
-              "circle-color": [
-                "case",
-                ["boolean", ["feature-state", "clicked"], false],
-                lineColors.yellow,
-                ["boolean", ["get", "well_owner"], false],
-                lineColors.orange,
-                lineColors.lightBlue,
-              ],
-              "circle-stroke-width": [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                2,
-                1,
-              ],
-              "circle-stroke-color": [
-                "case",
-                ["boolean", ["feature-state", "hover"], false],
-                lineColors.yellow,
-                "black",
-              ],
-            },
-          });
+          map.addLayer(locationsLayer);
 
-          map.addLayer({
-            id: "locations-labels",
-            type: "symbol",
-            source: "locations",
-            minzoom: 12,
-            layout: {
-              "text-field": ["get", "CUWCD Well #"],
-              "text-offset": [0, -2],
-              "text-size": 14,
-            },
-            paint: {
-              "text-halo-color": "#ffffff",
-              "text-halo-width": 0.5,
-            },
-          });
+          //add labels for locations points
+          map.addLayer(locationsLabelsLayer);
         }
 
         //makes currently selected point yellow
@@ -366,88 +239,101 @@ const DashboardMap = ({
         });
 
         //set well number used to fetch data for graph
-        //fly to graph
+        //fly to point
         map.on("click", "locations", (e) => {
-          setCurrentSelectedPoint(e.features[0].properties["CUWCD Well #"]);
+          setCurrentSelectedPoint(e.features[0].properties.cuwcd_well_number);
           map.flyTo({
             center: [
-              e.features[0].properties["Longitude (dd)"],
-              e.features[0].properties["Latitude (dd)"],
+              e.features[0].properties.longitude_dd,
+              e.features[0].properties.latitude_dd,
             ],
             zoom: 14,
             padding: { bottom: 250 },
           });
         });
 
-        //for lat/long display
-        map.on("click", "locations", onPointClick);
+        //sets ref.current.innerHTMLs for coordinates popup
+        map.on("click", "locations", (e) =>
+          onPointClickSetCoordinateRefs(
+            coordinatesContainerRef,
+            longRef,
+            latRef,
+            eleRef,
+            e.features[0].properties.latitude_dd,
+            e.features[0].properties.longitude_dd
+          )
+        );
 
-        // When a click event occurs on a feature in the places layer, open a popup at the
-        // location of the feature, with description HTML from its properties.
+        //handles main point click popup
         map.on("click", "locations", (e) => {
-          let popup = new mapboxgl.Popup({ maxWidth: "310px" });
-
-          let data = e.features[0].properties;
-
-          // Copy coordinates array.
           const coordinates = e.features[0].geometry.coordinates.slice();
-
-          // Ensure that if the map is zoomed out such that multiple
-          // copies of the feature are visible, the popup appears
-          // over the copy being pointed to.
+          // // Ensure that if the map is zoomed out such that multiple
+          // // copies of the feature are visible, the popup appears
+          // // over the copy being pointed to.
           while (Math.abs(e.lngLat.lng - coordinates[0]) > 180) {
             coordinates[0] += e.lngLat.lng > coordinates[0] ? 360 : -360;
           }
 
-          const canUserEdit = currentUser.isUser
-            ? ""
-            : `<tr><td><strong>Edit Well</strong></td><td><a href="/models/dm-wells/${data.id}">Link</a></td></tr>`;
+          const excludedPopupFields = [
+            "id",
+            "has_production",
+            "has_waterlevels",
+            "has_wqdata",
+            "well_ndx",
+            "location_geometry",
+            "authorized_users",
+            "is_well_owner",
+            "tableData",
+            "is_permitted",
+            "is_exempt",
+            "is_monitoring",
+            "well_type",
+            "tableData",
+          ];
 
-          const html =
-            '<div class="' +
-            classes.popupWrap +
-            '"><h3>Properties</h3><table class="' +
-            classes.propTable +
-            '"><tbody>' +
-            canUserEdit +
-            Object.entries(data)
-              .map(([k, v]) => {
-                if (
-                  [
-                    "id",
-                    "has_production",
-                    "has_waterlevels",
-                    "has_wqdata",
-                    "well_ndx",
-                    "location_geometry",
-                    "authorized_users",
-                    "well_owner",
-                  ].includes(k)
-                )
-                  return null;
-                return `<tr><td><strong>${k}</strong></td><td>${formatBooleanTrueFalse(
-                  v
-                )}</td></tr>`;
-              })
-              .join("") +
-            "</tbody></table></div>";
+          let feature = e.features[0].properties;
 
-          popup.setLngLat(coordinates).setHTML(html).addTo(map);
+          const popupNode = document.createElement("div");
+          ReactDOM.render(
+            //MJB adding style providers to the popup
+            <StylesProvider jss={jss}>
+              <MuiThemeProvider theme={createTheme(theme.currentTheme)}>
+                <ThemeProvider theme={createTheme(theme.currentTheme)}>
+                  <MainPopup
+                    excludeFields={excludedPopupFields}
+                    feature={feature}
+                    currentUser={currentUser}
+                  />
+                </ThemeProvider>
+              </MuiThemeProvider>
+            </StylesProvider>,
+            popupNode
+          );
+
+          popUpRef.current
+            .setLngLat(coordinates)
+            .setDOMContent(popupNode)
+            .addTo(map);
 
           map.on("closeAllPopups", () => {
-            popup.remove();
+            popUpRef.current.remove();
           });
         });
 
-        longRef.current.addEventListener("click", (e) =>
-          handleCopyCoords(e.target.innerHTML)
-        );
-        latRef.current.addEventListener("click", (e) =>
-          handleCopyCoords(e.target.innerHTML)
-        );
-        polygonRef.current.addEventListener("click", (e) =>
-          handleCopyCoords(e.target.innerHTML)
-        );
+        // //handles copying coordinates and measurements to the clipboard
+        const copyableRefs = [
+          longRef,
+          latRef,
+          eleRef,
+          polygonRef,
+          radiusRef,
+          pointRef,
+        ];
+        copyableRefs.forEach((ref) => {
+          ref.current.addEventListener("click", (e) =>
+            handleCopyCoords(e.target.textContent)
+          );
+        });
 
         // Change the cursor to a pointer when the mouse is over the places layer.
         map.on("mouseenter", "locations", () => {
@@ -458,11 +344,12 @@ const DashboardMap = ({
           });
         });
 
+        //changes the border of the hovered point to yellow and a thicker border
         let hoverID = null;
-
         map.on("mousemove", "locations", (e) => {
           if (e.features.length === 0) return;
 
+          //removes hover-state border if the hovered hoverID changes
           if (hoverID) {
             map.setFeatureState(
               {
@@ -477,6 +364,7 @@ const DashboardMap = ({
 
           hoverID = e.features[0].id;
 
+          //adds hover-state border
           map.setFeatureState(
             {
               source: "locations",
@@ -488,8 +376,7 @@ const DashboardMap = ({
           );
         });
 
-        // When the mouse leaves the earthquakes-viz layer, update the
-        // feature state of the previously hovered feature
+        // When the mouse leaves the currently hovered item, change the border back to normal
         map.on("mouseleave", "locations", () => {
           if (hoverID) {
             map.setFeatureState(
@@ -505,11 +392,13 @@ const DashboardMap = ({
           hoverID = null;
         });
 
-        // Change it back to a pointer when it leaves.
+        //all layers need to load, then filter out those that don't have production
+        setRadioValue && setRadioValue(defaultFilterValue);
       }
     }
   }, [isLoading, mapIsLoaded, map, data]); // eslint-disable-line
 
+  //filters the table based on the selected radioValues filters
   useEffect(() => {
     if (map !== undefined && map.getLayer("locations")) {
       if (radioValue === "all") {
@@ -524,38 +413,39 @@ const DashboardMap = ({
 
   if (error) return "An error has occurred: " + error.message;
 
+  // {drawControl && (
+  //   <>
+  //     <Button
+  //       style={{ zIndex: "10000" }}
+  //       onClick={() => map.removeControl(drawControl)}
+  //     >
+  //       Remove
+  //     </Button>
+  //     <Button
+  //       style={{ zIndex: "10000" }}
+  //       onClick={() => map.addControl(drawControl)}
+  //     >
+  //       Add
+  //     </Button>
+  //   </>
+  // )}
+
   return (
     <>
       <MapContainer ref={mapContainerRef}>
-        <CoordinatesContainer ref={coordinatesContainerRef}>
-          Longitude:{" "}
-          <Tooltip title="Copy Longitude to Clipboard">
-            <Coord ref={longRef} />
-          </Tooltip>
-          <br />
-          Latitude:{" "}
-          <Tooltip title="Copy Latitude to Clipboard" placement="bottom-start">
-            <Coord ref={latRef} />
-          </Tooltip>
-        </CoordinatesContainer>
-        {/*<DistanceContainer>*/}
-        {/*  Click the map to measure the distance between points*/}
-        {/*  <br />*/}
-        {/*  <Tooltip title="Copy Distance to Clipboard" placement="bottom-start">*/}
-        {/*    <Coord ref={polygonRef} />*/}
-        {/*  </Tooltip>*/}
-        {/*</DistanceContainer>*/}
-        <PolygonContainer ref={polygonContainerRef}>
-          Total polygon area:
-          <br />
-          <Tooltip
-            title="Copy Measurement to Clipboard"
-            placement="bottom-start"
-          >
-            <Coord ref={polygonRef} />
-          </Tooltip>{" "}
-          square feet
-        </PolygonContainer>
+        <CoordinatesPopup
+          coordinatesContainerRef={coordinatesContainerRef}
+          longRef={longRef}
+          latRef={latRef}
+          eleRef={eleRef}
+          title="Most recently selected well:"
+        />
+        <MeasurementsPopup
+          measurementsContainerRef={measurementsContainerRef}
+          radiusRef={radiusRef}
+          polygonRef={polygonRef}
+          pointRef={pointRef}
+        />
       </MapContainer>
     </>
   );

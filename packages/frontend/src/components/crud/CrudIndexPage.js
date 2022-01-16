@@ -2,15 +2,16 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet-async";
 import Results from "./Results";
 import { isWidthDown, withWidth } from "@material-ui/core";
-import { pluralize } from "inflected";
 import { useApp } from "../../AppProvider";
 import { CRUD_DISPLAY_MODES } from "../../constants";
 import { ConfirmDeleteDialog } from "./ConfirmDeleteDialog";
 import IndexAppBar from "./IndexAppBar";
 import { useHistory } from "react-router-dom";
 import { useCrud } from "../../CrudProvider";
+import { pluralize } from "inflected";
 
 function CrudIndexPage({ config, width, modelName }) {
+  const crudModelNameLabels = config.crudModelNameLabels;
   const app = useApp();
   const crud = useCrud();
   const history = useHistory();
@@ -24,7 +25,7 @@ function CrudIndexPage({ config, width, modelName }) {
 
   return (
     <div style={{ height: "100%" }}>
-      <Helmet title={pluralize(modelName)} />
+      <Helmet title={crudModelNameLabels?.standard ?? pluralize(modelName)} />
 
       <ConfirmDeleteDialog
         modelName={modelName}
@@ -40,11 +41,13 @@ function CrudIndexPage({ config, width, modelName }) {
         modelName={modelName}
         displayMode={displayMode}
         setDisplayMode={setDisplayMode}
+        crudModelNameLabels={crudModelNameLabels}
       />
 
       <Results
         config={config}
         modelName={modelName}
+        crudModelNameLabels={crudModelNameLabels}
         displayMode={displayMode}
       />
     </div>

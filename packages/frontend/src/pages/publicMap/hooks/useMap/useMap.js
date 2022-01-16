@@ -18,6 +18,13 @@ import {
   ThemeProvider as MuiThemeProvider,
 } from "@material-ui/core/styles";
 import { create } from "jss";
+import DragCircleControl from "../../../../components/map/DragCircleControl";
+import { RulerControl } from "mapbox-gl-controls";
+import MapboxDraw from "@mapbox/mapbox-gl-draw";
+import * as MapboxDrawGeodesic from "mapbox-gl-draw-geodesic";
+import { handleCopyCoords, updateArea } from "../../../../utils/map";
+import ResetZoomControl from "../../../../components/map/ResetZoomControl";
+import { isTouchScreenDevice } from "../../../../utils";
 
 const mapLogger = new MapLogger({
   enabled: process.env.NODE_ENV === "development",
@@ -48,7 +55,17 @@ const useMap = (ref, mapConfig) => {
   const [activeBasemap, setActiveBasemap] = useState(BASEMAP_STYLES[0].style);
   const [dataAdded, setDataAdded] = useState(false);
   const [eventsRegistered, setEventsRegistered] = useState(false);
-  const popUpRef = useRef(new mapboxgl.Popup({ offset: 15 }));
+  const popUpRef = useRef(
+    new mapboxgl.Popup({
+      maxWidth: "375px",
+      offset: 15,
+      focusAfterOpen: false,
+    })
+  );
+  const polygonRef = useRef(null);
+  const radiusRef = useRef(null);
+  const pointRef = useRef(null);
+  const measurementsContainerRef = useRef(null);
 
   // Fetch a list of sources  and layers to add to the map
   const { sources } = useSources();
@@ -66,20 +83,18 @@ const useMap = (ref, mapConfig) => {
         ...mapConfig,
       });
 
-      const nav = new mapboxgl.NavigationControl();
-      mapInstance.addControl(nav, "top-right");
-
-      mapInstance.addControl(new mapboxgl.ScaleControl({ unit: "imperial" }));
-
+      //loop through each base layer and add a layer toggle for that layer
       //MJB 3 toggles for 3 different base layers
       DUMMY_BASEMAP_LAYERS.forEach((layer) => {
         return mapInstance.addControl(
-          new ToggleBasemapControl(layer.url, layer.icon)
+          new ToggleBasemapControl(layer.url, layer.icon),
+          "top-right"
         );
       });
 
       setMap(mapInstance);
     }
+    //MJB removed map from dependency array because it set an endless loop
   }, [ref, mapConfig]); //eslint-disable-line
 
   //MJB adding some logic to resize the map when the map container ref size changes
@@ -104,7 +119,11 @@ const useMap = (ref, mapConfig) => {
    */
   const loadMapData = useCallback(() => {
     const shouldAddData =
-      map?.loaded() && sources?.length > 0 && layers?.length > 0 && !dataAdded;
+      !!map &&
+      map?.loaded() &&
+      sources?.length > 0 &&
+      layers?.length > 0 &&
+      !dataAdded;
 
     if (shouldAddData) {
       sources.forEach((source) => {
@@ -130,6 +149,82 @@ const useMap = (ref, mapConfig) => {
       setDataAdded(true);
     }
   }, [dataAdded, layers, map, sources]);
+
+  const addMapControls = useCallback(() => {
+    const shouldAddControls = !!map;
+    if (shouldAddControls) {
+      //top left controls
+      map.addControl(new mapboxgl.NavigationControl(), "top-left");
+      map.addControl(
+        new mapboxgl.GeolocateControl({
+          positionOptions: {
+            enableHighAccuracy: true,
+          },
+          // When active the map will receive updates to the device's location as it changes.
+          trackUserLocation: true,
+          // Draw an arrow next to the location dot to indicate which direction the device is heading.
+          showUserHeading: true,
+        }),
+        "top-left"
+      );
+      map.addControl(new ResetZoomControl(), "top-left");
+
+      //top right controls
+      map.addControl(new mapboxgl.FullscreenControl(), "top-right");
+
+      //bottom left controls
+      map.addControl(
+        new mapboxgl.ScaleControl({ unit: "imperial" }),
+        "bottom-left"
+      );
+      map.addControl(
+        new RulerControl({
+          units: "feet",
+          labelFormat: (n) => `${n.toFixed(2)} ft`,
+        }),
+        "bottom-right"
+      );
+
+      //adds control features as extended by MapboxDrawGeodesic (draw circle)
+      let modes = MapboxDraw.modes;
+      modes = MapboxDrawGeodesic.enable(modes);
+      const draw = new MapboxDraw({
+        modes,
+        controls: {
+          polygon: true,
+          point: true,
+          trash: true,
+        },
+        displayControlsDefault: false,
+        userProperties: true,
+      });
+
+      //event listener to run function updateArea during each draw action to handle measurements popup
+      const drawActions = ["draw.create", "draw.update", "draw.delete"];
+      drawActions.forEach((item) => {
+        map.on(item, (event) => {
+          const geojson = event.features[0];
+          const type = event.type;
+          updateArea(
+            geojson,
+            type,
+            polygonRef,
+            radiusRef,
+            pointRef,
+            measurementsContainerRef,
+            draw
+          );
+        });
+      });
+
+      //bottom right controls
+      //draw controls do not work correctly on touch screens
+      !isTouchScreenDevice() &&
+        map.addControl(draw, "bottom-right") &&
+        !isTouchScreenDevice() &&
+        map.addControl(new DragCircleControl(draw), "bottom-right");
+    }
+  }, [map]);
 
   const addMapEvents = useCallback(() => {
     map?.on("load", () => {
@@ -161,6 +256,18 @@ const useMap = (ref, mapConfig) => {
 
       map.on("click", (e) => {
         const features = map.queryRenderedFeatures(e.point);
+
+        //Ensure that if the map is zoomed out such that multiple
+        //copies of the feature are visible, the popup appears
+        //over the copy being pointed to.
+        //only for features with the properties.lat/long field (clearwater wells)
+        const coordinates = features[0]?.properties?.latitude_dd
+          ? [
+              features[0].properties.longitude_dd,
+              features[0].properties.latitude_dd,
+            ]
+          : [e.lngLat.lng, e.lngLat.lat];
+
         //MJB add check for popups so they only appear on our dynamic layers
         const popupLayerIds = layers.map((layer) => layer.id);
         if (
@@ -190,11 +297,20 @@ const useMap = (ref, mapConfig) => {
             popupNode
           );
           popUpRef.current
-            .setLngLat(e.lngLat)
+            .setLngLat(coordinates)
             .setDOMContent(popupNode)
             .addTo(map);
         }
       });
+
+      // //handles copying coordinates and measurements to the clipboard
+      const copyableRefs = [polygonRef, radiusRef, pointRef];
+      copyableRefs.forEach((ref) => {
+        ref.current.addEventListener("click", (e) => {
+          handleCopyCoords(e.target.textContent);
+        });
+      });
+
       setEventsRegistered(true);
       mapLogger.log("Event handlers attached to map");
     }
@@ -371,6 +487,11 @@ const useMap = (ref, mapConfig) => {
     addMapEvents();
   }, [addMapEvents]);
 
+  // add all map controls
+  useEffect(() => {
+    addMapControls();
+  }, [addMapControls]);
+
   return {
     activeBasemap,
     basemaps: BASEMAP_STYLES,
@@ -382,6 +503,10 @@ const useMap = (ref, mapConfig) => {
     updateLayerFilters,
     updateLayerStyles,
     updateLayerVisibility,
+    polygonRef,
+    radiusRef,
+    pointRef,
+    measurementsContainerRef,
   };
 };
 

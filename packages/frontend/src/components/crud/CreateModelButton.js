@@ -33,9 +33,12 @@ function CreateModelButton(props) {
       startIcon={<AddIcon />}
       onClick={() => history.push(`${crud.getModelBasePath()}/add`)}
     >
-      {isWidthUp("sm", props.width) && "Create"}
+      {isWidthUp("sm", props.width) && "Create a New"}
       {isWidthUp("md", props.width) &&
-        ` ${inflector.titleize(props.modelName)}`}
+        ` ${
+          inflector.singularize(props.crudModelNameLabels?.standard) ||
+          inflector.titleize(props.modelName)
+        }`}
     </Button>
   );
 }
@@ -49,6 +52,7 @@ CreateModelButton.propTypes = {
   fullWidth: PropTypes.bool,
   onClick: PropTypes.func,
   width: PropTypes.any,
+  crudModelNameLabels: PropTypes.any,
   modelName: PropTypes.any,
 };
 

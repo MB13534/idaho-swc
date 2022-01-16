@@ -38,9 +38,9 @@ export const formatBooleanTrueFalse = (value) => {
     return value;
   }
   if (value === true) {
-    return "yes";
+    return "Yes";
   }
-  return "no";
+  return "No";
 };
 
 export const downloadChartImage = (title, extension, ref) => {
@@ -193,4 +193,12 @@ export const filterDataForWellOwner = (data, user) => {
   return data
     ? data.filter((item) => item.authorized_users?.includes(user?.sub))
     : [];
+};
+
+export const isTouchScreenDevice = () => {
+  return (
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints ||
+    navigator.msMaxTouchPoints
+  );
 };

@@ -1,8 +1,10 @@
 // Control implemented as ES6 class
-import { STARTING_LOCATION } from "../../../constants";
 
-class ResetZoomControl {
-  onAdd(map) {
+class DragCircleControl {
+  constructor(draw) {
+    this.draw = draw;
+  }
+  onAdd() {
     this._container = document.createElement("div");
     this._container.className = "mapboxgl-ctrl mapboxgl-ctrl-group";
 
@@ -11,14 +13,10 @@ class ResetZoomControl {
     icon.className = "material-icons";
     icon.style.verticalAlign = "middle";
     icon.style.cursor = "pointer";
-    icon.textContent = "explore";
+    icon.textContent = "trip_origin";
     this._container.appendChild(icon);
     this._container.addEventListener("click", () => {
-      map.flyTo({
-        center: STARTING_LOCATION,
-        zoom: 9,
-        padding: { bottom: 0 },
-      });
+      this.draw.changeMode("draw_circle");
     });
     return this._container;
   }
@@ -28,4 +26,4 @@ class ResetZoomControl {
   }
 }
 
-export default ResetZoomControl;
+export default DragCircleControl;

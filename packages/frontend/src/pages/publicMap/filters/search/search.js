@@ -147,6 +147,7 @@ const Search = ({ onSelect }) => {
         type="search"
         value={value}
         variant="outlined"
+        size="small"
       />
       <SearchResults
         anchorEl={searchRef?.current}
