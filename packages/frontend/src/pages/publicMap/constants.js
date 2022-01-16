@@ -27,6 +27,16 @@ export const BASEMAP_STYLES = [
     name: "Satellite",
     url: "mapbox://styles/mapbox/satellite-streets-v11",
   },
+  {
+    style: "light-v10",
+    name: "Light",
+    url: "mapbox://styles/mapbox/light-v10",
+  },
+  {
+    style: "dark-v10",
+    name: "dark",
+    url: "mapbox://styles/mapbox/dark-v10",
+  },
 ];
 
 export const WELLS_LAYER_ID = "clearwater-wells-circle";

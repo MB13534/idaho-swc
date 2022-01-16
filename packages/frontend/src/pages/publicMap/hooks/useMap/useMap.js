@@ -78,18 +78,9 @@ const useMap = (ref, mapConfig) => {
         );
       });
 
-      mapInstance.on("load", () => {
-        setMap(mapInstance);
-        mapLogger.log("Map loaded");
-      });
-
-      if (process.env.NODE_ENV === "development") {
-        mapInstance.on("zoom", () => {
-          setZoomLevel(mapInstance?.getZoom());
-        });
-      }
+      setMap(mapInstance);
     }
-  }, [ref, mapConfig, map]);
+  }, [ref, mapConfig]); //eslint-disable-line
 
   //MJB adding some logic to resize the map when the map container ref size changes
   //ResizeObserver watches for changes in bounding box for ref
@@ -141,6 +132,16 @@ const useMap = (ref, mapConfig) => {
   }, [dataAdded, layers, map, sources]);
 
   const addMapEvents = useCallback(() => {
+    map?.on("load", () => {
+      mapLogger.log("Map loaded");
+    });
+
+    if (process.env.NODE_ENV === "development") {
+      map?.on("zoom", () => {
+        setZoomLevel(map?.getZoom());
+      });
+    }
+
     const shouldAddClickEvent = map && layers?.length > 0 && dataAdded;
     if (shouldAddClickEvent && !eventsRegistered) {
       //MJB add event listener for all circle and symbol layers
