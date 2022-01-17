@@ -4,8 +4,6 @@ import { Box, Paper, Typography } from "@material-ui/core";
 
 // import AppBar from "../../components/AppBar";
 import Map from "./map";
-import LayersControl from "./controls/layersControl";
-import BasemapsControl from "./controls/basemapsControl";
 import WellStylesControl from "./controls/wellStylesControl";
 import ZoomInfo from "./controls/zoomInfo";
 import Search from "./filters/search";
@@ -19,6 +17,7 @@ import { INIT_MAP_CONFIG } from "./constants";
 
 import DisclaimerDialog from "./components/DisclaimerDialog";
 import MeasurementsPopup from "../../components/map/components/MeasurementsPopup";
+import MainControl from "./controls/mainControl/mainControl";
 
 const FiltersBar = styled(Paper)`
   align-items: center;
@@ -233,15 +232,16 @@ const PublicMap = () => {
           polygonRef={polygonRef}
           pointRef={pointRef}
         />
-        <LayersControl items={layers} onLayerChange={updateLayerVisibility} />
+        <MainControl
+          activeBasemap={activeBasemap}
+          basemaps={basemaps}
+          layers={layers}
+          onBasemapChange={updateBasemap}
+          onLayerChange={updateLayerVisibility}
+        />
         {process.env.NODE_ENV === "development" && (
           <ZoomInfo zoomLevel={zoomLevel} />
         )}
-        <BasemapsControl
-          items={basemaps}
-          value={activeBasemap}
-          onBasemapChange={updateBasemap}
-        />
       </Map>
     </>
   );

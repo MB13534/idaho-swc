@@ -1,59 +1,18 @@
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import {
   Box,
-  Button,
   Checkbox,
   IconButton,
   List,
   ListItem,
   ListItemText,
   ListItemSecondaryAction,
-  Paper,
   Typography,
 } from "@material-ui/core";
 // import SearchIcon from "@material-ui/icons/Search";
-import LayersIcon from "@material-ui/icons/Layers";
+
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import ChevronRight from "@material-ui/icons/ChevronRight";
-import styled from "styled-components/macro";
-
-const Container = styled(Paper)`
-  box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
-  left: 49px;
-  position: absolute;
-  top: 10px;
-  transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  transition-duration: 300ms;
-  width: ${(props) => (props.open ? "300px" : "40px")};
-  z-index: 1;
-`;
-
-const ControlHeader = styled.div`
-  align-items: center;
-  background-color: #fafafa;
-  border-bottom: ${(props) =>
-    props.open ? "1px solid #dddddd" : "1px solid transparent"};
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  height: 42px;
-  position: fixed;
-  transition: width 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  transition-duration: 300ms;
-  width: ${(props) => (props.open ? "300px" : "40px")};
-`;
-
-const LayersInnerContainer = styled.div`
-  margin-top: 43px;
-  overflow-y: auto;
-  // change max-height from 500 to 535 to eliminate a scroll when all layers are shown
-  max-height: 540px;
-  min-height: 0px;
-  overflow-y: auto;
-  height: ${(props) => (props.open ? props.height : 0)}px;
-  transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1) 0ms;
-  transition-duration: 300ms;
-`;
 
 /**
  * Utility used to translate a Mapbox paint style
@@ -147,19 +106,7 @@ const LayerLegend = ({ item, open }) => {
  * [] Add support for layers search
  */
 const LayersControl = ({ items, onLayerChange }) => {
-  const [controlOpen, setControlOpen] = useState(true);
   const [expandedItems, setExpandedItems] = useState(["Clearwater Wells"]);
-  const childRef = useRef(null);
-  const [childHeight, setChildHeight] = useState(0);
-
-  /**
-   * This logic is used to properly animate the height changes
-   * when a user shows/hides the layer control
-   */
-  useEffect(() => {
-    const childHeight = controlOpen ? childRef?.current?.clientHeight : 0;
-    setChildHeight(childHeight);
-  }, [childRef, controlOpen, expandedItems, items]);
 
   /**
    * Generate a unique list of items to display in the layer
@@ -216,90 +163,46 @@ const LayersControl = ({ items, onLayerChange }) => {
   };
 
   return (
-    <Container open={controlOpen}>
-      <ControlHeader open={controlOpen}>
-        <Box
-          alignItems="center"
-          display="flex"
-          gridColumnGap={8}
-          p={2}
-          onClick={() => setControlOpen((s) => !s)}
-        >
-          <LayersIcon />
-          {controlOpen && <Typography variant="subtitle1">Layers</Typography>}
-        </Box>
-        {controlOpen && (
-          <Box m={2}>
-            <Button
-              size="small"
-              variant="outlined"
-              onClick={() => setControlOpen((s) => !s)}
-            >
-              {controlOpen ? "Hide" : "Show"}
-            </Button>
+    <Box display="flex" flexDirection="column">
+      <List dense>
+        {uniqueItems?.length === 0 && (
+          <Box textAlign="center">
+            <Typography variant="body1">No layers found</Typography>
           </Box>
         )}
-      </ControlHeader>
-      {/* <Box p={2}>
-        <TextField
-          InputProps={{
-            startAdornment: (
-              <InputAdornment position="start">
-                <SearchIcon />
-              </InputAdornment>
-            ),
-          }}
-          label="Layers Search"
-          margin="dense"
-          placeholder="Search"
-          variant="outlined"
-          fullWidth
-        />
-      </Box> */}
-
-      <LayersInnerContainer open={controlOpen} height={childHeight}>
-        <Box display="flex" flexDirection="column" ref={childRef}>
-          <List dense>
-            {uniqueItems?.length === 0 && (
-              <Box textAlign="center">
-                <Typography variant="body1">No layers found</Typography>
-              </Box>
-            )}
-            {uniqueItems?.map((item) => {
-              const open = expandedItems.includes(item?.name);
-              const layerVisible = item?.layout?.visibility === "visible";
-              return (
-                <Box key={item?.name}>
-                  <ListItem onClick={() => handleVisibilityChange(item)}>
-                    <Checkbox
-                      edge="start"
-                      checked={layerVisible}
-                      tabIndex={-1}
-                      disableRipple
-                      inputProps={{ "aria-labelledby": "test" }}
-                    />
-                    <ListItemText
-                      primary={item?.name}
-                      primaryTypographyProps={{
-                        color: layerVisible ? "textPrimary" : "textSecondary",
-                      }}
-                    />
-                    <ListItemSecondaryAction
-                      onClick={() => handleExpandItem(item?.name)}
-                    >
-                      <IconButton edge="end" aria-label="delete">
-                        <LayerLegendIcon open={open} />
-                      </IconButton>
-                    </ListItemSecondaryAction>
-                  </ListItem>
-                  <LayerLegend open={open} item={item} />
-                </Box>
-              );
-            })}
-          </List>
-        </Box>
-      </LayersInnerContainer>
-    </Container>
+        {uniqueItems?.map((item) => {
+          const open = expandedItems.includes(item?.name);
+          const layerVisible = item?.layout?.visibility === "visible";
+          return (
+            <Box key={item?.name}>
+              <ListItem onClick={() => handleVisibilityChange(item)}>
+                <Checkbox
+                  edge="start"
+                  checked={layerVisible}
+                  tabIndex={-1}
+                  disableRipple
+                  inputProps={{ "aria-labelledby": "test" }}
+                />
+                <ListItemText
+                  primary={item?.name}
+                  primaryTypographyProps={{
+                    color: layerVisible ? "textPrimary" : "textSecondary",
+                  }}
+                />
+                <ListItemSecondaryAction
+                  onClick={() => handleExpandItem(item?.name)}
+                >
+                  <IconButton edge="end" aria-label="delete">
+                    <LayerLegendIcon open={open} />
+                  </IconButton>
+                </ListItemSecondaryAction>
+              </ListItem>
+              <LayerLegend open={open} item={item} />
+            </Box>
+          );
+        })}
+      </List>
+    </Box>
   );
 };
 
