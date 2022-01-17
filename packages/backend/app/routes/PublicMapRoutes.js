@@ -11,8 +11,20 @@ const layersData = require('../data/layers');
 
 const router = express.Router();
 
+/**
+ * Utility for converting the object structure returned from the
+ * require-dir package (see data/layers/index.js) into an array
+ * of objects
+ * @param {object} layers
+ * @returns {array} returns an array of layer config objects
+ */
+const unnestLayers = (layerConfigs) =>
+  Object.values(layerConfigs).flatMap((config) => {
+    return Object.values(config);
+  });
+
 const sources = Object.values(sourceData);
-const layers = Object.values(layersData);
+const layers = unnestLayers(layersData);
 
 /**
  * Utility used to clean a provide map layer
