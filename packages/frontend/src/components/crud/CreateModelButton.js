@@ -6,6 +6,7 @@ import { useHistory } from "react-router-dom";
 import styled from "styled-components/macro";
 import { useCrud } from "../../CrudProvider";
 import * as inflector from "inflected";
+import { CREATE_NEW_CRUD_TABLES_DISABLED } from "../../constants";
 
 const Button = styled(MuiButton)`
   white-space: nowrap;
@@ -32,6 +33,7 @@ function CreateModelButton(props) {
       color="primary"
       startIcon={<AddIcon />}
       onClick={() => history.push(`${crud.getModelBasePath()}/add`)}
+      disabled={CREATE_NEW_CRUD_TABLES_DISABLED.includes(props.modelName)}
     >
       {isWidthUp("sm", props.width) && "Create a New"}
       {isWidthUp("md", props.width) &&

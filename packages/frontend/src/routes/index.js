@@ -43,13 +43,13 @@ import Default from "../pages/dashboards/Default";
 import { CrudProvider } from "../CrudProvider";
 import CRUD from "../pages/docs/CRUD";
 import Deploy from "../pages/docs/Deploy";
-import UiPermitsExpiringsReport from "../pages/dataAccess/reports/UiPermitsExpiringsReport";
 
 // TODO MAYBE LAZY IMPORT
 import PublicMap from "../pages/publicMap";
 import Production from "../pages/dashboards/data entry/Production";
 import UserVisibilityFilter from "../components/UserVisibilityFilter";
 import PDI from "../pages/dataAccess/reports/PDI";
+import UiReportAllPermitsReport from "../pages/dataAccess/reports/UiReportAllPermitsReport";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -133,9 +133,9 @@ const reportsRoutes = {
   icon: <FileText />,
   children: [
     {
-      path: "/data-access/reports/expiring-permits",
-      name: "Expiring Permits",
-      component: UiPermitsExpiringsReport,
+      path: "/data-access/reports/all-permits",
+      name: "All Permits",
+      component: UiReportAllPermitsReport,
     },
     {
       path: "/data-access/pdi",

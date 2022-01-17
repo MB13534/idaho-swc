@@ -48,8 +48,8 @@ function MultiOptionsPicker({
         MenuProps={MenuProps}
       >
         {options.map((option) => (
-          <MenuItem key={option.value} value={option.value}>
-            {option.label}
+          <MenuItem key={option} value={option}>
+            {option}
           </MenuItem>
         ))}
       </Select>

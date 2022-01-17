@@ -4,17 +4,23 @@ import CallMerge from "@material-ui/icons/CallMerge";
 import PermContactCalendar from "@material-ui/icons/PermContactCalendar";
 import AdminGuard from "../components/AdminGuard";
 import AdminVisibilityFilter from "../components/AdminVisibilityFilter";
-import DeveloperGuard from "../components/DeveloperGuard";
-import DeveloperVisibilityFilter from "../components/DeveloperVisibilityFilter";
 
 export const STARTING_LOCATION = [-97.4718189239502, 31.050691282461912];
+
+export const EDIT_CRUD_TABLES_DISABLED = [];
+
+export const DELETE_CRUD_TABLES_DISABLED = [];
+
+export const CREATE_NEW_CRUD_TABLES_DISABLED = [];
+
+export const DELETE_BUTTON_LABEL = [{ DmPermit: "CANCEL" }];
 
 // Configuration
 export const CRUD_MODELS = [
   {
     header: "Data Management",
     name: "DmPermits",
-    sidebarName: "Permits",
+    sidebarName: "Active Permits",
     icon: <CheckSquare />,
     guard: AdminGuard,
     visibilityFilter: AdminVisibilityFilter,
@@ -46,12 +52,6 @@ export const CRUD_MODELS = [
     icon: <CallMerge />,
     guard: AdminGuard,
     visibilityFilter: AdminVisibilityFilter,
-  },
-  {
-    name: "ListPermitTypes",
-    sidebarName: "Permit Types",
-    guard: DeveloperGuard,
-    visibilityFilter: DeveloperVisibilityFilter,
   },
 ];
 
