@@ -1,6 +1,5 @@
-import { useEffect, useMemo, useRef, useState } from "react";
-import { Box, Button, Grid, Paper, Typography } from "@material-ui/core";
-// import SearchIcon from "@material-ui/icons/Search";
+import { useEffect, useRef, useState } from "react";
+import { Box, Button, Paper, Typography } from "@material-ui/core";
 import MapIcon from "@material-ui/icons/Map";
 import styled from "styled-components/macro";
 

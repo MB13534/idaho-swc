@@ -12,7 +12,7 @@ const packageJson = require('../package.json');
 const header = require('./header');
 const output = require('./logger');
 const db = require('./db');
-const url = require('url');
+// const url = require('url');
 
 const log = {...output()};
 

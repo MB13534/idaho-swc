@@ -82,7 +82,10 @@ const useMap = (ref, mapConfig) => {
         ...mapConfig,
       });
 
-      setMap(mapInstance);
+      mapInstance?.on("load", () => {
+        mapLogger.log("Map loaded");
+        setMap(mapInstance);
+      });
     }
     //MJB removed map from dependency array because it set an endless loop
   }, [ref, mapConfig]); //eslint-disable-line
@@ -217,10 +220,6 @@ const useMap = (ref, mapConfig) => {
   }, [map]);
 
   const addMapEvents = useCallback(() => {
-    map?.on("load", () => {
-      mapLogger.log("Map loaded");
-    });
-
     if (process.env.NODE_ENV === "development") {
       map?.on("zoom", () => {
         setZoomLevel(map?.getZoom());

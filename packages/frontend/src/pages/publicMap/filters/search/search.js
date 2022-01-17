@@ -81,7 +81,7 @@ const Search = ({ onSelect }) => {
   const { data: options } = useQuery(["Search Options"], async () => {
     try {
       return await axios.get(
-        `${process.env.REACT_APP_ENDPOINT}/api/public-map/sources/wells`
+        `${process.env.REACT_APP_ENDPOINT}/api/public-map/wells`
       );
     } catch (err) {
       console.error(err);
