@@ -64,6 +64,9 @@ export const CRUD_LOOKUP_TABLES = [
   "list_booleans",
   "list_permit_types",
   "list_permit_terms",
+  "list_collected_bys",
+  "list_tested_bys",
+  "list_wq_presence_absences",
   "current_wells_to_rolodex_owners_texts",
   "current_wells_to_rolodex_contacts_texts",
 ];

@@ -118,7 +118,7 @@ const overrides = {
       "*::-webkit-scrollbar-thumb": {
         // backgroundColor: "rgba(255,255,255,.2)",
         backgroundColor: "rgb(178,178,178)",
-        border: "none",
+        border: "none !important",
         borderRadius: "8px",
       },
     },

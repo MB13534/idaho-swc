@@ -43,11 +43,13 @@ const DataAdminTable = ({
 
   const handleAdd = (newData) => {
     newData["cuwcd_well_number"] = data[0].cuwcd_well_number;
-    if (
-      newData.production_gallons === null ||
-      isNaN(newData.production_gallons)
-    ) {
-      newData.production_gallons = 0;
+    if (endpoint === "dm-well-productions") {
+      if (
+        newData.production_gallons === null ||
+        isNaN(newData.production_gallons)
+      ) {
+        newData.production_gallons = 0;
+      }
     }
 
     return (async () => {

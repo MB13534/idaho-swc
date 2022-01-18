@@ -50,6 +50,7 @@ import Production from "../pages/dashboards/data entry/Production";
 import UserVisibilityFilter from "../components/UserVisibilityFilter";
 import PDI from "../pages/dataAccess/reports/PDI";
 import UiReportAllPermitsReport from "../pages/dataAccess/reports/UiReportAllPermitsReport";
+import WaterQuality from "../pages/dashboards/data entry/WaterQuality";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -114,13 +115,19 @@ const modelCrudRoutes = [...getCrudRoutes(CRUD_MODELS)];
 
 const dataEntryRoutes = {
   header: "Data Access",
-  id: "Data Entry",
+  id: "Well Data Entry",
   icon: <Share2 />,
   children: [
     {
       path: "/data-access/well-production-data-entry",
-      name: "Well Production",
+      name: "Production",
       component: Production,
+      guard: AuthGuard,
+    },
+    {
+      path: "/data-access/well-water-quality-data-entry",
+      name: "Water Quality",
+      component: WaterQuality,
       guard: AuthGuard,
     },
   ],

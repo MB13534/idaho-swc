@@ -28,7 +28,7 @@ const TimeseriesLineChart = forwardRef(
       yRLLabel = null,
       theme,
       displayLegend = true,
-      setIsGraphRefCurrent,
+      setIsGraphRefCurrent = () => {},
       stacked = false,
       maxTicksX = 8.3,
       maxTicksYL = 11,
