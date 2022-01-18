@@ -13,7 +13,7 @@ module.exports = {
     'symbol-placement': 'line',
     'text-field': ['concat', ['to-string', ['get', 'ELEV']], ' ft'],
     'text-size': 14,
-    visibility: 'visible',
+    visibility: 'none',
   },
   lreProperties: {
     layerGroup: 'fema',
