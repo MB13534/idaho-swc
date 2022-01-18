@@ -21,7 +21,7 @@ export const BASEMAP_STYLES = [
   },
   {
     style: "dark-v10",
-    name: "dark",
+    name: "Dark",
     url: "mapbox://styles/txclearwater/ckyj8t1h04en914mm98yqwkcg",
   },
 ];
