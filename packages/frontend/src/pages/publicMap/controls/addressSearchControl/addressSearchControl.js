@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useCallback, useEffect, useRef, useState } from "react";
 import {
   ClickAwayListener,
   Divider,
@@ -14,7 +14,9 @@ import SearchIcon from "@material-ui/icons/Search";
 import styled from "styled-components/macro";
 import mbxClient from "@mapbox/mapbox-sdk";
 import mbxGeocoder from "@mapbox/mapbox-sdk/services/geocoding.js";
+import Loader from "../../../../components/Loader";
 import useDebounce from "../../../../hooks/useDebounce";
+import { DEFAULT_MAP_CENTER } from "../../constants";
 
 const baseClient = mbxClient({
   accessToken: process.env.REACT_APP_MAPBOX_TOKEN,
@@ -27,20 +29,28 @@ const Container = styled(Paper)`
   left: 49px;
   position: absolute;
   top: 10px;
-  // max-height: calc(100% - 32px);
   overflow-x: hidden;
   overflow-y: hidden;
   width: 300px;
   z-index: 1;
 `;
 
+/**
+ * Component used to render the results for the address search
+ */
 const SearchResults = ({
   anchorEl,
+  loading,
   open,
   onClose,
   onSelect,
   searchResults,
 }) => {
+  const handleSelect = (coordinates) => () => {
+    onSelect(coordinates);
+    onClose();
+  };
+
   return (
     <Popper
       open={open}
@@ -50,35 +60,32 @@ const SearchResults = ({
       transition
     >
       <ClickAwayListener onClickAway={onClose}>
-        <Paper style={{ width: 400, height: 400, overflowY: "auto" }}>
-          <List dense component="nav" aria-label="main mailbox folders">
-            {searchResults?.slice(0, 49)?.map((result) => (
-              <React.Fragment key={result?.label}>
-                <ListItem
-                  style={{
-                    flexDirection: "column",
-                    alignItems: "flex-start",
-                  }}
-                  button
-                  onClick={() => {
-                    onSelect(result?.coordinates);
-                    onClose();
-                  }}
-                >
-                  {/* <Typography variant="caption">CUWCD Well Number</Typography> */}
-                  <Typography variant="subtitle1">{result?.label}</Typography>
-                </ListItem>
-                <Divider />
-              </React.Fragment>
-            ))}
-          </List>
+        <Paper style={{ width: 300, overflowY: "auto" }}>
+          {loading ? (
+            <Loader />
+          ) : (
+            <List dense component="nav" aria-label="main mailbox folders">
+              {searchResults?.slice(0, 49)?.map((result) => (
+                <React.Fragment key={result?.label}>
+                  <ListItem button onClick={handleSelect(result?.coordinates)}>
+                    <Typography variant="body1">{result?.label}</Typography>
+                  </ListItem>
+                  <Divider />
+                </React.Fragment>
+              ))}
+            </List>
+          )}
         </Paper>
       </ClickAwayListener>
     </Popper>
   );
 };
 
-const AddressSearch = ({ onSelect }) => {
+/**
+ * Component used to render a control that allows the user
+ * to search for an address and then zoom to it by selecting it
+ */
+const AddressSearchControl = ({ onSelect }) => {
   const searchRef = useRef(null);
   const [value, setValue] = useState("");
   const debouncedSearchValue = useDebounce(value, 200);
@@ -98,27 +105,34 @@ const AddressSearch = ({ onSelect }) => {
     setValue(event?.target?.value);
   };
 
-  useEffect(() => {
-    async function fetchResults(search) {
-      if (search) {
-        setSearchResultsLoading(true);
-        const { body } = await geocodingClient
-          .forwardGeocode({
-            query: search,
-            limit: 10,
-          })
-          .send();
-        const mappedResults = body?.features.map((feat) => ({
-          value: feat.place_name,
-          label: feat.place_name,
-          coordinates: feat.geometry.coordinates,
-        }));
-        setSearchResultsLoading(false);
-        setSearchResults(mappedResults);
-      }
+  /**
+   * Function used to fetch a list addresses that most closely
+   * match the user's search value
+   */
+  const fetchAddresses = useCallback(async () => {
+    if (debouncedSearchValue) {
+      setSearchResultsLoading(true);
+      const { body } = await geocodingClient
+        .forwardGeocode({
+          bbox: [-100.456033, 29.175105, -94.49122577418242, 33.50022543589624],
+          countries: ["US"],
+          query: debouncedSearchValue,
+          limit: 5,
+          proximity: DEFAULT_MAP_CENTER,
+        })
+        .send();
+      const mappedResults = body?.features.map((feat) => ({
+        label: feat.place_name,
+        coordinates: feat.geometry.coordinates,
+      }));
+      setSearchResultsLoading(false);
+      setSearchResults(mappedResults);
     }
-    fetchResults(debouncedSearchValue);
   }, [debouncedSearchValue]);
+
+  useEffect(() => {
+    fetchAddresses();
+  }, [fetchAddresses]);
 
   return (
     <Container>
@@ -153,4 +167,4 @@ const AddressSearch = ({ onSelect }) => {
   );
 };
 
-export default AddressSearch;
+export default AddressSearchControl;

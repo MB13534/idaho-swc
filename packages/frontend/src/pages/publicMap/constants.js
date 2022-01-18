@@ -26,9 +26,11 @@ export const BASEMAP_STYLES = [
   },
 ];
 
+export const DEFAULT_MAP_CENTER = [-97.47, 31.05];
+
 export const INIT_MAP_CONFIG = {
   style: BASEMAP_STYLES[0].url,
-  center: [-97.47, 31.05],
+  center: DEFAULT_MAP_CENTER,
   zoom: 11,
 };
 
