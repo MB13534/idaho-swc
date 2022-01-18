@@ -17,7 +17,8 @@ import { INIT_MAP_CONFIG } from "./constants";
 
 import DisclaimerDialog from "./components/DisclaimerDialog";
 import MeasurementsPopup from "../../components/map/components/MeasurementsPopup";
-import MainControl from "./controls/mainControl/mainControl";
+import MainControl from "./controls/mainControl/";
+import AddressSearch from "./controls/addressSearch";
 
 const FiltersBar = styled(Paper)`
   align-items: center;
@@ -231,6 +232,11 @@ const PublicMap = () => {
           radiusRef={radiusRef}
           polygonRef={polygonRef}
           pointRef={pointRef}
+        />
+        <AddressSearch
+          onSelect={(coordinates) =>
+            map?.flyTo({ center: coordinates, zoom: 16 })
+          }
         />
         <MainControl
           activeBasemap={activeBasemap}
