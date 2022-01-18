@@ -413,7 +413,7 @@ function WaterQuality() {
                 (new Date(item.test_datetime) > filterValues.startDate &&
                   new Date(item.test_datetime) <
                     (filterValues.endDate || new Date(3000, 0, 1))) ||
-                item.datetime === null
+                item.test_datetime === null
             );
             setCurrentSelectedEditTableData(dateFilteredEditTableResults);
           } else {
@@ -439,7 +439,7 @@ function WaterQuality() {
           (new Date(item.test_datetime) > filterValues.startDate &&
             new Date(item.test_datetime) <
               (filterValues.endDate || new Date(3000, 0, 1))) ||
-          item.datetime === null
+          item.test_datetime === null
       );
       setCurrentSelectedEditTableData(dateFilteredEditTableResults);
     }
