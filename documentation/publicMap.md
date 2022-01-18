@@ -46,9 +46,33 @@ There really is not too much happening in the API. Pretty much all of the public
 
 The most important thing to note is that the list of sources and layers to display on the map are not specified in the frontend. They are declared as hardcoded variables in the `PublicMapRoutes.js` file. The `sources` and `layers` variables are both arrays of objects that follow the Mapbox [Source](https://docs.mapbox.com/mapbox-gl-js/style-spec/sources/) and [Layer](https://docs.mapbox.com/mapbox-gl-js/style-spec/layers/) style specifications respectively. As a result, the structure of the source and layer objects are very strict. If there are any custom layer or source attributes that needed be added to a source or layer, a property called `lreProperties` should be added to the object. You can then add custom properties to your hearts content and this provides us a way to sandbox our configuration from Mapbox's.
 
+We recently added support for making certain layers only visible to certain roles. This is accomplished through the `lreProperties` key on a layer config. To limit a layer to certain roles you just need to setup the layer as follows (note the addition of the `permissions` key to the `lreProperties` key):
+
+```js
+module.exports = {
+  id: 'proposed-management-zones-fill',
+  name: 'Proposed Management Zones',
+  type: 'fill',
+  source: 'proposed-management-zones',
+  'source-layer': 'Proposed_Management_Zones-bd97ag',
+  paint: {
+    'fill-color': 'hsla(83, 89%, 57%, 0.14)',
+  },
+  layout: {
+    visibility: 'none',
+  },
+  lreProperties: {
+    layerGroup: 'proposed-management-zones',
+    permissions: {
+      roles: ['Administrator', 'Developer'],
+    },
+  },
+};
+```
+
 ## Importers
 
-Coming soon
+Coming soon. In the interim, just reach out to Ben Tyler with any questions.
 
 ## Resources
 
