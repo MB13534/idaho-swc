@@ -1,6 +1,12 @@
 import React, { useRef } from "react";
 import styled from "styled-components/macro";
-import { Box, Paper, Typography } from "@material-ui/core";
+import {
+  Box,
+  MenuItem,
+  Paper,
+  TextField as MuiTextField,
+  Typography,
+} from "@material-ui/core";
 
 // import AppBar from "../../components/AppBar";
 import Map from "./map";
@@ -13,12 +19,13 @@ import Filter from "./filters/filter";
 import { useMap } from "./hooks/useMap";
 import useFilters from "./hooks/useFilters";
 import useLayerStyles from "./hooks/useLayerStyles";
-import { INIT_MAP_CONFIG } from "./constants";
+import { INIT_MAP_CONFIG, WELLS_SEARCH_OPTIONS } from "./constants";
 
 import DisclaimerDialog from "./components/DisclaimerDialog";
 import MeasurementsPopup from "../../components/map/components/MeasurementsPopup";
 import MainControl from "./controls/mainControl/";
 import AddressSearchControl from "./controls/addressSearchControl";
+import CommaSeparatedWellsSearch from "./filters/commaSeparatedWellsSearch";
 
 const FiltersBar = styled(Paper)`
   align-items: center;
@@ -34,10 +41,21 @@ const FiltersSection = styled.div`
   gap: ${({ theme }) => theme.spacing(2)}px;
 `;
 
+const FiltersSectionRow = styled.div`
+  display: flex;
+  flex-direction: row;
+  gap: ${({ theme }) => theme.spacing(2)}px;
+`;
+
 const FiltersContainer = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing(2)}px;
+`;
+
+const TextField = styled(MuiTextField)`
+  width: 120px;
+  display: flex;
 `;
 
 const getMoreFiltersCount = (filterValues) => {
@@ -78,21 +96,41 @@ const PublicMap = () => {
   const { activeStyle, handleActiveStyle, styleOptions } = useLayerStyles({
     onLayerStyleChange: updateLayerStyles,
   });
-
   const handleSearchSelect = (result) => {
     map?.flyTo({ center: result?.location_geometry?.coordinates, zoom: 16 });
   };
 
   return (
     <>
-      {/*MJB popup dialog with disclaimer if the user is not logged in (public)*/}
       {process.env.NODE_ENV !== "development" && <DisclaimerDialog />}
-      {/*<AppBar />*/}
       <FiltersBar>
-        <FiltersSection>
-          {/*<Typography variant="subtitle1">Search Wells</Typography>*/}
-          <Search onSelect={handleSearchSelect} />
-        </FiltersSection>
+        <FiltersSectionRow>
+          {filterValues?.search?.value === "attributes_search" && (
+            <Search onSelect={handleSearchSelect} />
+          )}
+          {filterValues?.search?.value === "comma_separated_wells_search" && (
+            <CommaSeparatedWellsSearch
+              map={map}
+              selected={filterValues?.search?.value}
+            />
+          )}
+          <TextField
+            variant="outlined"
+            select
+            fullWidth
+            size="small"
+            label="Search Options"
+            value={filterValues?.search?.value}
+            onChange={handleFilterValues}
+            name="search"
+          >
+            {WELLS_SEARCH_OPTIONS.map((item) => (
+              <MenuItem key={item.value} value={item.value}>
+                {item.label}
+              </MenuItem>
+            ))}
+          </TextField>
+        </FiltersSectionRow>
         <FiltersSection>
           {/*<Typography variant="subtitle1">Filters</Typography>*/}
           <FiltersContainer>

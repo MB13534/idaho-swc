@@ -175,7 +175,7 @@ const useMap = (ref, mapConfig) => {
           units: "feet",
           labelFormat: (n) => `${n.toFixed(2)} ft`,
         }),
-        "bottom-right"
+        "bottom-left"
       );
 
       //adds control features as extended by MapboxDrawGeodesic (draw circle)

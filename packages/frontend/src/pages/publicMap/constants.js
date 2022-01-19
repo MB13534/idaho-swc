@@ -102,4 +102,21 @@ export const INIT_FILTER_VALUES = {
     type: "boolean",
     value: false,
   },
+
+  search: {
+    layerId: WELLS_LAYER_ID,
+    type: "select",
+    value: "attributes_search",
+  },
 };
+
+export const WELLS_SEARCH_OPTIONS = [
+  {
+    value: "attributes_search",
+    label: "Attributes",
+  },
+  {
+    value: "comma_separated_wells_search",
+    label: "Wells",
+  },
+];

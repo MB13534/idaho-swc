@@ -32,7 +32,7 @@ const SearchResults = ({
       transition
     >
       <ClickAwayListener onClickAway={onClose}>
-        <Paper style={{ width: 400, height: 400, overflowY: "auto" }}>
+        <Paper style={{ width: 350, height: 400, overflowY: "auto" }}>
           <List dense component="nav" aria-label="main mailbox folders">
             {searchResults?.slice(0, 49)?.map((result) => (
               <React.Fragment key={result?.item?.well_ndx}>
@@ -131,7 +131,7 @@ const Search = ({ onSelect }) => {
     <>
       <TextField
         id="outlined-basic"
-        label="Well Search"
+        label="Individual Well Search"
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -143,7 +143,7 @@ const Search = ({ onSelect }) => {
         onFocus={() => !!value && setOpen(true)}
         placeholder="Search by well attributes"
         ref={searchRef}
-        style={{ width: 400 }}
+        style={{ width: 350 }}
         type="search"
         value={value}
         variant="outlined"

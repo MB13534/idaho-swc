@@ -57,7 +57,8 @@ const Search = ({ map, radioValue }) => {
   const handleSubmit = (event) => {
     event.preventDefault();
     const wellsArray = value.replaceAll(" ", "").toUpperCase().split(",");
-    setWells([wellsArray]);
+    const uniqueWellsArray = [...new Set(wellsArray)];
+    setWells([uniqueWellsArray]);
   };
 
   return (

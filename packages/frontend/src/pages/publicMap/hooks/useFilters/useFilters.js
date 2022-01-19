@@ -126,6 +126,18 @@ const useFilters = ({ onFilterChange }) => {
         onFilterChange(newState);
         return newState;
       });
+    } else if (type === "select") {
+      setFilterValues((prevState) => {
+        const newState = {
+          ...prevState,
+          [name]: {
+            ...prevState[name],
+            value: value,
+          },
+        };
+        // onFilterChange(newState);
+        return newState;
+      });
     }
   };
 
