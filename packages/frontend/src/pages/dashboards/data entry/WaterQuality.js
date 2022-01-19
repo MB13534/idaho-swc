@@ -590,18 +590,6 @@ function WaterQuality() {
           }}
         />
       ),
-      // validate: (rowData) =>
-      //   isNaN(rowData.ph)
-      //     ? {
-      //         isValid: false,
-      //         helperText: "Must be a positive number or 0",
-      //       }
-      //     : rowData.ph < 0
-      //     ? {
-      //         isValid: false,
-      //         helperText: "Must be a positive number or 0",
-      //       }
-      //     : true,
     },
     {
       title: "Conductivity",
@@ -763,6 +751,14 @@ function WaterQuality() {
         />
       ),
     },
+    {
+      title: "Notes",
+      field: "wq_sample_notes ",
+      cellStyle: {
+        width: 300,
+        minWidth: 300,
+      },
+    },
   ];
 
   useEffect(() => {
@@ -843,7 +839,7 @@ function WaterQuality() {
     <React.Fragment>
       <Helmet title="Water Quality" />
       <Typography variant="h3" gutterBottom display="inline">
-        Well Data Quality Data
+        Well Water Quality Data
       </Typography>
 
       <Breadcrumbs aria-label="Breadcrumb" mt={2}>
