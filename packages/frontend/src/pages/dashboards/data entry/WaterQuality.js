@@ -460,7 +460,7 @@ function WaterQuality() {
             ? []
             : {
                 labels: parameterFilteredData.map(
-                  (item) => new Date(item.test_datetime)
+                  (item) => new Date(item.test_date)
                 ),
                 units: parameterFilteredData[0].unit_desc,
                 parameter: parameterFilteredData[0].wq_parameter_name,

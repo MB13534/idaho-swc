@@ -92,7 +92,7 @@ const TableWrapper = styled.div`
 `;
 
 const MapContainer = styled.div`
-  height: calc(570px);
+  height: calc(627px);
   width: 100%;
 `;
 
@@ -150,6 +150,7 @@ function Default() {
     has_production: "Well Production",
     has_waterlevels: "Water Levels",
     has_wqdata: "Water Quality",
+    search: "Map Wells Search",
   };
 
   const handleRadioChange = (event) => {
@@ -309,7 +310,7 @@ function Default() {
     useState(null);
 
   useEffect(() => {
-    if (currentSelectedPoint && radioValue !== "all") {
+    if (currentSelectedPoint && !["all", "search"].includes(radioValue)) {
       async function send() {
         try {
           const token = await getAccessTokenSilently();
@@ -515,7 +516,7 @@ function Default() {
             ? []
             : {
                 labels: parameterFilteredData.map(
-                  (item) => new Date(item.test_datetime)
+                  (item) => new Date(item.test_date)
                 ),
                 units: parameterFilteredData[0].unit_desc,
                 parameter: parameterFilteredData[0].wq_parameter_name,
@@ -877,6 +878,15 @@ function Default() {
                         />
                       </ListItem>
                     </Grid>
+                    <Grid item xs={6} sm={12}>
+                      <ListItem>
+                        <FormControlLabel
+                          value="search"
+                          control={<Radio />}
+                          label={radioLabels["search"]}
+                        />
+                      </ListItem>
+                    </Grid>
                   </Grid>
                 </RadioGroup>
                 <SidebarSection>Date Range</SidebarSection>
@@ -943,257 +953,285 @@ function Default() {
           </Accordion>
         </Grid>
       </Grid>
+      {radioValue !== "search" && (
+        <>
+          {Boolean(filteredMutatedGraphData) ? (
+            <Grid container spacing={6}>
+              <Grid item xs={12}>
+                <div ref={divSaveRef}>
+                  <Accordion defaultExpanded>
+                    <AccordionSummary
+                      expandIcon={
+                        <ExpandMoreIcon data-html2canvas-ignore="true" />
+                      }
+                      aria-controls="time-series"
+                      id="time-series"
+                    >
+                      <TitleContainer>
+                        {formatTableTitle(
+                          currentTableLabel,
+                          radioLabels[radioValue]
+                        )}
+                      </TitleContainer>
+                    </AccordionSummary>
+                    <Panel>
+                      <AccordionDetails>
+                        <TimeseriesContainer>
+                          <span data-html2canvas-ignore="true">
+                            <Grid container pb={2}>
+                              <Grid
+                                item
+                                style={{
+                                  flexGrow: 1,
+                                  maxWidth: "calc(100% - 110px)",
+                                  display: "flex",
+                                  flexDirection: "column",
+                                  justifyContent: "center",
+                                }}
+                              >
+                                {radioValue === "has_wqdata" &&
+                                  wQparameterOptions && (
+                                    <>
+                                      <SidebarSection ml={-3}>
+                                        Parameters
+                                      </SidebarSection>
+                                      <ListItem
+                                        style={{
+                                          paddingLeft: 0,
+                                          paddingRight: 0,
+                                        }}
+                                      >
+                                        <OptionsPicker
+                                          selectedOption={selectedWQParameter}
+                                          setSelectedOption={
+                                            setSelectedWQParameter
+                                          }
+                                          options={wQparameterOptions}
+                                          label="Water Quality Parameters"
+                                        />
+                                      </ListItem>
+                                    </>
+                                  )}
+                                {radioValue === "has_production" &&
+                                  isGraphRefCurrent && (
+                                    <>
+                                      <Button
+                                        size="small"
+                                        style={{ width: "130px" }}
+                                        variant="contained"
+                                        color="primary"
+                                        onClick={
+                                          handleToggleProductionUnitsChange
+                                        }
+                                      >
+                                        Switch Units
+                                      </Button>
+                                    </>
+                                  )}
+                              </Grid>
+                              <Grid
+                                item
+                                style={{
+                                  display: "flex",
+                                  alignItems: "flex-end",
+                                }}
+                                mb={1}
+                              >
+                                <ExportDataButton
+                                  title="cuwcd_well_number"
+                                  data={currentSelectedTimeseriesData}
+                                  filterValues={filterValues}
+                                  parameter={selectedWQParameter}
+                                />
+                                <SaveRefButton
+                                  data-html2canvas-ignore
+                                  ref={divSaveRef}
+                                  title={currentSelectedPoint}
+                                />
+                              </Grid>
+                            </Grid>
+                          </span>
+                          <TimeseriesWrapper
+                            style={
+                              radioValue === "has_wqdata"
+                                ? { height: "calc(100% - 118px)" }
+                                : radioValue === "has_production"
+                                ? { height: "calc(100% - 58px)" }
+                                : null
+                            }
+                          >
+                            <TimeseriesLineChart
+                              data={filteredMutatedGraphData}
+                              error={error}
+                              isLoading={isLoading}
+                              yLLabel={
+                                radioValue === "has_waterlevels"
+                                  ? "Water Level (Feet Below Ground Level)"
+                                  : radioValue === "has_production"
+                                  ? productionUnitsLabels.yLLabel
+                                  : `${filteredMutatedGraphData?.parameter} (${filteredMutatedGraphData?.units})`
+                              }
+                              yRLLabel={
+                                radioValue === "has_production" &&
+                                productionUnitsLabels.yRLabel
+                              }
+                              reverseLegend={false}
+                              yLReverse={radioValue === "has_waterlevels"}
+                              ref={graphSaveRef}
+                              filterValues={filterValues}
+                              type={
+                                radioValue === "has_production"
+                                  ? "bar"
+                                  : "scatter"
+                              }
+                              displayLegend={radioValue === "has_production"}
+                              setIsGraphRefCurrent={setIsGraphRefCurrent}
+                              stacked={true}
+                              xLabelUnit={
+                                radioValue === "has_production"
+                                  ? "month"
+                                  : "day"
+                              }
+                              maxTicksX={12}
+                              maxTicksYL={6}
+                              maxTicksYR={5}
+                              align={
+                                radioValue === "has_production"
+                                  ? "start"
+                                  : "center"
+                              }
+                            />
+                          </TimeseriesWrapper>
+                        </TimeseriesContainer>
+                      </AccordionDetails>
+                    </Panel>
+                  </Accordion>
+                </div>
+              </Grid>
+            </Grid>
+          ) : (
+            <Grid container spacing={6}>
+              <Grid item xs={12}>
+                <Card>
+                  <CardHeader
+                    title={
+                      radioValue === "all"
+                        ? "Filter Data and Click a Point on the Map to View Corresponding Summary"
+                        : `Select a Point on the Map to View ${radioLabels[radioValue]} Summary`
+                    }
+                  />
+                  {radioValue === "has_wqdata" && wQparameterOptions && (
+                    <Box mr={2} ml={2}>
+                      <SidebarSection>Parameters</SidebarSection>
+                      <ListItem>
+                        <OptionsPicker
+                          selectedOption={selectedWQParameter}
+                          setSelectedOption={setSelectedWQParameter}
+                          options={wQparameterOptions}
+                          label="Water Quality Parameters"
+                        />
+                      </ListItem>
+                    </Box>
+                  )}
+                </Card>
+              </Grid>
+            </Grid>
+          )}
 
-      {Boolean(filteredMutatedGraphData) ? (
-        <Grid container spacing={6}>
-          <Grid item xs={12}>
-            <div ref={divSaveRef}>
+          <Grid container spacing={6}>
+            <Grid item xs={12}>
               <Accordion defaultExpanded>
                 <AccordionSummary
-                  expandIcon={<ExpandMoreIcon data-html2canvas-ignore="true" />}
-                  aria-controls="time-series"
-                  id="time-series"
+                  expandIcon={<ExpandMoreIcon />}
+                  aria-controls="table-content"
+                  id="table-header"
                 >
-                  <TitleContainer>
-                    {formatTableTitle(
-                      currentTableLabel,
-                      radioLabels[radioValue]
-                    )}
-                  </TitleContainer>
+                  <Typography variant="h4" ml={2}>
+                    Search Wells
+                  </Typography>
                 </AccordionSummary>
                 <Panel>
                   <AccordionDetails>
-                    <TimeseriesContainer>
-                      <span data-html2canvas-ignore="true">
-                        <Grid container pb={2}>
-                          <Grid
-                            item
-                            style={{
-                              flexGrow: 1,
-                              maxWidth: "calc(100% - 110px)",
-                              display: "flex",
-                              flexDirection: "column",
-                              justifyContent: "center",
-                            }}
-                          >
-                            {radioValue === "has_wqdata" && wQparameterOptions && (
-                              <>
-                                <SidebarSection ml={-3}>
-                                  Parameters
-                                </SidebarSection>
-                                <ListItem
-                                  style={{ paddingLeft: 0, paddingRight: 0 }}
-                                >
-                                  <OptionsPicker
-                                    selectedOption={selectedWQParameter}
-                                    setSelectedOption={setSelectedWQParameter}
-                                    options={wQparameterOptions}
-                                    label="Water Quality Parameters"
-                                  />
-                                </ListItem>
-                              </>
-                            )}
-                            {radioValue === "has_production" &&
-                              isGraphRefCurrent && (
-                                <>
-                                  <Button
-                                    size="small"
-                                    style={{ width: "130px" }}
-                                    variant="contained"
-                                    color="primary"
-                                    onClick={handleToggleProductionUnitsChange}
+                    <TableWrapper>
+                      <Table
+                        pageSize={10}
+                        isLoading={isLoading}
+                        label="Search Well Table"
+                        columns={tableColumns}
+                        data={filteredData}
+                        height="350px"
+                        actions={[
+                          (rowData) => ({
+                            icon: "bar_chart",
+                            tooltip: "Production",
+                            disabled: !rowData.has_production,
+                            onClick: (event, rowData) => {
+                              setRadioValue("has_production");
+                              setCurrentSelectedPoint(
+                                rowData.cuwcd_well_number
+                              );
+                              setCurrentSelectedTimeseriesData(null);
+                              handlePointInteractions(rowData);
+                            },
+                          }),
+                          (rowData) => ({
+                            icon: "water",
+                            tooltip: "Water Levels",
+                            disabled: !rowData.has_waterlevels,
+                            onClick: (event, rowData) => {
+                              setRadioValue("has_waterlevels");
+                              setCurrentSelectedPoint(
+                                rowData.cuwcd_well_number
+                              );
+                              setCurrentSelectedTimeseriesData(null);
+                              handlePointInteractions(rowData);
+                            },
+                          }),
+                          (rowData) => ({
+                            icon: "bloodtype",
+                            tooltip: "Water Quality",
+                            disabled: !rowData.has_wqdata,
+                            onClick: (event, rowData) => {
+                              setRadioValue("has_wqdata");
+                              setCurrentSelectedPoint(
+                                rowData.cuwcd_well_number
+                              );
+                              setCurrentSelectedTimeseriesData(null);
+                              handlePointInteractions(rowData);
+                            },
+                          }),
+                          (rowData) =>
+                            !currentUser.isUser && {
+                              icon: () => {
+                                return (
+                                  <Link
+                                    component={NavLink}
+                                    exact
+                                    to={"/models/dm-wells/" + rowData.id}
                                   >
-                                    Switch Units
-                                  </Button>
-                                </>
-                              )}
-                          </Grid>
-                          <Grid
-                            item
-                            style={{ display: "flex", alignItems: "flex-end" }}
-                            mb={1}
-                          >
-                            <ExportDataButton
-                              title="cuwcd_well_number"
-                              data={currentSelectedTimeseriesData}
-                              filterValues={filterValues}
-                              parameter={selectedWQParameter}
-                            />
-                            <SaveRefButton
-                              data-html2canvas-ignore
-                              ref={divSaveRef}
-                              title={currentSelectedPoint}
-                            />
-                          </Grid>
-                        </Grid>
-                      </span>
-                      <TimeseriesWrapper
-                        style={
-                          radioValue === "has_wqdata"
-                            ? { height: "calc(100% - 118px)" }
-                            : radioValue === "has_production"
-                            ? { height: "calc(100% - 58px)" }
-                            : null
-                        }
-                      >
-                        <TimeseriesLineChart
-                          data={filteredMutatedGraphData}
-                          error={error}
-                          isLoading={isLoading}
-                          yLLabel={
-                            radioValue === "has_waterlevels"
-                              ? "Water Level (Feet Below Ground Level)"
-                              : radioValue === "has_production"
-                              ? productionUnitsLabels.yLLabel
-                              : `${filteredMutatedGraphData?.parameter} (${filteredMutatedGraphData?.units})`
-                          }
-                          yRLLabel={
-                            radioValue === "has_production" &&
-                            productionUnitsLabels.yRLabel
-                          }
-                          reverseLegend={false}
-                          yLReverse={radioValue === "has_waterlevels"}
-                          ref={graphSaveRef}
-                          filterValues={filterValues}
-                          type={
-                            radioValue === "has_production" ? "bar" : "scatter"
-                          }
-                          displayLegend={radioValue === "has_production"}
-                          setIsGraphRefCurrent={setIsGraphRefCurrent}
-                          stacked={true}
-                          xLabelUnit={
-                            radioValue === "has_production" ? "month" : "day"
-                          }
-                          maxTicksX={12}
-                          maxTicksYL={6}
-                          maxTicksYR={5}
-                          align={
-                            radioValue === "has_production" ? "start" : "center"
-                          }
-                        />
-                      </TimeseriesWrapper>
-                    </TimeseriesContainer>
+                                    <Edit />
+                                  </Link>
+                                );
+                              },
+                              tooltip: "Edit Well",
+                            },
+                          () => ({
+                            icon: "near_me",
+                            tooltip: "Fly to on Map",
+                            onClick: (event, rowData) => {
+                              handlePointInteractions(rowData);
+                            },
+                          }),
+                        ]}
+                      />
+                    </TableWrapper>
                   </AccordionDetails>
                 </Panel>
               </Accordion>
-            </div>
+            </Grid>
           </Grid>
-        </Grid>
-      ) : (
-        <Grid container spacing={6}>
-          <Grid item xs={12}>
-            <Card>
-              <CardHeader
-                title={
-                  radioValue === "all"
-                    ? "Filter Data and Click a Point on the Map to View Corresponding Summary"
-                    : `Select a Point on the Map to View ${radioLabels[radioValue]} Summary`
-                }
-              />
-              {radioValue === "has_wqdata" && wQparameterOptions && (
-                <Box mr={2} ml={2}>
-                  <SidebarSection>Parameters</SidebarSection>
-                  <ListItem>
-                    <OptionsPicker
-                      selectedOption={selectedWQParameter}
-                      setSelectedOption={setSelectedWQParameter}
-                      options={wQparameterOptions}
-                      label="Water Quality Parameters"
-                    />
-                  </ListItem>
-                </Box>
-              )}
-            </Card>
-          </Grid>
-        </Grid>
+        </>
       )}
-
-      <Grid container spacing={6}>
-        <Grid item xs={12}>
-          <Accordion defaultExpanded>
-            <AccordionSummary
-              expandIcon={<ExpandMoreIcon />}
-              aria-controls="table-content"
-              id="table-header"
-            >
-              <Typography variant="h4" ml={2}>
-                Search Wells
-              </Typography>
-            </AccordionSummary>
-            <Panel>
-              <AccordionDetails>
-                <TableWrapper>
-                  <Table
-                    pageSize={10}
-                    isLoading={isLoading}
-                    label="Search Well Table"
-                    columns={tableColumns}
-                    data={filteredData}
-                    height="350px"
-                    actions={[
-                      (rowData) => ({
-                        icon: "bar_chart",
-                        tooltip: "Production",
-                        disabled: !rowData.has_production,
-                        onClick: (event, rowData) => {
-                          setRadioValue("has_production");
-                          setCurrentSelectedPoint(rowData.cuwcd_well_number);
-                          setCurrentSelectedTimeseriesData(null);
-                          handlePointInteractions(rowData);
-                        },
-                      }),
-                      (rowData) => ({
-                        icon: "water",
-                        tooltip: "Water Levels",
-                        disabled: !rowData.has_waterlevels,
-                        onClick: (event, rowData) => {
-                          setRadioValue("has_waterlevels");
-                          setCurrentSelectedPoint(rowData.cuwcd_well_number);
-                          setCurrentSelectedTimeseriesData(null);
-                          handlePointInteractions(rowData);
-                        },
-                      }),
-                      (rowData) => ({
-                        icon: "bloodtype",
-                        tooltip: "Water Quality",
-                        disabled: !rowData.has_wqdata,
-                        onClick: (event, rowData) => {
-                          setRadioValue("has_wqdata");
-                          setCurrentSelectedPoint(rowData.cuwcd_well_number);
-                          setCurrentSelectedTimeseriesData(null);
-                          handlePointInteractions(rowData);
-                        },
-                      }),
-                      (rowData) =>
-                        !currentUser.isUser && {
-                          icon: () => {
-                            return (
-                              <Link
-                                component={NavLink}
-                                exact
-                                to={"/models/dm-wells/" + rowData.id}
-                              >
-                                <Edit />
-                              </Link>
-                            );
-                          },
-                          tooltip: "Edit Well",
-                        },
-                      () => ({
-                        icon: "near_me",
-                        tooltip: "Fly to on Map",
-                        onClick: (event, rowData) => {
-                          handlePointInteractions(rowData);
-                        },
-                      }),
-                    ]}
-                  />
-                </TableWrapper>
-              </AccordionDetails>
-            </Panel>
-          </Accordion>
-        </Grid>
-      </Grid>
     </React.Fragment>
   );
 }

@@ -32,6 +32,7 @@ import MainPopup from "./components/MainPopup";
 import { useApp } from "../../AppProvider";
 import debounce from "lodash.debounce";
 import { isTouchScreenDevice } from "../../utils";
+import Search from "./components/search";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -401,7 +402,7 @@ const DashboardMap = ({
   //filters the table based on the selected radioValues filters
   useEffect(() => {
     if (map !== undefined && map.getLayer("locations")) {
-      if (radioValue === "all") {
+      if (["all", "search"].includes(radioValue)) {
         map.setFilter("locations", null);
         map.setFilter("locations-labels", null);
       } else {
@@ -433,12 +434,16 @@ const DashboardMap = ({
   return (
     <>
       <MapContainer ref={mapContainerRef}>
+        {radioValue === "search" && (
+          <Search map={map} radioValue={radioValue} />
+        )}
         <CoordinatesPopup
           coordinatesContainerRef={coordinatesContainerRef}
           longRef={longRef}
           latRef={latRef}
           eleRef={eleRef}
           title="Most recently selected well:"
+          top={radioValue === "search" ? "57px" : "10px"}
         />
         <MeasurementsPopup
           measurementsContainerRef={measurementsContainerRef}
