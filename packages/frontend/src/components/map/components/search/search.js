@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { TextField } from "@material-ui/core";
+import { InputAdornment, TextField } from "@material-ui/core";
 import styled from "styled-components/macro";
+import SearchIcon from "@material-ui/icons/Search";
 
 const CustomSearch = styled(TextField)`
-  border-radius: 10px;
+  fieldset {
+    border-radius: 15px;
+  }
+  border-radius: 15px;
   background-color: rgba(255, 255, 255, 0.7);
   position: absolute;
   top: 10px;
   left: 50px;
   width: calc(100% - 100px);
-  z-index: 1299;
+  z-index: 1;
   &:hover {
     background-color: white;
   }
@@ -52,7 +56,7 @@ const Search = ({ map, radioValue }) => {
 
   const handleSubmit = (event) => {
     event.preventDefault();
-    const wellsArray = value.replaceAll(" ", "").split(",");
+    const wellsArray = value.replaceAll(" ", "").toUpperCase().split(",");
     setWells([wellsArray]);
   };
 
@@ -60,6 +64,13 @@ const Search = ({ map, radioValue }) => {
     <>
       <form onSubmit={handleSubmit}>
         <CustomSearch
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
           id="outlined-basic"
           autoComplete="off"
           onChange={handleChange}

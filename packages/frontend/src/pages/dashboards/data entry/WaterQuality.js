@@ -843,7 +843,7 @@ function WaterQuality() {
     <React.Fragment>
       <Helmet title="Water Quality" />
       <Typography variant="h3" gutterBottom display="inline">
-        Well Production Data
+        Well Data Quality Data
       </Typography>
 
       <Breadcrumbs aria-label="Breadcrumb" mt={2}>
