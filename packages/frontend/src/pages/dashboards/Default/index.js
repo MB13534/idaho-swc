@@ -515,7 +515,7 @@ function Default() {
             ? []
             : {
                 labels: parameterFilteredData.map(
-                  (item) => new Date(item.test_date)
+                  (item) => new Date(item.test_datetime)
                 ),
                 units: parameterFilteredData[0].unit_desc,
                 parameter: parameterFilteredData[0].wq_parameter_name,
