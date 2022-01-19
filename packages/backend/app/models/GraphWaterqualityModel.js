@@ -10,7 +10,7 @@ module.exports = (sequelize, DataTypes) => {
       cuwcd_well_number: {
         type: TEXT,
       },
-      test_date: {
+      test_datetime: {
         type: DATE,
       },
       wq_parameter_ndx: {
