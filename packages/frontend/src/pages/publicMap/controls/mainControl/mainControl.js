@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import {
   Accordion,
   AccordionSummary,
@@ -43,6 +43,7 @@ const MainControl = ({
   layers,
   onBasemapChange,
   onLayerChange,
+  value,
 }) => {
   const [expandedItem, setExpandedItem] = useState("layers");
 
@@ -52,24 +53,27 @@ const MainControl = ({
 
   return (
     <Container>
-      <Accordion
-        expanded={expandedItem === "basemaps"}
-        onChange={handleChange("basemaps")}
-      >
-        <AccordionSummary expandIcon={<ExpandMore />}>
-          <Box alignItems="center" display="flex" gridColumnGap={8}>
-            <MapIcon />
-            <Typography variant="subtitle1">Basemaps</Typography>
-          </Box>
-        </AccordionSummary>
-        <AccordionDetails>
-          <BasemapsControl
-            items={basemaps}
-            value={activeBasemap}
-            onBasemapChange={onBasemapChange}
-          />
-        </AccordionDetails>
-      </Accordion>
+      {value === "attributes_search" && (
+        <Accordion
+          expanded={expandedItem === "basemaps"}
+          onChange={handleChange("basemaps")}
+        >
+          <AccordionSummary expandIcon={<ExpandMore />}>
+            <Box alignItems="center" display="flex" gridColumnGap={8}>
+              <MapIcon />
+              <Typography variant="subtitle1">Basemaps</Typography>
+            </Box>
+          </AccordionSummary>
+          <AccordionDetails>
+            <BasemapsControl
+              items={basemaps}
+              value={activeBasemap}
+              onBasemapChange={onBasemapChange}
+            />
+          </AccordionDetails>
+        </Accordion>
+      )}
+
       <Accordion
         expanded={expandedItem === "layers"}
         onChange={handleChange("layers")}

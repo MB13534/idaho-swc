@@ -31,7 +31,8 @@ const FiltersBar = styled(Paper)`
   align-items: center;
   border-bottom: 1px solid #ddd;
   display: flex;
-  gap: ${({ theme }) => theme.spacing(12)}px;
+  justify-content: space-between;
+  gap: ${({ theme }) => theme.spacing(6)}px;
   padding: 12px 16px 12px 32px;
 `;
 
@@ -45,12 +46,14 @@ const FiltersSectionRow = styled.div`
   display: flex;
   flex-direction: row;
   gap: ${({ theme }) => theme.spacing(2)}px;
+  flex-grow: 100;
 `;
 
 const FiltersContainer = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing(2)}px;
+  flex-grow: 100;
 `;
 
 const TextField = styled(MuiTextField)`
@@ -104,16 +107,7 @@ const PublicMap = () => {
     <>
       {process.env.NODE_ENV !== "development" && <DisclaimerDialog />}
       <FiltersBar>
-        <FiltersSectionRow>
-          {filterValues?.search?.value === "attributes_search" && (
-            <Search onSelect={handleSearchSelect} />
-          )}
-          {filterValues?.search?.value === "comma_separated_wells_search" && (
-            <CommaSeparatedWellsSearch
-              map={map}
-              selected={filterValues?.search?.value}
-            />
-          )}
+        <FiltersContainer>
           <TextField
             variant="outlined"
             select
@@ -130,124 +124,137 @@ const PublicMap = () => {
               </MenuItem>
             ))}
           </TextField>
-        </FiltersSectionRow>
-        <FiltersSection>
-          {/*<Typography variant="subtitle1">Filters</Typography>*/}
-          <FiltersContainer>
-            <FilterControl
-              appliedCount={filterValues?.aquifers?.value?.length}
-              label="Aquifers"
-            >
-              <Filter
+
+          {filterValues?.search?.value === "attributes_search" && (
+            <FiltersSectionRow>
+              <Search onSelect={handleSearchSelect} />
+            </FiltersSectionRow>
+          )}
+          {filterValues?.search?.value === "comma_separated_wells_search" && (
+            <FiltersSectionRow>
+              <CommaSeparatedWellsSearch map={map} />
+            </FiltersSectionRow>
+          )}
+        </FiltersContainer>
+
+        {filterValues?.search?.value === "attributes_search" && (
+          <FiltersSection>
+            <FiltersContainer>
+              <FilterControl
+                appliedCount={filterValues?.aquifers?.value?.length}
                 label="Aquifers"
-                name="aquifers"
-                onChange={handleFilterValues}
-                onSelectAll={handleSelectAll}
-                onSelectNone={handleSelectNone}
-                options={filterValues?.aquifers?.options}
-                type={filterValues?.aquifers?.type}
-                value={filterValues?.aquifers?.value}
-              />
-            </FilterControl>
-            <FilterControl
-              appliedCount={filterValues?.primaryUses?.value?.length}
-              label="Primary Use"
-            >
-              <Filter
+              >
+                <Filter
+                  label="Aquifers"
+                  name="aquifers"
+                  onChange={handleFilterValues}
+                  onSelectAll={handleSelectAll}
+                  onSelectNone={handleSelectNone}
+                  options={filterValues?.aquifers?.options}
+                  type={filterValues?.aquifers?.type}
+                  value={filterValues?.aquifers?.value}
+                />
+              </FilterControl>
+              <FilterControl
+                appliedCount={filterValues?.primaryUses?.value?.length}
                 label="Primary Use"
-                name="primaryUses"
-                onChange={handleFilterValues}
-                onSelectAll={handleSelectAll}
-                onSelectNone={handleSelectNone}
-                options={filterValues?.primaryUses?.options}
-                type={filterValues?.primaryUses?.type}
-                value={filterValues?.primaryUses?.value}
-              />
-            </FilterControl>
-            <FilterControl
-              appliedCount={filterValues?.wellStatus?.value?.length}
-              label="Well Status"
-            >
-              <Filter
+              >
+                <Filter
+                  label="Primary Use"
+                  name="primaryUses"
+                  onChange={handleFilterValues}
+                  onSelectAll={handleSelectAll}
+                  onSelectNone={handleSelectNone}
+                  options={filterValues?.primaryUses?.options}
+                  type={filterValues?.primaryUses?.type}
+                  value={filterValues?.primaryUses?.value}
+                />
+              </FilterControl>
+              <FilterControl
+                appliedCount={filterValues?.wellStatus?.value?.length}
                 label="Well Status"
-                name="wellStatus"
-                onChange={handleFilterValues}
-                onSelectAll={handleSelectAll}
-                onSelectNone={handleSelectNone}
-                options={filterValues?.wellStatus?.options}
-                type={filterValues?.wellStatus?.type}
-                value={filterValues?.wellStatus?.value}
-              />
-            </FilterControl>
-            {/*MJB hide aggregated system control per client (probably temporary)*/}
-            {/*<FilterControl*/}
-            {/*  appliedCount={filterValues?.aggregatedSystems?.value?.length}*/}
-            {/*  label="Aggregated System"*/}
-            {/*>*/}
-            {/*  <Filter*/}
-            {/*    label="Aggregated System"*/}
-            {/*    name="aggregatedSystems"*/}
-            {/*    onChange={handleFilterValues}*/}
-            {/*    onSelectAll={handleSelectAll}*/}
-            {/*    onSelectNone={handleSelectNone}*/}
-            {/*    options={filterValues?.aggregatedSystems?.options}*/}
-            {/*    type={filterValues?.aggregatedSystems?.type}*/}
-            {/*    value={filterValues?.aggregatedSystems?.value}*/}
-            {/*  />*/}
-            {/*</FilterControl>*/}
-            <FilterControl
-              appliedCount={getMoreFiltersCount(filterValues)}
-              label="More Filters"
-            >
-              <Box display="flex" flexDirection="column">
+              >
                 <Filter
-                  label="Has Production"
-                  name="hasProduction"
+                  label="Well Status"
+                  name="wellStatus"
                   onChange={handleFilterValues}
-                  type="boolean"
-                  value={filterValues?.hasProduction?.value}
+                  onSelectAll={handleSelectAll}
+                  onSelectNone={handleSelectNone}
+                  options={filterValues?.wellStatus?.options}
+                  type={filterValues?.wellStatus?.type}
+                  value={filterValues?.wellStatus?.value}
                 />
-                <Filter
-                  label="Has Water Levels"
-                  name="hasWaterLevels"
-                  onChange={handleFilterValues}
-                  type="boolean"
-                  value={filterValues?.hasWaterLevels?.value}
-                />
-                <Filter
-                  label="Has Water Quality Data"
-                  name="hasWQData"
-                  onChange={handleFilterValues}
-                  type="boolean"
-                  value={filterValues?.hasWQData?.value}
-                />
-                <Filter
-                  label="Is Permitted"
-                  name="isPermitted"
-                  onChange={handleFilterValues}
-                  type="boolean"
-                  value={filterValues?.isPermitted?.value}
-                />
-                <Filter
-                  label="Is Exempt"
-                  name="isExempt"
-                  onChange={handleFilterValues}
-                  type="boolean"
-                  value={filterValues?.isExempt?.value}
-                />
-                <Filter
-                  label="Is Monitoring"
-                  name="isMonitoring"
-                  onChange={handleFilterValues}
-                  type="boolean"
-                  value={filterValues?.isMonitoring?.value}
-                />
-              </Box>
-            </FilterControl>
-          </FiltersContainer>
-        </FiltersSection>
+              </FilterControl>
+              {/*MJB hide aggregated system control per client (probably temporary)*/}
+              {/*<FilterControl*/}
+              {/*  appliedCount={filterValues?.aggregatedSystems?.value?.length}*/}
+              {/*  label="Aggregated System"*/}
+              {/*>*/}
+              {/*  <Filter*/}
+              {/*    label="Aggregated System"*/}
+              {/*    name="aggregatedSystems"*/}
+              {/*    onChange={handleFilterValues}*/}
+              {/*    onSelectAll={handleSelectAll}*/}
+              {/*    onSelectNone={handleSelectNone}*/}
+              {/*    options={filterValues?.aggregatedSystems?.options}*/}
+              {/*    type={filterValues?.aggregatedSystems?.type}*/}
+              {/*    value={filterValues?.aggregatedSystems?.value}*/}
+              {/*  />*/}
+              {/*</FilterControl>*/}
+              <FilterControl
+                appliedCount={getMoreFiltersCount(filterValues)}
+                label="More Filters"
+              >
+                <Box display="flex" flexDirection="column">
+                  <Filter
+                    label="Has Production"
+                    name="hasProduction"
+                    onChange={handleFilterValues}
+                    type="boolean"
+                    value={filterValues?.hasProduction?.value}
+                  />
+                  <Filter
+                    label="Has Water Levels"
+                    name="hasWaterLevels"
+                    onChange={handleFilterValues}
+                    type="boolean"
+                    value={filterValues?.hasWaterLevels?.value}
+                  />
+                  <Filter
+                    label="Has Water Quality Data"
+                    name="hasWQData"
+                    onChange={handleFilterValues}
+                    type="boolean"
+                    value={filterValues?.hasWQData?.value}
+                  />
+                  <Filter
+                    label="Is Permitted"
+                    name="isPermitted"
+                    onChange={handleFilterValues}
+                    type="boolean"
+                    value={filterValues?.isPermitted?.value}
+                  />
+                  <Filter
+                    label="Is Exempt"
+                    name="isExempt"
+                    onChange={handleFilterValues}
+                    type="boolean"
+                    value={filterValues?.isExempt?.value}
+                  />
+                  <Filter
+                    label="Is Monitoring"
+                    name="isMonitoring"
+                    onChange={handleFilterValues}
+                    type="boolean"
+                    value={filterValues?.isMonitoring?.value}
+                  />
+                </Box>
+              </FilterControl>
+            </FiltersContainer>
+          </FiltersSection>
+        )}
+
         <FiltersSection>
-          {/*<Typography variant="subtitle1">Layer Styling</Typography>*/}
           <FiltersContainer>
             <FilterControl label={`Color wells by ${activeStyle.name}`}>
               <Typography variant="subtitle1" gutterBottom>
@@ -282,6 +289,7 @@ const PublicMap = () => {
           layers={layers}
           onBasemapChange={updateBasemap}
           onLayerChange={updateLayerVisibility}
+          value={filterValues?.search?.value}
         />
         {process.env.NODE_ENV === "development" && (
           <ZoomInfo zoomLevel={zoomLevel} />
