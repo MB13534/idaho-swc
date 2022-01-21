@@ -137,7 +137,7 @@ const CommaSeparatedWellsSearch = ({ map }) => {
         <TextField
           fullWidth
           id="comma-separated-wells-search"
-          label="Multiple Wells filter"
+          label="Multiple Wells Filter"
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
