@@ -23,6 +23,8 @@ import { INIT_MAP_CONFIG, WELLS_SEARCH_OPTIONS } from "./constants";
 
 import DisclaimerDialog from "./components/DisclaimerDialog";
 import MeasurementsPopup from "../../components/map/components/MeasurementsPopup";
+import DataVizControl from "./controls/dataVizControl";
+import DataViz from "./components/DataViz";
 import MainControl from "./controls/mainControl/";
 import AddressSearchControl from "./controls/addressSearchControl";
 import CommaSeparatedWellsSearch from "./filters/commaSeparatedWellsSearch";
@@ -89,6 +91,10 @@ const PublicMap = () => {
     radiusRef,
     pointRef,
     measurementsContainerRef,
+    dataVizVisible,
+    setDataVizVisible,
+    dataVizWellNumber,
+    dataVizGraphType,
   } = useMap(mapContainer, INIT_MAP_CONFIG);
   const {
     filterValues,
@@ -294,6 +300,15 @@ const PublicMap = () => {
         {process.env.NODE_ENV === "development" && (
           <ZoomInfo zoomLevel={zoomLevel} />
         )}
+        <DataVizControl
+          open={dataVizVisible}
+          onClose={() => setDataVizVisible(!dataVizVisible)}
+        />
+        <DataViz
+          open={dataVizVisible}
+          dataVizWellNumber={dataVizWellNumber}
+          dataVizGraphType={dataVizGraphType}
+        />
       </Map>
     </>
   );

@@ -39,7 +39,6 @@ module.exports = {
         'has_production',
         'has_waterlevels',
         'has_wqdata',
-        'count_waterlevels',
         'well_type',
         'count_',
         'id',

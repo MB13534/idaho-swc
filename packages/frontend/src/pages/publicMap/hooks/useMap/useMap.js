@@ -53,6 +53,10 @@ const useMap = (ref, mapConfig) => {
   const [zoomLevel, setZoomLevel] = useState(0);
   const [activeBasemap, setActiveBasemap] = useState(BASEMAP_STYLES[0].style);
   const [dataAdded, setDataAdded] = useState(false);
+  const [dataVizVisible, setDataVizVisible] = useState(false);
+  const [dataVizWellNumber, setDataVizWellNumber] = useState(null);
+  const [dataVizGraphType, setDataVizGraphType] = useState(null);
+
   const [eventsRegistered, setEventsRegistered] = useState(false);
   const popUpRef = useRef(
     new mapboxgl.Popup({
@@ -276,6 +280,9 @@ const useMap = (ref, mapConfig) => {
               <MuiThemeProvider theme={createTheme(theme.currentTheme)}>
                 <ThemeProvider theme={createTheme(theme.currentTheme)}>
                   <Popup
+                    setDataVizVisible={setDataVizVisible}
+                    setDataVizWellNumber={setDataVizWellNumber}
+                    setDataVizGraphType={setDataVizGraphType}
                     excludeFields={popup?.excludeFields}
                     feature={feature}
                     titleField={popup?.titleField}
@@ -496,6 +503,12 @@ const useMap = (ref, mapConfig) => {
     radiusRef,
     pointRef,
     measurementsContainerRef,
+    dataVizVisible,
+    setDataVizVisible,
+    dataVizWellNumber,
+    setDataVizWellNumber,
+    dataVizGraphType,
+    setDataVizGraphType,
   };
 };
 

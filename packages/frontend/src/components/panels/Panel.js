@@ -20,6 +20,7 @@ const ChartWrapper = styled.div`
   min-height: ${({ minHeight }) => minHeight};
   max-width: calc(100vw - ${(props) => props.theme.spacing(12)}px);
   overflow-y: ${(props) => props.overflowY};
+  overflow-x: ${(props) => props.overflowX};
 `;
 
 function Panel({
@@ -28,7 +29,8 @@ function Panel({
   rightHeader,
   height = "100%",
   minHeight = "0px",
-  overflowY = "false",
+  overflowY = "visible",
+  overflowX = "visible",
 }) {
   return (
     <Card>
@@ -36,6 +38,7 @@ function Panel({
       <CardContent>
         <ChartWrapper
           overflowY={overflowY}
+          overflowX={overflowX}
           height={height}
           minHeight={minHeight}
         >

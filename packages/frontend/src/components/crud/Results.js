@@ -53,7 +53,7 @@ function Results({
     { keepPreviousData: true }
   );
 
-  if (isLoading || lookupTableCache.length === 0) return <Loader />;
+  if (isLoading || lookupTableCache?.length === 0) return <Loader />;
 
   if (error) return "An error has occurred: " + error.message;
 
