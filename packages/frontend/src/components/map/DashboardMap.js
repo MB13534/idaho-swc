@@ -109,12 +109,12 @@ const DashboardMap = ({
 
     if (coord1 >= -90 && coord1 <= 90 && coord2 >= -180 && coord2 <= 180) {
       // must be lat, lng
-      geocodes.push(coordinateFeature(coord1, coord2));
+      geocodes.push(coordinateFeature(coord2, coord1));
     }
 
     if (coord2 >= -90 && coord2 <= 90 && coord1 >= -180 && coord1 <= 180) {
       // must be lng, lat
-      geocodes.push(coordinateFeature(coord2, coord1));
+      geocodes.push(coordinateFeature(coord1, coord2));
     }
 
     // if (geocodes.length === 0) {
