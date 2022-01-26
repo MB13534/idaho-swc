@@ -51,6 +51,7 @@ import UserVisibilityFilter from "../components/UserVisibilityFilter";
 import PDI from "../pages/dataAccess/reports/PDI";
 import UiReportAllPermitsReport from "../pages/dataAccess/reports/UiReportAllPermitsReport";
 import WaterQuality from "../pages/dashboards/data entry/WaterQuality";
+import CurrentExemptWellUseSummaryReport from "../pages/dataAccess/reports/CurrentExemptWellUseSummaryReport";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -144,6 +145,11 @@ const reportsRoutes = {
       path: "/data-access/reports/all-permits",
       name: "All Permits",
       component: UiReportAllPermitsReport,
+    },
+    {
+      path: "/data-access/reports/current-exempt-well-use",
+      name: "Current Exempt Well Use",
+      component: CurrentExemptWellUseSummaryReport,
     },
     {
       path: "/data-access/pdi",
