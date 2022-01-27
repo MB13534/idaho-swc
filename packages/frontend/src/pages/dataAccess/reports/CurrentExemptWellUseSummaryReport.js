@@ -109,7 +109,7 @@ const CurrentExemptWellUseSummaryReport = () => {
         <TableWrapper>
           {data ? (
             <Table
-              label="All Permits Report"
+              label="Exempt Well Use Summary"
               isLoading={isLoading}
               columns={tabColumns}
               data={data}
