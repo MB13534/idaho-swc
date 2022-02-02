@@ -1,5 +1,9 @@
 import React from "react";
-import { Droplet, CheckSquare, CreditCard } from "react-feather";
+import {
+  Droplet,
+  CheckSquare,
+  // CreditCard
+} from "react-feather";
 import CallMerge from "@material-ui/icons/CallMerge";
 import PermContactCalendar from "@material-ui/icons/PermContactCalendar";
 import AdminGuard from "../components/AdminGuard";
@@ -32,13 +36,13 @@ export const CRUD_MODELS = [
     guard: AdminGuard,
     visibilityFilter: AdminVisibilityFilter,
   },
-  {
-    name: "DmRolodexes",
-    sidebarName: "Rolodex",
-    icon: <CreditCard />,
-    guard: AdminGuard,
-    visibilityFilter: AdminVisibilityFilter,
-  },
+  // {
+  //   name: "DmRolodexes",
+  //   sidebarName: "Rolodex",
+  //   icon: <CreditCard />,
+  //   guard: AdminGuard,
+  //   visibilityFilter: AdminVisibilityFilter,
+  // },
   {
     name: "DmPermitHolders",
     sidebarName: "Permit Holders",
