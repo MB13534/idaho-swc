@@ -52,6 +52,7 @@ import PDI from "../pages/dataAccess/reports/PDI";
 import UiReportAllPermitsReport from "../pages/dataAccess/reports/UiReportAllPermitsReport";
 import WaterQuality from "../pages/dashboards/data entry/WaterQuality";
 import CurrentExemptWellUseSummaryReport from "../pages/dataAccess/reports/CurrentExemptWellUseSummaryReport";
+import WaterLevels from "../pages/dashboards/data entry/WaterLevels";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -131,6 +132,13 @@ const dataEntryRoutes = {
       component: WaterQuality,
       guard: AdminGuard,
       visibilityFilter: AdminVisibilityFilter,
+    },
+    {
+      path: "/data-access/well-water-level-data-entry",
+      name: "Water Level",
+      component: WaterLevels,
+      guard: DeveloperGuard,
+      visibilityFilter: DeveloperVisibilityFilter,
     },
   ],
   guard: AuthGuard,

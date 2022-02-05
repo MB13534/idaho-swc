@@ -1,13 +1,13 @@
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT, BOOLEAN, ARRAY} = DataTypes;
-  const ListCollectedBys = sequelize.define(
-    'list_collected_bys',
+  const {INTEGER, TEXT, BOOLEAN} = DataTypes;
+  const ListPumpingStatuses = sequelize.define(
+    'list_pumping_statuses',
     {
-      collected_by_ndx: {
+      pumping_status_ndx: {
         type: INTEGER,
         primaryKey: true,
       },
-      collected_by_desc: {
+      pumping_status_desc: {
         type: TEXT,
       },
       removed: {
@@ -16,14 +16,8 @@ module.exports = (sequelize, DataTypes) => {
       display_order: {
         type: INTEGER,
       },
-      applies_to: {
-        type: ARRAY(TEXT),
-      },
     },
     {
-      defaultScope: {
-        order: [['display_order', 'asc']],
-      },
       schema: 'client_clearwater',
       timestamps: false,
       paranoid: true,
@@ -31,5 +25,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  return ListCollectedBys;
+  return ListPumpingStatuses;
 };

@@ -1,13 +1,13 @@
 module.exports = (sequelize, DataTypes) => {
   const {INTEGER, TEXT, BOOLEAN, ARRAY} = DataTypes;
-  const ListCollectedBys = sequelize.define(
-    'list_collected_bys',
+  const ListMeasurementMethods = sequelize.define(
+    'list_measurement_methods',
     {
-      collected_by_ndx: {
+      measurement_method_ndx: {
         type: INTEGER,
         primaryKey: true,
       },
-      collected_by_desc: {
+      measurement_method_desc: {
         type: TEXT,
       },
       removed: {
@@ -21,9 +21,6 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-      defaultScope: {
-        order: [['display_order', 'asc']],
-      },
       schema: 'client_clearwater',
       timestamps: false,
       paranoid: true,
@@ -31,5 +28,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  return ListCollectedBys;
+  return ListMeasurementMethods;
 };
