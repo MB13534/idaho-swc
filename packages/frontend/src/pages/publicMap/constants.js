@@ -32,6 +32,7 @@ export const INIT_MAP_CONFIG = {
   style: BASEMAP_STYLES[0].url,
   center: DEFAULT_MAP_CENTER,
   zoom: 11,
+  preserveDrawingBuffer: true,
 };
 
 export const WELLS_LAYER_ID = "clearwater-wells-circle";

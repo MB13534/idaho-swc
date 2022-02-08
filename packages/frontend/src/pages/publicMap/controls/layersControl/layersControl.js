@@ -1,4 +1,4 @@
-import { useMemo, useState } from "react";
+import React, { useMemo, useState } from "react";
 import {
   Box,
   Checkbox,
@@ -174,7 +174,7 @@ const LayersControl = ({ items, onLayerChange }) => {
           const open = expandedItems.includes(item?.name);
           const layerVisible = item?.layout?.visibility === "visible";
           return (
-            <Box key={item?.name}>
+            <Box key={item?.name} id="layerCheck">
               <ListItem onClick={() => handleVisibilityChange(item)}>
                 <Checkbox
                   edge="start"
@@ -182,6 +182,10 @@ const LayersControl = ({ items, onLayerChange }) => {
                   tabIndex={-1}
                   disableRipple
                   inputProps={{ "aria-labelledby": "test" }}
+                  onClick={() =>
+                    (!layerVisible && !open && handleExpandItem(item?.name)) ||
+                    (layerVisible && open && handleExpandItem(item?.name))
+                  }
                 />
                 <ListItemText
                   primary={item?.name}

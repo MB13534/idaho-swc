@@ -89,6 +89,7 @@
     "react-router-dom": "5.2.0",
     "react-scripts": "4.0.3",
     "react-syntax-highlighter": "^15.4.3",
+    "react-to-print": "^2.14.4",
     "redux": "4.0.5",
     "redux-thunk": "2.3.0",
     "styled-components": "5.2.1",

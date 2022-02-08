@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import React, { useRef, useState } from "react";
 import {
   ClickAwayListener,
   Fade,
@@ -41,8 +41,9 @@ const FilterControl = ({ appliedCount, children, label }) => {
   };
 
   return (
-    <div>
+    <div style={{ height: "100%" }}>
       <Button
+        style={{ height: "100%" }}
         color={active ? "primary" : "inherit"}
         //MJB change size from large to small
         size="small"

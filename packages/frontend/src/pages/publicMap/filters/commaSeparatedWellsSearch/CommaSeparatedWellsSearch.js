@@ -22,10 +22,10 @@ const CommaSeparatedWellsSearch = ({ map }) => {
   //**a marker must be on the screen in order for it to be in the query results
   useEffect(() => {
     map?.flyTo({ center: [-97.99366949028948, 30.979780201064344], zoom: 8 });
-    var northEast = [-97.08729741997672, 31.447227501139395];
-    var southEast = [-97.08729741997672, 30.518054701366808];
-    var southWest = [-98.93184683603334, 30.518054701366808];
-    var northWest = [-98.93184683603334, 31.447227501139395];
+    const northEast = [-97.08729741997672, 31.447227501139395];
+    const southEast = [-97.08729741997672, 30.518054701366808];
+    const southWest = [-98.93184683603334, 30.518054701366808];
+    const northWest = [-98.93184683603334, 31.447227501139395];
 
     if (!map.getSource("boundingBox")) {
       map.addSource("boundingBox", {
@@ -119,7 +119,7 @@ const CommaSeparatedWellsSearch = ({ map }) => {
     ]);
 
     if (allCoords.length) {
-      var bounds = allCoords.reduce(function (bounds, coord) {
+      const bounds = allCoords.reduce(function (bounds, coord) {
         return bounds.extend(coord);
       }, new mapboxgl.LngLatBounds(allCoords[0], allCoords[0]));
 
@@ -135,7 +135,7 @@ const CommaSeparatedWellsSearch = ({ map }) => {
     <>
       <form style={{ width: "100%" }} onSubmit={handleSubmit}>
         <TextField
-          fullWidth
+          style={{ width: "100%", minWidth: "162px" }}
           id="comma-separated-wells-search"
           label="Multiple Wells Filter"
           InputProps={{

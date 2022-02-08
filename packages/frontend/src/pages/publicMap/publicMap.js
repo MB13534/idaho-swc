@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useRef, useState } from "react";
 import styled from "styled-components/macro";
 import {
   Box,
@@ -8,7 +8,6 @@ import {
   Typography,
 } from "@material-ui/core";
 
-// import AppBar from "../../components/AppBar";
 import Map from "./map";
 import WellStylesControl from "./controls/wellStylesControl";
 import ZoomInfo from "./controls/zoomInfo";
@@ -28,6 +27,11 @@ import DataViz from "./components/DataViz";
 import MainControl from "./controls/mainControl/";
 import AddressSearchControl from "./controls/addressSearchControl";
 import CommaSeparatedWellsSearch from "./filters/commaSeparatedWellsSearch";
+
+import PrintReportDialog from "./components/PrintReportDialog";
+import { useReactToPrint } from "react-to-print";
+import PrintMapFormat from "./components/PrintMapFormat";
+import SplitButton from "../../components/SplitButton";
 
 const FiltersBar = styled(Paper)`
   align-items: center;
@@ -55,11 +59,12 @@ const FiltersContainer = styled.div`
   display: flex;
   align-items: center;
   gap: ${({ theme }) => theme.spacing(2)}px;
-  flex-grow: 100;
+  flex: 1 1 0;
 `;
 
 const TextField = styled(MuiTextField)`
   width: 120px;
+  min-width: 120px;
   display: flex;
 `;
 
@@ -95,6 +100,7 @@ const PublicMap = () => {
     setDataVizVisible,
     dataVizWellNumber,
     dataVizGraphType,
+    eventsRegistered,
   } = useMap(mapContainer, INIT_MAP_CONFIG);
   const {
     filterValues,
@@ -107,6 +113,32 @@ const PublicMap = () => {
   });
   const handleSearchSelect = (result) => {
     map?.flyTo({ center: result?.location_geometry?.coordinates, zoom: 16 });
+  };
+
+  const printRef = useRef();
+  const [printReportDialogOpen, setPrintReportDialogOpen] = useState(false);
+  const [title, setTitle] = useState("");
+  const handlePrintMapClick = useReactToPrint({
+    content: () => printRef.current,
+  });
+
+  const handleSavePNG = () => {
+    const a = document.createElement("a");
+    a.href = map.getCanvas().toDataURL();
+    a.download = "map.png";
+    document.body.appendChild(a);
+    a.click();
+  };
+
+  const splitButtonOptions = ["Print PDF", "Save PNG"];
+  const handleSplitButtonClick = (index) => {
+    if (![0, 1].includes(index)) return;
+
+    if (index === 0) {
+      setPrintReportDialogOpen(true);
+    } else if (index === 1) {
+      handleSavePNG();
+    }
   };
 
   return (
@@ -276,6 +308,24 @@ const PublicMap = () => {
             </FilterControl>
           </FiltersContainer>
         </FiltersSection>
+
+        <FiltersSection>
+          <FiltersContainer>
+            <>
+              <SplitButton
+                options={splitButtonOptions}
+                handleExportClick={handleSplitButtonClick}
+              />
+              <PrintReportDialog
+                downloadCallback={handlePrintMapClick}
+                setPrintReportDialogOpen={setPrintReportDialogOpen}
+                printReportDialogOpen={printReportDialogOpen}
+                title={title}
+                setTitle={setTitle}
+              />
+            </>
+          </FiltersContainer>
+        </FiltersSection>
       </FiltersBar>
       <Map ref={mapContainer}>
         <MeasurementsPopup
@@ -310,6 +360,22 @@ const PublicMap = () => {
           dataVizGraphType={dataVizGraphType}
         />
       </Map>
+
+      {eventsRegistered && printReportDialogOpen && (
+        <span
+          style={{
+            display: "none",
+            width: "100%",
+          }}
+        >
+          <PrintMapFormat
+            ref={printRef}
+            title={title}
+            mapImg={map.getCanvas().toDataURL("image/png")}
+            map={map}
+          />
+        </span>
+      )}
     </>
   );
 };

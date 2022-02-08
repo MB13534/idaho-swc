@@ -171,7 +171,7 @@ const useMap = (ref, mapConfig) => {
 
       //bottom left controls
       map.addControl(
-        new mapboxgl.ScaleControl({ unit: "imperial" }),
+        new mapboxgl.ScaleControl({ unit: "imperial", maxWidth: 300 }),
         "bottom-left"
       );
       map.addControl(
@@ -509,6 +509,7 @@ const useMap = (ref, mapConfig) => {
     setDataVizWellNumber,
     dataVizGraphType,
     setDataVizGraphType,
+    eventsRegistered,
   };
 };
 
