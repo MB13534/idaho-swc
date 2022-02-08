@@ -23,8 +23,6 @@ const PrintMapFormat = forwardRef(({ title, mapImg, map }, ref) => {
     .map((item) => item.parentElement.parentElement.nextElementSibling)
     .filter((item) => item);
 
-  console.log(legend);
-
   return (
     <Box style={{ padding: "32px" }} ref={ref}>
       <Centered>
@@ -67,8 +65,8 @@ const PrintMapFormat = forwardRef(({ title, mapImg, map }, ref) => {
       >
         <Grid item xs={7} style={{ textAlign: "left" }}>
           <Grid container>
-            {legend.map((item) => (
-              <Grid item xs={6}>
+            {legend.map((item, index) => (
+              <Grid item xs={6} key={index}>
                 <span dangerouslySetInnerHTML={{ __html: item.outerHTML }} />
               </Grid>
             ))}
