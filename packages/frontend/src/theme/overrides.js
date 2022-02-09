@@ -13,6 +13,30 @@ const overrides = {
       background: "none",
     },
   },
+  PrivateNotchedOutline: {
+    legendLabelled: {
+      fontSize: ".92em",
+    },
+  },
+  MuiInputLabel: {
+    shrink: {
+      fontSize: "16px",
+      color: "black",
+    },
+    root: {
+      color: "black",
+    },
+  },
+  MuiInputBase: {
+    root: {
+      color: "rgba(0,0,0,1)",
+    },
+  },
+  MuiFormLabel: {
+    root: {
+      color: "black",
+    },
+  },
   MuiCardHeader: {
     action: {
       marginTop: "-4px",

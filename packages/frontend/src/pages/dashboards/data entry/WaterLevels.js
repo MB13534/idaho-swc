@@ -120,6 +120,10 @@ function WaterLevels() {
       prevState[name] = "" + value;
     }
 
+    if (["meas_1", "meas_2", "meas_3", "meas_4"].includes(name)) {
+      prevState["final_dtw_ft"] = null;
+    }
+
     setSelectedRow(prevState);
   };
 
@@ -199,7 +203,6 @@ function WaterLevels() {
     {
       title: "Well",
       field: "cuwcd_well_number",
-      test: "test",
     },
     {
       title: "Measurement Date/Time",
@@ -210,56 +213,20 @@ function WaterLevels() {
       searchable: false,
     },
     {
-      title: "Measurement Source",
-      field: "collected_by_ndx",
-      lookup: listMeasurementSource,
-      searchable: false,
-    },
-    {
-      title: "Pumping Status",
-      field: "pumping_status_ndx",
-      lookup: listPumpingStatus,
-      searchable: false,
-    },
-    {
-      title: "Measurement Method",
-      field: "measurement_method_ndx",
-      lookup: listMeasurementMethods,
-      searchable: false,
-    },
-    {
-      title: "Measurement 1",
-      field: "meas_1",
-      searchable: false,
-    },
-    {
-      title: "Measurement 2",
-      field: "meas_2",
-      searchable: false,
-    },
-    {
-      title: "Measurement 3",
-      field: "meas_3",
-      searchable: false,
-    },
-    {
-      title: "Static Water Level (ft)",
-      field: "static_water_level_ft",
-      searchable: false,
-    },
-    {
-      title: "Measurement 4",
-      field: "meas_4",
-      searchable: false,
-    },
-    {
       title: "Final Depth (ft)",
       field: "final_dtw_ft",
       searchable: false,
     },
     {
-      title: "1/4 Mile Radius",
-      field: "qtr_mile_wells_exist",
+      title: "Measurement",
+      field: "measurement_method_ndx",
+      lookup: listMeasurementMethods,
+      searchable: false,
+    },
+    {
+      title: "Source",
+      field: "collected_by_ndx",
+      lookup: listMeasurementSource,
       searchable: false,
     },
     {
