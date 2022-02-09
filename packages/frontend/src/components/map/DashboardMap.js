@@ -188,16 +188,6 @@ const DashboardMap = ({
     map.addControl(new ResetZoomControl(), "top-left");
 
     //top right controls
-
-    map.addControl(
-      new MapboxGeocoder({
-        accessToken: mapboxgl.accessToken,
-        localGeocoder: coordinatesGeocoder,
-        zoom: 16,
-        mapboxgl: mapboxgl,
-        reverseGeocode: true,
-      })
-    );
     map.addControl(new mapboxgl.FullscreenControl(), "top-right");
     //loop through each base layer and add a layer toggle for that layer
     DUMMY_BASEMAP_LAYERS.forEach((layer) => {
@@ -208,6 +198,16 @@ const DashboardMap = ({
     });
 
     //bottom right controls
+    map.addControl(
+      new MapboxGeocoder({
+        accessToken: mapboxgl.accessToken,
+        localGeocoder: coordinatesGeocoder,
+        zoom: 16,
+        mapboxgl: mapboxgl,
+        reverseGeocode: true,
+      }),
+      "bottom-right"
+    );
     //draw controls do not work correctly on touch screens
     !isTouchScreenDevice() &&
       map.addControl(draw, "bottom-right") &&

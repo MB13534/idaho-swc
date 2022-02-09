@@ -6,7 +6,7 @@ module.exports = {
   'source-layer': 'parcels',
   paint: {
     'line-color': '#ffe119',
-    'line-width': 3,
+    'line-width': 2,
   },
   layout: {
     visibility: 'none',

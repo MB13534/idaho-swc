@@ -6,7 +6,9 @@ module.exports = {
   'source-layer': 'parcels',
   paint: {
     // 'line-color': '#444',
-    'text-color': '#9a184e',
+    'text-color': '#857000',
+    'text-halo-color': '#ffffff',
+    'text-halo-width': 5,
   },
   layout: {
     'text-field': ['get', 'PROP_ID'],

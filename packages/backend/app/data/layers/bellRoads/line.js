@@ -1,9 +1,9 @@
 module.exports = {
-  id: 'bell-streets-line',
-  name: 'Bell CAD Streets',
+  id: 'bell-roads-line',
+  name: 'Bell CAD Roads',
   type: 'line',
-  source: 'bell-streets',
-  'source-layer': 'parcel_test',
+  source: 'bell-roads',
+  'source-layer': 'Bell_CAD_Roads-aq94oj',
   paint: {
     'line-color': '#8D8D8D',
     'line-width': 2,
@@ -12,6 +12,6 @@ module.exports = {
     visibility: 'none',
   },
   lreProperties: {
-    layerGroup: 'bell-streets',
+    layerGroup: 'bell-roads',
   },
 };
