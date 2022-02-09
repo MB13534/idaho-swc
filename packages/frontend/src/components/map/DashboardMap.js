@@ -19,6 +19,9 @@ import ResetZoomControl from "./ResetZoomControl";
 import ToggleBasemapControl from "./ToggleBasemapControl";
 import DragCircleControl from "./DragCircleControl";
 import {
+  bellParcelsFill,
+  bellParcelsLine,
+  bellParcelsSymbol,
   DUMMY_BASEMAP_LAYERS,
   handleCopyCoords,
   locationsLabelsLayer,
@@ -35,6 +38,7 @@ import { useApp } from "../../AppProvider";
 import debounce from "lodash.debounce";
 import { isTouchScreenDevice } from "../../utils";
 import Search from "./components/search";
+import Popup from "../../pages/publicMap/popup";
 
 mapboxgl.accessToken = process.env.REACT_APP_MAPBOX_TOKEN;
 
@@ -245,6 +249,15 @@ const DashboardMap = ({
   useEffect(() => {
     if (mapIsLoaded && data?.length > 0 && typeof map != "undefined") {
       if (!map.getSource("locations")) {
+        map.addSource("bell-parcels", {
+          type: "vector",
+          url: "mapbox://txclearwater.bell_cad_parcels",
+        });
+
+        map.addLayer(bellParcelsFill);
+        map.addLayer(bellParcelsLine);
+        map.addLayer(bellParcelsSymbol);
+
         map.addSource("locations", {
           type: "geojson",
           data: {
@@ -323,7 +336,7 @@ const DashboardMap = ({
           )
         );
 
-        //handles main point click popup
+        //handles main point click popup for LOCATIONS ONLY
         map.on("click", "locations", (e) => {
           const coordinates = e.features[0].geometry.coordinates.slice();
           // // Ensure that if the map is zoomed out such that multiple
@@ -377,6 +390,48 @@ const DashboardMap = ({
           map.on("closeAllPopups", () => {
             popUpRef.current.remove();
           });
+        });
+
+        //click event for popups other than LOCATIONS
+        map.on("click", (e) => {
+          const features = map.queryRenderedFeatures(e.point);
+          const coordinates = [e.lngLat.lng, e.lngLat.lat];
+          //MJB add check for popups so they only appear on our dynamic layers
+          const popupLayerIds = [
+            "bell-parcels-fill",
+            "bell-parcels-line",
+            "bell-parcels-symbol",
+          ];
+
+          if (
+            features.length > 0 &&
+            popupLayerIds.includes(features[0].layer.id)
+          ) {
+            const feature = features[0];
+            const popup = {};
+
+            // create popup node
+            const popupNode = document.createElement("div");
+            ReactDOM.render(
+              //MJB adding style providers to the popup
+              <StylesProvider jss={jss}>
+                <MuiThemeProvider theme={createTheme(theme.currentTheme)}>
+                  <ThemeProvider theme={createTheme(theme.currentTheme)}>
+                    <Popup
+                      excludeFields={popup?.excludeFields}
+                      feature={feature}
+                      titleField={popup?.titleField}
+                    />
+                  </ThemeProvider>
+                </MuiThemeProvider>
+              </StylesProvider>,
+              popupNode
+            );
+            popUpRef.current
+              .setLngLat(coordinates)
+              .setDOMContent(popupNode)
+              .addTo(map);
+          }
         });
 
         // //handles copying coordinates and measurements to the clipboard

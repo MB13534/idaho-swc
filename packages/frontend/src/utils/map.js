@@ -138,12 +138,68 @@ export const locationsLabelsLayer = {
   minzoom: 12,
   layout: {
     "text-field": ["get", "cuwcd_well_number"],
-    "text-offset": [0, -2],
+    "text-offset": [0, -1.2],
     "text-size": 14,
   },
   paint: {
     "text-halo-color": "#ffffff",
-    "text-halo-width": 0.5,
+    "text-halo-width": 5,
+  },
+};
+
+export const bellParcelsFill = {
+  id: "bell-parcels-fill",
+  name: "Bell CAD Parcels",
+  type: "fill",
+  source: "bell-parcels",
+  "source-layer": "parcels",
+  paint: {
+    "fill-color": "#333",
+    "fill-opacity": 0,
+  },
+  // layout: {
+  //   visibility: "none",
+  // },
+  lreProperties: {
+    layerGroup: "bell-parcels",
+  },
+};
+
+export const bellParcelsLine = {
+  id: "bell-parcels-line",
+  name: "Bell CAD Parcels",
+  type: "line",
+  source: "bell-parcels",
+  "source-layer": "parcels",
+  paint: {
+    "line-color": "#9a184e",
+  },
+  // layout: {
+  //   visibility: "none",
+  // },
+  lreProperties: {
+    layerGroup: "bell-parcels",
+  },
+};
+
+export const bellParcelsSymbol = {
+  id: "bell-parcels-symbol",
+  name: "Bell CAD Parcels",
+  type: "symbol",
+  source: "bell-parcels",
+  "source-layer": "parcels",
+  paint: {
+    // 'line-color': '#444',
+    "text-color": "#9a184e",
+  },
+  layout: {
+    "text-field": ["get", "PROP_ID"],
+    "text-size": 14,
+    // visibility: "none",
+  },
+  minzoom: 16.5,
+  lreProperties: {
+    layerGroup: "bell-parcels",
   },
 };
 
