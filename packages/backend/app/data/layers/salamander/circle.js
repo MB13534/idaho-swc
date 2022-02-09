@@ -4,6 +4,7 @@ module.exports = {
   type: 'circle',
   source: 'salamander',
   'source-layer': 'Salamander-1tblws',
+  drawOrder: -1,
   paint: {
     'circle-color': 'maroon',
     'circle-radius': [

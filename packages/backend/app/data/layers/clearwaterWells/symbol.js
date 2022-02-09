@@ -3,6 +3,7 @@ module.exports = {
   name: 'Clearwater Well Labels',
   type: 'symbol',
   source: 'clearwater-wells',
+  drawOrder: -100,
   // minzoom: 12,
   layout: {
     'text-field': ['get', 'cuwcd_well_number'],

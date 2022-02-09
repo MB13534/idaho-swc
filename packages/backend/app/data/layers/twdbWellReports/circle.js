@@ -3,6 +3,7 @@ module.exports = {
   name: 'TWDB Well Reports',
   type: 'circle',
   source: 'twdb-well-reports',
+  drawOrder: -1,
   'source-layer': 'parcels',
   paint: {
     'circle-color': '#d95f00',

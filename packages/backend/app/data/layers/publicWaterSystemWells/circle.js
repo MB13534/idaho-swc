@@ -4,6 +4,7 @@ module.exports = {
   type: 'circle',
   source: 'public-water-system-wells',
   'source-layer': 'PublicWaterSystem_Wells_TCEQ-7y2jxm',
+  drawOrder: -1,
   paint: {
     'circle-color': 'hsla(240, 96%, 60%, 1)',
     'circle-radius': [

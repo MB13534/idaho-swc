@@ -3,6 +3,7 @@ module.exports = {
   name: 'TWDB Groundwater Wells',
   type: 'circle',
   source: 'twdb-groundwater-wells',
+  drawOrder: -1,
   'source-layer': 'parcels',
   paint: {
     'circle-color': '#756fb4',

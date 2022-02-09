@@ -4,6 +4,7 @@ module.exports = {
   type: 'symbol',
   source: 'public-water-system-intakes',
   'source-layer': 'PublicWaterSystem_SurfaceInta-0f7f3z',
+  drawOrder: -1,
   layout: {
     'icon-image': 'za-provincial-2',
     'icon-size': [

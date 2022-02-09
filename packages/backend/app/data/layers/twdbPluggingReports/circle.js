@@ -3,6 +3,7 @@ module.exports = {
   name: 'TWDB Plugging Reports',
   type: 'circle',
   source: 'twdb-plugging-reports',
+  drawOrder: -1,
   'source-layer': 'parcels',
   paint: {
     'circle-color': '#fb4444',

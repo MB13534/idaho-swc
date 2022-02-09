@@ -3,6 +3,7 @@ module.exports = {
   name: 'Clearwater Wells',
   type: 'circle',
   source: 'clearwater-wells',
+  drawOrder: -100,
   paint: {
     'circle-color': '#1e8dd2',
     // 'circle-radius': [

@@ -133,13 +133,15 @@ const useMap = (ref, mapConfig) => {
 
       mapLogger.log("Sources added to map");
 
-      layers.forEach((layer) => {
-        const { lreProperties, ...rest } = layer;
-        const layerExists = map.getLayer(layer.id);
-        if (!layerExists) {
-          map.addLayer(rest);
-        }
-      });
+      layers
+        .sort((a, b) => ((a.drawOrder || 0) > (b.drawOrder || 0) ? -1 : 1))
+        .forEach((layer) => {
+          const { lreProperties, ...rest } = layer;
+          const layerExists = map.getLayer(layer.id);
+          if (!layerExists) {
+            map.addLayer(rest);
+          }
+        });
 
       mapLogger.log("Layers added to map");
 

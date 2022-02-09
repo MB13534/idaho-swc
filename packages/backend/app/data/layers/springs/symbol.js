@@ -4,6 +4,7 @@ module.exports = {
   type: 'symbol',
   source: 'springs',
   'source-layer': 'Springs-8ng3rn',
+  drawOrder: -1,
   layout: {
     'icon-image': 'rectangle-blue-2',
     'icon-allow-overlap': true,
