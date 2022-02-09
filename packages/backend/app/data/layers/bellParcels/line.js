@@ -5,7 +5,8 @@ module.exports = {
   source: 'bell-parcels',
   'source-layer': 'parcels',
   paint: {
-    'line-color': '#9a184e',
+    'line-color': '#ffe119',
+    'line-width': 3,
   },
   layout: {
     visibility: 'none',

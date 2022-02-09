@@ -171,7 +171,7 @@ const useMap = (ref, mapConfig) => {
 
       //bottom left controls
       map.addControl(
-        new mapboxgl.ScaleControl({ unit: "imperial", maxWidth: 300 }),
+        new mapboxgl.ScaleControl({ unit: "imperial", maxWidth: 250 }),
         "bottom-left"
       );
       map.addControl(

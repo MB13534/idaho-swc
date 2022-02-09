@@ -79,7 +79,7 @@ const PrintMapFormat = forwardRef(({ title, mapImg, map }, ref) => {
           <div style={{ textAlign: "right" }}>
             <img
               src="/static/img/lrewater-logo-full.png"
-              width="100px"
+              width="75px"
               alt={"LRE Water"}
             />
           </div>

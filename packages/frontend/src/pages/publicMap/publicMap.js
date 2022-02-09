@@ -63,8 +63,8 @@ const FiltersContainer = styled.div`
 `;
 
 const TextField = styled(MuiTextField)`
-  width: 120px;
-  min-width: 120px;
+  width: 125px;
+  min-width: 125px;
   display: flex;
 `;
 
