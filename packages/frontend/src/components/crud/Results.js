@@ -50,7 +50,10 @@ function Results({
         doToast("error", err);
       }
     },
-    { keepPreviousData: true }
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
   );
 
   if (isLoading || lookupTableCache?.length === 0) return <Loader />;

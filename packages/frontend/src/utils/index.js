@@ -202,3 +202,5 @@ export const isTouchScreenDevice = () => {
     navigator.msMaxTouchPoints
   );
 };
+
+export const twentyFourHoursInMs = 1000 * 60 * 60 * 24;

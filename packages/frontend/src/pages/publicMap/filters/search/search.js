@@ -78,15 +78,21 @@ const SearchResults = ({
 
 const Search = ({ onSelect }) => {
   const searchRef = useRef(null);
-  const { data: options } = useQuery(["Search Options"], async () => {
-    try {
-      return await axios.get(
-        `${process.env.REACT_APP_ENDPOINT}/api/public-map/wells`
-      );
-    } catch (err) {
-      console.error(err);
+  const { data: options } = useQuery(
+    ["Search Options"],
+    async () => {
+      try {
+        return await axios.get(
+          `${process.env.REACT_APP_ENDPOINT}/api/public-map/wells`
+        );
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    {
+      refetchOnWindowFocus: false,
     }
-  });
+  );
   const [value, setValue] = useState("");
   const debouncedSearchValue = useDebounce(value, 200);
   const [searchResults, setSearchResults] = useState([]);

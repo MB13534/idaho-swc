@@ -137,7 +137,10 @@ function WaterLevels() {
         console.error(err);
       }
     },
-    { keepPreviousData: true }
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
   );
 
   const [filteredData, setFilteredData] = useState(null);

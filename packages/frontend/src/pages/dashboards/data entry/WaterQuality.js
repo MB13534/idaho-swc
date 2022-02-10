@@ -276,7 +276,10 @@ function WaterQuality() {
         console.error(err);
       }
     },
-    { keepPreviousData: true }
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
   );
 
   //paramaters in picker that are selected by user
@@ -294,7 +297,10 @@ function WaterQuality() {
         console.error(err);
       }
     },
-    { keepPreviousData: true }
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
   );
 
   //LOOKUPS

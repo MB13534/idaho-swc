@@ -179,7 +179,10 @@ const DataViz = ({ open = false, dataVizWellNumber, dataVizGraphType }) => {
         console.error(err);
       }
     },
-    { keepPreviousData: true }
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
   );
 
   const [filteredMutatedGraphData, setFilteredMutatedGraphData] = useState({});

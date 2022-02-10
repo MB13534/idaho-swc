@@ -61,7 +61,10 @@ const UiReportAllPermitsReport = () => {
         console.error(err);
       }
     },
-    { keepPreviousData: true }
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
   );
 
   //years to show up in picker

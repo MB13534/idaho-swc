@@ -273,7 +273,10 @@ function Production() {
         console.error(err);
       }
     },
-    { keepPreviousData: true }
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
   );
 
   const cuwcdLookup = useMemo(() => {

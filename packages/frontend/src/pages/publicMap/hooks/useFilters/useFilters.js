@@ -20,16 +20,22 @@ const useFilters = ({ onFilterChange }) => {
    * This approach allows us to make a single API request instead
    * of multiple
    */
-  const { data } = useQuery(["filterData"], async () => {
-    try {
-      const response = await axios.get(
-        `${process.env.REACT_APP_ENDPOINT}/api/public-map/filters`
-      );
-      return response;
-    } catch (err) {
-      console.error(err);
+  const { data } = useQuery(
+    ["filterData"],
+    async () => {
+      try {
+        const response = await axios.get(
+          `${process.env.REACT_APP_ENDPOINT}/api/public-map/filters`
+        );
+        return response;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    {
+      refetchOnWindowFocus: false,
     }
-  });
+  );
 
   /**
    * Set the options and initial value for each filter based on

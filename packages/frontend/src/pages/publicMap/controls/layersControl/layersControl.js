@@ -184,19 +184,20 @@ const LayersControl = ({ items, onLayerChange }) => {
             const layerVisible = item?.layout?.visibility === "visible";
             return (
               <Box key={item?.name} id="layerCheck">
-                <ListItem onClick={() => handleVisibilityChange(item)}>
+                <ListItem
+                  // style={{ cursor: "pointer" }}
+                  onClick={() => {
+                    handleVisibilityChange(item);
+                    (!layerVisible && !open && handleExpandItem(item?.name)) ||
+                      (layerVisible && open && handleExpandItem(item?.name));
+                  }}
+                >
                   <Checkbox
                     edge="start"
                     checked={layerVisible}
                     tabIndex={-1}
                     disableRipple
                     inputProps={{ "aria-labelledby": "test" }}
-                    onClick={() =>
-                      (!layerVisible &&
-                        !open &&
-                        handleExpandItem(item?.name)) ||
-                      (layerVisible && open && handleExpandItem(item?.name))
-                    }
                   />
                   <ListItemText
                     primary={item?.name}
