@@ -331,7 +331,7 @@ function WaterLevels() {
         const token = await getAccessTokenSilently();
         const headers = { Authorization: `Bearer ${token}` };
 
-        await axios.post(
+        const { data: addedEntry } = await axios.post(
           `${process.env.REACT_APP_ENDPOINT}/api/dm-depth-to-waters`,
           selectedRow,
           { headers }
@@ -339,7 +339,7 @@ function WaterLevels() {
         //update the material table
         setFilteredData((prevState) => {
           let data = [...prevState];
-          data.unshift(selectedRow);
+          data.unshift(addedEntry);
           return data;
         });
         doToast("success", "New entry was saved to the database");
