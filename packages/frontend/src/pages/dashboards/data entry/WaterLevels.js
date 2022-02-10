@@ -946,7 +946,7 @@ function WaterLevels() {
                             style={{ width: "100%", height: "100%" }}
                             onClick={() => calculateNewFinalDepth()}
                           >
-                            Calculate Final Suggested Depth (ft)
+                            Calculate Final Depth (ft)
                           </Button>
                         </Grid>
                       </>
