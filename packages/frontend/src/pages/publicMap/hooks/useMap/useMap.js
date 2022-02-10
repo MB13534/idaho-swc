@@ -365,6 +365,7 @@ const useMap = (ref, mapConfig) => {
         }
       });
       map.setFilter("clearwater-wells-circle", mapFilterExpression);
+      map.setFilter("clearwater-wells-symbol", mapFilterExpression);
       mapLogger.log("Filters updated on the clearwater-wells-circle layer");
     }
   };

@@ -339,14 +339,16 @@ const PublicMap = () => {
             map?.flyTo({ center: coordinates, zoom: 16 })
           }
         />
-        <MainControl
-          activeBasemap={activeBasemap}
-          basemaps={basemaps}
-          layers={layers}
-          onBasemapChange={updateBasemap}
-          onLayerChange={updateLayerVisibility}
-          value={filterValues?.search?.value}
-        />
+        {eventsRegistered && (
+          <MainControl
+            activeBasemap={activeBasemap}
+            basemaps={basemaps}
+            layers={layers}
+            onBasemapChange={updateBasemap}
+            onLayerChange={updateLayerVisibility}
+            value={filterValues?.search?.value}
+          />
+        )}
         {process.env.NODE_ENV === "development" && (
           <ZoomInfo zoomLevel={zoomLevel} />
         )}

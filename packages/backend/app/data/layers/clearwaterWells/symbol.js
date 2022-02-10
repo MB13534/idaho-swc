@@ -5,16 +5,16 @@ module.exports = {
   source: 'clearwater-wells',
   drawOrder: -100,
   legendOrder: 99,
-  // minzoom: 12,
   layout: {
     'text-field': ['get', 'cuwcd_well_number'],
     'text-size': 14,
     'text-offset': [0, -1.2],
+    'text-font': ['literal', ['Roboto Black', 'Arial Unicode MS Bold']],
     visibility: 'none',
   },
   paint: {
-    'text-color': '#000000',
-    'text-halo-color': '#ffffff',
-    'text-halo-width': 5,
+    'text-color': 'rgb(49,49,49)',
+    'text-halo-color': 'rgba(255,255,255,1)',
+    'text-halo-width': 3,
   },
 };

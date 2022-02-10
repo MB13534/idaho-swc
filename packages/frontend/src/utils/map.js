@@ -140,10 +140,12 @@ export const locationsLabelsLayer = {
     "text-field": ["get", "cuwcd_well_number"],
     "text-offset": [0, -1.2],
     "text-size": 14,
+    "text-font": ["literal", ["Roboto Black", "Arial Unicode MS Bold"]],
   },
   paint: {
-    "text-halo-color": "#ffffff",
-    "text-halo-width": 5,
+    "text-color": "rgb(49,49,49)",
+    "text-halo-color": "rgba(255,255,255,1)",
+    "text-halo-width": 3,
   },
 };
 
@@ -154,7 +156,7 @@ export const bellParcelsFill = {
   source: "bell-parcels",
   "source-layer": "parcels",
   paint: {
-    "fill-color": "#333",
+    "fill-color": "#9a184e",
     "fill-opacity": 0,
   },
   // layout: {
@@ -172,7 +174,8 @@ export const bellParcelsLine = {
   source: "bell-parcels",
   "source-layer": "parcels",
   paint: {
-    "line-color": "#9a184e",
+    "line-color": "#e02675",
+    "line-width": 2,
   },
   // layout: {
   //   visibility: "none",
@@ -189,12 +192,14 @@ export const bellParcelsSymbol = {
   source: "bell-parcels",
   "source-layer": "parcels",
   paint: {
-    // 'line-color': '#444',
-    "text-color": "#9a184e",
+    "text-color": "rgb(49,49,49)",
+    "text-halo-color": "rgba(255,255,255,1)",
+    "text-halo-width": 3,
   },
   layout: {
     "text-field": ["get", "PROP_ID"],
     "text-size": 14,
+    "text-font": ["literal", ["Roboto Black", "Arial Unicode MS Bold"]],
     // visibility: "none",
   },
   minzoom: 16.5,

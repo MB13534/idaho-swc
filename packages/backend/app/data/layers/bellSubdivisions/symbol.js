@@ -5,17 +5,17 @@ module.exports = {
   source: 'bell-subdivisions',
   'source-layer': 'Bell_CAD_Subdivisions-3vq1qd',
   paint: {
-    // 'line-color': '#444',
-    'text-color': '#008088',
-    'text-halo-color': '#ffffff',
-    'text-halo-width': 5,
+    'text-color': 'rgb(49,49,49)',
+    'text-halo-color': 'rgba(255,255,255,1)',
+    'text-halo-width': 3,
   },
   layout: {
     'text-field': ['get', 'SUBDIVISIO'],
     'text-size': 14,
+    'text-font': ['literal', ['Roboto Black', 'Arial Unicode MS Bold']],
+
     visibility: 'none',
   },
-  // minzoom: 16.5,
   lreProperties: {
     layerGroup: 'bell-subdivisions',
   },

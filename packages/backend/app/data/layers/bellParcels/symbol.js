@@ -5,13 +5,13 @@ module.exports = {
   source: 'bell-parcels',
   'source-layer': 'parcels',
   paint: {
-    // 'line-color': '#444',
-    'text-color': '#857000',
-    'text-halo-color': '#ffffff',
-    'text-halo-width': 5,
+    'text-color': 'rgb(49,49,49)',
+    'text-halo-color': 'rgba(255,255,255,1)',
+    'text-halo-width': 3,
   },
   layout: {
     'text-field': ['get', 'PROP_ID'],
+    'text-font': ['literal', ['Roboto Black', 'Arial Unicode MS Bold']],
     'text-size': 14,
     visibility: 'none',
   },
