@@ -78,7 +78,13 @@ const getLegendOptions = (layer) => {
 };
 
 const LegendSymbol = ({ color }) => (
-  <Box bgcolor={color} borderRadius="50%" height={12} width={12} />
+  <Box
+    bgcolor={color}
+    borderRadius="50%"
+    height={12}
+    width={12}
+    style={{ minWidth: "12px" }}
+  />
 );
 
 const LayerLegendIcon = ({ open }) =>
@@ -161,7 +167,6 @@ const LayersControl = ({ items, onLayerChange }) => {
       return newValues;
     });
   };
-
   return (
     <Box display="flex" flexDirection="column">
       <List dense>
@@ -170,41 +175,47 @@ const LayersControl = ({ items, onLayerChange }) => {
             <Typography variant="body1">No layers found</Typography>
           </Box>
         )}
-        {uniqueItems?.map((item) => {
-          const open = expandedItems.includes(item?.name);
-          const layerVisible = item?.layout?.visibility === "visible";
-          return (
-            <Box key={item?.name} id="layerCheck">
-              <ListItem onClick={() => handleVisibilityChange(item)}>
-                <Checkbox
-                  edge="start"
-                  checked={layerVisible}
-                  tabIndex={-1}
-                  disableRipple
-                  inputProps={{ "aria-labelledby": "test" }}
-                  onClick={() =>
-                    (!layerVisible && !open && handleExpandItem(item?.name)) ||
-                    (layerVisible && open && handleExpandItem(item?.name))
-                  }
-                />
-                <ListItemText
-                  primary={item?.name}
-                  primaryTypographyProps={{
-                    color: layerVisible ? "textPrimary" : "textSecondary",
-                  }}
-                />
-                <ListItemSecondaryAction
-                  onClick={() => handleExpandItem(item?.name)}
-                >
-                  <IconButton edge="end" aria-label="delete">
-                    <LayerLegendIcon open={open} />
-                  </IconButton>
-                </ListItemSecondaryAction>
-              </ListItem>
-              <LayerLegend open={open} item={item} />
-            </Box>
-          );
-        })}
+        {uniqueItems
+          ?.sort((a, b) =>
+            (a.legendOrder || 0) > (b.legendOrder || 0) ? -1 : 1
+          )
+          .map((item) => {
+            const open = expandedItems.includes(item?.name);
+            const layerVisible = item?.layout?.visibility === "visible";
+            return (
+              <Box key={item?.name} id="layerCheck">
+                <ListItem onClick={() => handleVisibilityChange(item)}>
+                  <Checkbox
+                    edge="start"
+                    checked={layerVisible}
+                    tabIndex={-1}
+                    disableRipple
+                    inputProps={{ "aria-labelledby": "test" }}
+                    onClick={() =>
+                      (!layerVisible &&
+                        !open &&
+                        handleExpandItem(item?.name)) ||
+                      (layerVisible && open && handleExpandItem(item?.name))
+                    }
+                  />
+                  <ListItemText
+                    primary={item?.name}
+                    primaryTypographyProps={{
+                      color: layerVisible ? "textPrimary" : "textSecondary",
+                    }}
+                  />
+                  <ListItemSecondaryAction
+                    onClick={() => handleExpandItem(item?.name)}
+                  >
+                    <IconButton edge="end" aria-label="delete">
+                      <LayerLegendIcon open={open} />
+                    </IconButton>
+                  </ListItemSecondaryAction>
+                </ListItem>
+                <LayerLegend open={open} item={item} />
+              </Box>
+            );
+          })}
       </List>
     </Box>
   );

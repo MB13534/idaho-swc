@@ -252,6 +252,11 @@ const useMap = (ref, mapConfig) => {
       map.on("click", (e) => {
         const features = map.queryRenderedFeatures(e.point);
 
+        //TODO add popup pagination
+        // console.log(
+        //   features.filter((item) => popupLayerIds.includes(item.layer.id))
+        // );
+
         //Ensure that if the map is zoomed out such that multiple
         //copies of the feature are visible, the popup appears
         //over the copy being pointed to.

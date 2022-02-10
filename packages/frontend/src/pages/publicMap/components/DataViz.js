@@ -13,12 +13,9 @@ import {
 } from "@material-ui/core";
 import styled, { keyframes } from "styled-components";
 import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
 import { spacing } from "@material-ui/system";
 import { firstOfYear, lastOfYear, lineColors } from "../../../utils";
 import { useQuery } from "react-query";
-import { findRawRecords } from "../../../services/crudService";
-import useService from "../../../hooks/useService";
 import DatePicker from "../../../components/pickers/DatePicker";
 import Panel from "../../../components/panels/Panel";
 import AccordionSummary from "@material-ui/core/AccordionSummary";
@@ -100,9 +97,6 @@ const Grid = styled(MuiGrid)(spacing);
 const Typography = styled(MuiTypography)(spacing);
 
 const DataViz = ({ open = false, dataVizWellNumber, dataVizGraphType }) => {
-  const { getAccessTokenSilently } = useAuth0();
-  const service = useService({ toast: false });
-
   const divSaveRef = useRef(null);
   const graphSaveRef = useRef(null);
 
@@ -136,9 +130,6 @@ const DataViz = ({ open = false, dataVizWellNumber, dataVizGraphType }) => {
     if (dataVizWellNumber && dataVizGraphType) {
       async function send() {
         try {
-          const token = await getAccessTokenSilently();
-          const headers = { Authorization: `Bearer ${token}` };
-
           const endpoint = {
             count_production: "graph-wellproductions",
             count_waterlevels: "graph-depthtowater",
@@ -149,8 +140,7 @@ const DataViz = ({ open = false, dataVizWellNumber, dataVizGraphType }) => {
             `${process.env.REACT_APP_ENDPOINT}/api/${endpoint[dataVizGraphType]}/${dataVizWellNumber}`,
             {
               cuwcd_well_number: dataVizWellNumber,
-            },
-            { headers }
+            }
           );
 
           if (results.length) {
@@ -177,8 +167,11 @@ const DataViz = ({ open = false, dataVizWellNumber, dataVizGraphType }) => {
     ["ListWQParameters"],
     async () => {
       try {
-        const response = await service([findRawRecords, ["ListWQParameters"]]);
-        return response.map((parameter) => ({
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_ENDPOINT}/api/list-wq-parameters`
+        );
+
+        return data.map((parameter) => ({
           label: parameter.wq_parameter_name,
           value: parameter.wq_parameter_ndx,
         }));

@@ -4,6 +4,7 @@ module.exports = {
   type: 'symbol',
   source: 'clearwater-wells',
   drawOrder: -100,
+  legendOrder: 99,
   // minzoom: 12,
   layout: {
     'text-field': ['get', 'cuwcd_well_number'],

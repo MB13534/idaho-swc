@@ -137,8 +137,8 @@ const dataEntryRoutes = {
       path: "/data-access/well-water-level-data-entry",
       name: "Water Level",
       component: WaterLevels,
-      guard: DeveloperGuard,
-      visibilityFilter: DeveloperVisibilityFilter,
+      guard: AdminGuard,
+      visibilityFilter: AdminVisibilityFilter,
     },
   ],
   guard: AuthGuard,
@@ -225,10 +225,10 @@ const timeseriesRoutes = {
 
 const publicMapRoutes = {
   header: "Public Resources",
-  id: "Public Map",
+  id: "Interactive Map",
   icon: <Map />,
   path: ROUTES.PUBLIC_MAP,
-  name: "Public Map",
+  name: "Interactive Map",
   component: PublicMap,
 };
 
@@ -239,6 +239,8 @@ const publicFilesRoutes = {
   path: "/data-access/documents/public-files",
   name: "Public Files",
   component: Blank,
+  guard: DeveloperGuard,
+  visibilityFilter: DeveloperVisibilityFilter,
 };
 
 const clientDocsRoutes = {
@@ -247,8 +249,10 @@ const clientDocsRoutes = {
   path: "/data-access/documents/client-docs",
   name: "Client Documents",
   component: Blank,
-  guard: AdminGuard,
-  visibilityFilter: AdminVisibilityFilter,
+  // guard: AdminGuard,
+  // visibilityFilter: AdminVisibilityFilter,
+  guard: DeveloperGuard,
+  visibilityFilter: DeveloperVisibilityFilter,
 };
 
 const DeveloperDocsRoutes = {

@@ -24,7 +24,7 @@ const Container = styled(Paper)`
   overflow-x: hidden;
   overflow-y: hidden;
   width: 300px;
-  z-index: 1;
+  z-index: 3;
 `;
 
 const AccordionDetails = styled(MuiAccordionDetails)`

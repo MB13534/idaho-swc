@@ -1,6 +1,6 @@
 module.exports = {
   id: 'proposed-management-zones-line',
-  name: 'Proposed Management Zones',
+  name: '🔒 Proposed Management Zones',
   type: 'line',
   source: 'proposed-management-zones',
   'source-layer': 'Proposed_Management_Zones-bd97ag',

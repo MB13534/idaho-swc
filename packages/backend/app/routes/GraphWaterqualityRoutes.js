@@ -1,12 +1,12 @@
 const express = require('express');
-const {checkAccessToken} = require('../../core/middleware/auth.js');
+// const {checkAccessToken} = require('../../core/middleware/auth.js');
 const {graph_waterquality: model} = require('../../core/models');
 const router = express.Router();
 
 // Attach middleware to ensure that user is authenticated & has permissions
-router.use(
-  checkAccessToken(process.env.AUTH0_DOMAIN, process.env.AUTH0_AUDIENCE)
-);
+// router.use(
+//   checkAccessToken(process.env.AUTH0_DOMAIN, process.env.AUTH0_AUDIENCE)
+// );
 
 router.post('/:id', (req, res, next) => {
   const where = {};

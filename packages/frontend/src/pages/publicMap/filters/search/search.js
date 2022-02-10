@@ -143,7 +143,7 @@ const Search = ({ onSelect }) => {
         onFocus={() => !!value && setOpen(true)}
         placeholder="Search by well attributes"
         ref={searchRef}
-        style={{ width: "100%", minWidth: "162px" }}
+        style={{ width: "100%", minWidth: "180px" }}
         type="search"
         value={value}
         variant="outlined"
