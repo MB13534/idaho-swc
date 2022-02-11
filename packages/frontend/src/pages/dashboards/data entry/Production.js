@@ -799,7 +799,9 @@ function Production() {
                   latRef={latRef}
                   eleRef={eleRef}
                   setRadioValue={setRadioValue}
-                  defaultFilterValue="has_production"
+                  defaultFilterValue={
+                    currentUser?.isUser ? "all" : "has_production"
+                  }
                 />
               </MapContainer>
             </AccordionDetails>
