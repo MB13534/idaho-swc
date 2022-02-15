@@ -28,7 +28,7 @@ const SearchResults = ({
       open={open}
       anchorEl={anchorEl}
       placement="bottom-start"
-      style={{ zIndex: 2 }}
+      style={{ zIndex: 3 }}
       transition
     >
       <ClickAwayListener onClickAway={onClose}>

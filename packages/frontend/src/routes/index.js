@@ -20,6 +20,7 @@ import {
   Users,
   Map,
   Share2,
+  CreditCard,
 } from "react-feather";
 
 import AuthGuard from "../components/AuthGuard";
@@ -53,6 +54,7 @@ import UiReportAllPermitsReport from "../pages/dataAccess/reports/UiReportAllPer
 import WaterQuality from "../pages/dashboards/data entry/WaterQuality";
 import CurrentExemptWellUseSummaryReport from "../pages/dataAccess/reports/CurrentExemptWellUseSummaryReport";
 import WaterLevels from "../pages/dashboards/data entry/WaterLevels";
+import Rolodex from "../pages/dashboards/data entry/Rolodex";
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -114,6 +116,16 @@ const getCrudRoutes = (list) => {
 
 const crudSidebarMenu = [...getSidebarMenu(CRUD_MODELS)];
 const modelCrudRoutes = [...getCrudRoutes(CRUD_MODELS)];
+
+const dataManagementRoutes = {
+  id: "Rolodex",
+  icon: <CreditCard />,
+  path: "/data-access/rolodex",
+  name: "Rolodex",
+  component: Rolodex,
+  guard: AdminGuard,
+  visibilityFilter: AdminVisibilityFilter,
+};
 
 const dataEntryRoutes = {
   header: "Data Access",
@@ -464,6 +476,7 @@ export const dashboardLayoutRoutes = [
   pageRoutes,
   mainRoutes,
   changelogRoutes,
+  dataManagementRoutes,
   dataEntryRoutes,
   reportsRoutes,
   // mapRoutes,
@@ -499,6 +512,7 @@ export const protectedRoutes = [protectedPageRoutes];
 export const sidebarRoutes = [
   mainRoutes,
   ...crudSidebarMenu,
+  dataManagementRoutes,
   dataEntryRoutes,
   reportsRoutes,
   timeseriesRoutes,
