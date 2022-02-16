@@ -931,6 +931,7 @@ function Production() {
                   <TableWrapper>
                     <DataAdminTable
                       pageSize={10}
+                      currentSelectedPoint={currentSelectedPoint}
                       // isLoading={isLoading}
                       label="Search Well Table"
                       columns={editTableColumns}

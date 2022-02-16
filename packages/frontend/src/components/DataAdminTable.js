@@ -30,6 +30,7 @@ const DataAdminTable = ({
   updateHandler,
   endpoint,
   handleRefresh = () => {},
+  currentSelectedPoint,
   // ndxField,
   // options = {},
   // components = {},
@@ -42,7 +43,8 @@ const DataAdminTable = ({
   const [selectedRow, setSelectedRow] = useState(null);
 
   const handleAdd = (newData) => {
-    newData["cuwcd_well_number"] = data[0].cuwcd_well_number;
+    newData["cuwcd_well_number"] =
+      data[0]?.cuwcd_well_number ?? currentSelectedPoint;
     if (endpoint === "dm-well-productions") {
       if (
         newData.production_gallons === null ||

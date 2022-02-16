@@ -66,7 +66,7 @@ function Rolodex() {
     organization: null,
     address: null,
     city: null,
-    state: null,
+    state: "TX",
     zipcode: null,
     email_1: null,
     email_2: null,

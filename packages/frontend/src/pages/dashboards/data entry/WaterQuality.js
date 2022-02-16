@@ -1023,6 +1023,7 @@ function WaterQuality() {
                       updateHandler={setCurrentSelectedEditTableData}
                       endpoint="dm-wqs"
                       ndxField="ndx"
+                      currentSelectedPoint={currentSelectedPoint}
                     />
                   </TableWrapper>
                 </AccordionDetails>
