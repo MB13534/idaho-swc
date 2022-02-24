@@ -537,8 +537,8 @@ function WaterLevels() {
               >
                 <Typography variant="h4" ml={2}>
                   {!selectedRow.ndx
-                    ? "Creating New Water Level Entry"
-                    : `Editing Form for Well: ${selectedRow.cuwcd_well_number}`}
+                    ? "New Water Level Data Entry Form"
+                    : `Water Level Data Entry Form for Well: ${selectedRow.cuwcd_well_number}`}
                 </Typography>
               </AccordionSummary>
               <Panel>
@@ -588,6 +588,7 @@ function WaterLevels() {
                       <MuiPickersUtilsProvider utils={DateFnsUtils}>
                         <FormControl>
                           <KeyboardDateTimePicker
+                            format="LLLL do, yyyy, h:mm a"
                             inputVariant="outlined"
                             autoOk
                             required
