@@ -26,7 +26,7 @@ const geocodingClient = mbxGeocoder(baseClient);
 const Container = styled(Paper)`
   background: #fff;
   box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
-  left: 49px;
+  left: 359px;
   position: absolute;
   top: 10px;
   overflow-x: hidden;
@@ -56,7 +56,7 @@ const SearchResults = ({
       open={open}
       anchorEl={anchorEl}
       placement="bottom-start"
-      style={{ zIndex: 2 }}
+      style={{ zIndex: 4 }}
       transition
     >
       <ClickAwayListener onClickAway={onClose}>
@@ -153,7 +153,7 @@ const AddressSearchControl = ({ onSelect }) => {
         type="search"
         value={value}
         variant="outlined"
-        size="medium"
+        size="small"
       />
       <SearchResults
         anchorEl={searchRef?.current}

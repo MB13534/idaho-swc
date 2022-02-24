@@ -10,13 +10,17 @@ const DataVizControl = ({ open = false, onClose }) => {
       borderRadius={4}
       position="absolute"
       zIndex={1}
-      top={10}
-      right={49}
+      top={49}
+      right={10}
       display="flex"
       flexDirection="column"
     >
       <Tooltip title="Detailed Results">
-        <IconButton color={open ? "secondary" : "default"} onClick={onClose}>
+        <IconButton
+          size="small"
+          color={open ? "secondary" : "default"}
+          onClick={onClose}
+        >
           <GraphIcon />
         </IconButton>
       </Tooltip>

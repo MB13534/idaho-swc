@@ -26,6 +26,8 @@ import ExportDataButton from "../../../components/graphs/ExportDataButton";
 import SaveRefButton from "../../../components/graphs/SaveRefButton";
 import TimeseriesLineChart from "../../../components/graphs/TimeseriesLineChart";
 import { customSecondary } from "../../../theme/variants";
+import IconButton from "@material-ui/core/IconButton";
+import { Close } from "@material-ui/icons";
 
 const fadeIn = keyframes`
   from {
@@ -93,10 +95,21 @@ const SidebarSection = styled(MuiTypography)`
   display: block;
 `;
 
+const CloseContainer = styled.div`
+  position: absolute;
+  right: 0;
+  top: 0;
+`;
+
 const Grid = styled(MuiGrid)(spacing);
 const Typography = styled(MuiTypography)(spacing);
 
-const DataViz = ({ open = false, dataVizWellNumber, dataVizGraphType }) => {
+const DataViz = ({
+  open = false,
+  dataVizWellNumber,
+  dataVizGraphType,
+  onClose,
+}) => {
   const divSaveRef = useRef(null);
   const graphSaveRef = useRef(null);
 
@@ -515,163 +528,159 @@ const DataViz = ({ open = false, dataVizWellNumber, dataVizGraphType }) => {
       borderRadius={4}
       open={open}
     >
+      {/*<Box display="flex" alignItems="center">*/}
+      {/*  <Box flexGrow={1}> </Box>*/}
+      {/*  <Box>*/}
+      {/*    <IconButton>*/}
+      {/*      <Close />*/}
+      {/*    </IconButton>*/}
+      {/*  </Box>*/}
+      {/*</Box>*/}
+
       <Viz>
         <Panel overflowY="scroll" overflowX="hidden">
+          <CloseContainer>
+            <IconButton size="small" onClick={onClose}>
+              <Close />
+            </IconButton>
+          </CloseContainer>
           <>
             {Boolean(filteredMutatedGraphData) ? (
               <Grid container spacing={6}>
                 <Grid item xs={12}>
                   <div ref={divSaveRef}>
-                    <Accordion defaultExpanded>
-                      <AccordionSummary
-                        expandIcon={
-                          <ExpandMoreIcon data-html2canvas-ignore="true" />
-                        }
-                        aria-controls="time-series"
-                        id="time-series"
-                      >
-                        <TitleContainer>
-                          {formatTableTitle(
-                            currentTableLabel,
-                            graphLabels[dataVizGraphType]
-                          )}
-                        </TitleContainer>
-                      </AccordionSummary>
+                    <TitleContainer>
+                      {formatTableTitle(
+                        currentTableLabel,
+                        graphLabels[dataVizGraphType]
+                      )}
+                    </TitleContainer>
 
-                      <AccordionDetails>
-                        <TimeseriesContainer>
-                          <span data-html2canvas-ignore="true">
-                            <Grid container pb={2}>
-                              <Grid
-                                item
-                                style={{
-                                  flexGrow: 1,
-                                  maxWidth: "calc(100% - 110px)",
-                                  display: "flex",
-                                  flexDirection: "column",
-                                  justifyContent: "center",
-                                }}
-                              >
-                                {dataVizGraphType === "count_wqdata" &&
-                                  wQparameterOptions && (
-                                    <>
-                                      <SidebarSection ml={-3}>
-                                        Parameters
-                                      </SidebarSection>
-                                      <ListItem
-                                        style={{
-                                          paddingLeft: 0,
-                                          paddingRight: 0,
-                                        }}
-                                      >
-                                        <OptionsPicker
-                                          selectedOption={selectedWQParameter}
-                                          setSelectedOption={
-                                            setSelectedWQParameter
-                                          }
-                                          options={wQparameterOptions}
-                                          label="Water Quality Parameters"
-                                        />
-                                      </ListItem>
-                                    </>
-                                  )}
-                                {dataVizGraphType === "count_production" &&
-                                  isGraphRefCurrent && (
-                                    <>
-                                      <Button
-                                        size="small"
-                                        style={{ width: "130px" }}
-                                        variant="contained"
-                                        color="primary"
-                                        onClick={
-                                          handleToggleProductionUnitsChange
-                                        }
-                                      >
-                                        Switch Units
-                                      </Button>
-                                    </>
-                                  )}
-                              </Grid>
-                              <Grid
-                                item
-                                style={{
-                                  display: "flex",
-                                  alignItems: "flex-end",
-                                }}
-                                mb={1}
-                              >
-                                <ExportDataButton
-                                  title="cuwcd_well_number"
-                                  data={currentSelectedTimeseriesData}
-                                  filterValues={filterValues}
-                                  parameter={selectedWQParameter}
-                                />
-                                <SaveRefButton
-                                  data-html2canvas-ignore
-                                  ref={divSaveRef}
-                                  title={dataVizWellNumber}
-                                />
-                              </Grid>
-                            </Grid>
-                          </span>
-                          <TimeseriesWrapper
-                            style={
-                              dataVizGraphType === "count_wqdata"
-                                ? { height: "calc(100% - 118px)" }
-                                : dataVizGraphType === "count_production"
-                                ? { height: "calc(100% - 58px)" }
-                                : null
-                            }
+                    <TimeseriesContainer>
+                      <span data-html2canvas-ignore="true">
+                        <Grid container pb={2}>
+                          <Grid
+                            item
+                            style={{
+                              flexGrow: 1,
+                              maxWidth: "calc(100% - 110px)",
+                              display: "flex",
+                              flexDirection: "column",
+                              justifyContent: "center",
+                            }}
                           >
-                            <TimeseriesLineChart
-                              data={filteredMutatedGraphData}
-                              // error={error}
-                              // isLoading={isLoading}
-                              yLLabel={
-                                dataVizGraphType === "count_waterlevels"
-                                  ? "Water Level (Feet Below Ground Level)"
-                                  : dataVizGraphType === "count_production"
-                                  ? productionUnitsLabels.yLLabel
-                                  : `${filteredMutatedGraphData?.parameter} (${filteredMutatedGraphData?.units})`
-                              }
-                              yRLLabel={
-                                dataVizGraphType === "count_production" &&
-                                productionUnitsLabels.yRLabel
-                              }
-                              reverseLegend={false}
-                              yLReverse={
-                                dataVizGraphType === "count_waterlevels"
-                              }
-                              ref={graphSaveRef}
+                            {dataVizGraphType === "count_wqdata" &&
+                              wQparameterOptions && (
+                                <>
+                                  <SidebarSection ml={-3}>
+                                    Parameters
+                                  </SidebarSection>
+                                  <ListItem
+                                    style={{
+                                      paddingLeft: 0,
+                                      paddingRight: 0,
+                                    }}
+                                  >
+                                    <OptionsPicker
+                                      selectedOption={selectedWQParameter}
+                                      setSelectedOption={setSelectedWQParameter}
+                                      options={wQparameterOptions}
+                                      label="Water Quality Parameters"
+                                    />
+                                  </ListItem>
+                                </>
+                              )}
+                            {dataVizGraphType === "count_production" &&
+                              isGraphRefCurrent && (
+                                <>
+                                  <Button
+                                    size="small"
+                                    style={{ width: "130px" }}
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={handleToggleProductionUnitsChange}
+                                  >
+                                    Switch Units
+                                  </Button>
+                                </>
+                              )}
+                          </Grid>
+                          <Grid
+                            item
+                            style={{
+                              display: "flex",
+                              alignItems: "flex-end",
+                            }}
+                            mb={1}
+                          >
+                            <ExportDataButton
+                              title="cuwcd_well_number"
+                              data={currentSelectedTimeseriesData}
                               filterValues={filterValues}
-                              type={
-                                dataVizGraphType === "count_production"
-                                  ? "bar"
-                                  : "scatter"
-                              }
-                              displayLegend={
-                                dataVizGraphType === "count_production"
-                              }
-                              setIsGraphRefCurrent={setIsGraphRefCurrent}
-                              stacked={true}
-                              xLabelUnit={
-                                dataVizGraphType === "count_production"
-                                  ? "month"
-                                  : "day"
-                              }
-                              maxTicksX={12}
-                              maxTicksYL={6}
-                              maxTicksYR={5}
-                              align={
-                                dataVizGraphType === "count_production"
-                                  ? "start"
-                                  : "center"
-                              }
+                              parameter={selectedWQParameter}
                             />
-                          </TimeseriesWrapper>
-                        </TimeseriesContainer>
-                      </AccordionDetails>
-                    </Accordion>
+                            <SaveRefButton
+                              data-html2canvas-ignore
+                              ref={divSaveRef}
+                              title={dataVizWellNumber}
+                            />
+                          </Grid>
+                        </Grid>
+                      </span>
+                      <TimeseriesWrapper
+                        style={
+                          dataVizGraphType === "count_wqdata"
+                            ? { height: "calc(100% - 118px)" }
+                            : dataVizGraphType === "count_production"
+                            ? { height: "calc(100% - 58px)" }
+                            : null
+                        }
+                      >
+                        <TimeseriesLineChart
+                          data={filteredMutatedGraphData}
+                          // error={error}
+                          // isLoading={isLoading}
+                          yLLabel={
+                            dataVizGraphType === "count_waterlevels"
+                              ? "Water Level (Feet Below Ground Level)"
+                              : dataVizGraphType === "count_production"
+                              ? productionUnitsLabels.yLLabel
+                              : `${filteredMutatedGraphData?.parameter} (${filteredMutatedGraphData?.units})`
+                          }
+                          yRLLabel={
+                            dataVizGraphType === "count_production" &&
+                            productionUnitsLabels.yRLabel
+                          }
+                          reverseLegend={false}
+                          yLReverse={dataVizGraphType === "count_waterlevels"}
+                          ref={graphSaveRef}
+                          filterValues={filterValues}
+                          type={
+                            dataVizGraphType === "count_production"
+                              ? "bar"
+                              : "scatter"
+                          }
+                          displayLegend={
+                            dataVizGraphType === "count_production"
+                          }
+                          setIsGraphRefCurrent={setIsGraphRefCurrent}
+                          stacked={true}
+                          xLabelUnit={
+                            dataVizGraphType === "count_production"
+                              ? "month"
+                              : "day"
+                          }
+                          maxTicksX={12}
+                          maxTicksYL={6}
+                          maxTicksYR={5}
+                          align={
+                            dataVizGraphType === "count_production"
+                              ? "start"
+                              : "center"
+                          }
+                        />
+                      </TimeseriesWrapper>
+                    </TimeseriesContainer>
                   </div>
                 </Grid>
               </Grid>

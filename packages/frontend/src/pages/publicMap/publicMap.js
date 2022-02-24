@@ -360,6 +360,7 @@ const PublicMap = () => {
           open={dataVizVisible}
           dataVizWellNumber={dataVizWellNumber}
           dataVizGraphType={dataVizGraphType}
+          onClose={() => setDataVizVisible(false)}
         />
       </Map>
 

@@ -19,8 +19,8 @@ const Container = styled(Paper)`
   box-shadow: 0px 1px 2px 0px rgba(0, 0, 0, 0.05);
   left: 49px;
   position: absolute;
-  top: 80px;
-  // max-height: calc(100% - 32px);
+  top: 10px;
+  max-height: calc(100% - 32px);
   overflow-x: hidden;
   overflow-y: hidden;
   width: 300px;
