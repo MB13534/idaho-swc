@@ -12,9 +12,8 @@ const UserGuard = ({ children }) => {
   let isUser = false;
   if (
     roles &&
-    roles.filter((x) =>
-      ["Well Owner", "Administrator", "Developer"].includes(x)
-    ).length > 0
+    roles.filter((x) => ["User", "Administrator", "Developer"].includes(x))
+      .length > 0
   ) {
     isUser = true;
   }

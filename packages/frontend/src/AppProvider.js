@@ -31,7 +31,7 @@ export const AppProvider = ({ children }) => {
         myUser.isAdmin = false;
       }
 
-      if (roles && roles.filter((x) => x === "Well Owner").length > 0) {
+      if (roles && roles.filter((x) => x === "User").length > 0) {
         myUser.isUser = true;
       } else {
         myUser.isUser = false;
