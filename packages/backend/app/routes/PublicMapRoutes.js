@@ -1,13 +1,13 @@
 const express = require('express');
 const {checkAccessToken, checkRoles} = require('../../core/middleware/auth.js');
 const {
-  ui_list_wells_table,
-  list_aquifers,
+  summary_of_sites,
   /*MJB hide aggregated system control per client (probably temporary)*/
   // list_aggregate_systems,
 } = require('../../core/models');
 const sourceData = require('../data/sources');
 const layersData = require('../data/layers');
+const {titleize} = require('inflected');
 
 const router = express.Router();
 
@@ -44,29 +44,45 @@ const cleanLayer = (layer) => {
   };
 };
 
-// TODO move to DB and key off of index instead
-const wellUsesData = [
-  'Ag/Irrigation',
-  'Domestic',
-  'Industrial',
-  'Livestock/Poultry',
-  'Monitoring',
-  'Not Used',
-  'Other',
-  'Public Supply',
-  'Testing',
+const locationTypesData = [
+  'stream gage',
+  'sentinel well',
+  'return flow',
+  'reservoir ',
+  'recharge',
+  'diversion',
+  'precipitation station',
+  'stream reach',
+  'diversion pump',
+  'snotel',
+  'non-sentinel well',
 ];
 
 // TODO move to DB and key off of index instead
-const wellStatusesData = [
-  'Abandoned',
-  'Active',
-  'Capped',
-  'Inactive',
-  'Never Drilled',
-  'Plugged',
-  'Proposed',
-  'Unknown',
+const parameterNamesData = [
+  'discharge',
+  'reach gain',
+  'SWE',
+  'Soil Moisture (Avg % at 8")',
+  'depth to water level',
+  'gage height',
+  'recharge',
+  'reservoir contents',
+  'return flow',
+  'total precipitation',
+  'water surface elevation',
+];
+
+// TODO move to DB and key off of index instead
+const dataProvidersData = [
+  'BOR - Hydromet',
+  'IDWR',
+  'IDWR Accounting',
+  'IDWR AquaInfo',
+  'NRCS',
+  'USGS',
+  'agrimet',
+  'fill this in',
 ];
 
 /**
@@ -103,7 +119,7 @@ const toGeoJSON = ({data, geometryField}) => {
  */
 router.get('/sources', async (req, res, next) => {
   try {
-    const wellsData = await ui_list_wells_table.findAll();
+    const wellsData = await summary_of_sites.findAll();
     const finalSources = sources.map((source) => {
       if (source.id === 'clearwater-wells') {
         return {
@@ -157,7 +173,7 @@ router.get(
  */
 router.get('/wells', async (req, res, next) => {
   try {
-    const wellsData = await ui_list_wells_table.findAll();
+    const wellsData = await summary_of_sites.findAll();
     res.json(wellsData);
   } catch (err) {
     next(err);
@@ -174,14 +190,21 @@ router.get('/wells', async (req, res, next) => {
  */
 router.get('/filters', async (req, res, next) => {
   try {
-    const aquifers = await list_aquifers
-      .findAll({
-        order: [['aquifer_name', 'ASC']],
-      })
-      .map(({aquifer_name}) => ({display: aquifer_name, value: aquifer_name}));
-    const primaryUses = wellUsesData.map((use) => ({display: use, value: use}));
-    const wellStatus = wellStatusesData.map((use) => ({
-      display: use,
+    // const aquifers = await list_aquifers
+    //   .findAll({
+    //     order: [['aquifer_name', 'ASC']],
+    //   })
+    //   .map(({aquifer_name}) => ({display: aquifer_name, value: aquifer_name}));
+    const locationTypes = locationTypesData.map((use) => ({
+      display: titleize(use),
+      value: use,
+    }));
+    const parameterNames = parameterNamesData.map((use) => ({
+      display: titleize(use),
+      value: use,
+    }));
+    const dataProviders = dataProvidersData.map((use) => ({
+      display: titleize(use),
       value: use,
     }));
     /*MJB hide aggregated system control per client (probably temporary)*/
@@ -194,9 +217,9 @@ router.get('/filters', async (req, res, next) => {
     //     value: agg_system_name,
     //   }));
     res.json({
-      aquifers: aquifers || [],
-      primaryUses,
-      wellStatus,
+      locationTypes: locationTypes || [],
+      parameterNames,
+      dataProviders,
       /*MJB hide aggregated system control per client (probably temporary)*/
       // aggregatedSystems:
       //   [...aggregatedSystems, {display: '--', value: '--'}] || [],

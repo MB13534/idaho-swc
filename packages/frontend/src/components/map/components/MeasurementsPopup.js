@@ -1,6 +1,7 @@
 import React from "react";
-import { Tooltip } from "@material-ui/core";
+import { Box, Tooltip } from "@material-ui/core";
 import styled from "styled-components/macro";
+import Button from "@material-ui/core/Button";
 
 const MeasurementsContainer = styled.pre`
   background: rgba(0, 0, 0, 0.6);
@@ -13,7 +14,7 @@ const MeasurementsContainer = styled.pre`
   font-size: 11px;
   line-height: 18px;
   border-radius: 3px;
-  z-index: 1000;
+  z-index: 2;
   display: none;
 `;
 
@@ -28,6 +29,9 @@ const MeasurementsPopup = ({
   radiusRef,
   polygonRef,
   pointRef,
+  lineRef,
+  onHide,
+  onClear,
 }) => {
   return (
     <>
@@ -36,6 +40,11 @@ const MeasurementsPopup = ({
         <br />
         <Tooltip title="Copy Radius to Clipboard" placement="left-start">
           <Measurement ref={radiusRef} />
+        </Tooltip>
+        <strong>Most recently edited line length:</strong>
+        <br />
+        <Tooltip title="Copy Radius to Clipboard" placement="left-start">
+          <Measurement ref={lineRef} />
         </Tooltip>
         <strong>Total polygon area:</strong>
         <br />
@@ -47,6 +56,26 @@ const MeasurementsPopup = ({
         <Tooltip title="Copy Coordinates to Clipboard" placement="left-start">
           <Measurement ref={pointRef} />
         </Tooltip>
+        <br />
+        <Box display="flex" justifyContent="end">
+          <Button
+            size="small"
+            color="primary"
+            variant="contained"
+            onClick={onClear}
+          >
+            Reset
+          </Button>
+          <Button
+            style={{ marginLeft: "10px" }}
+            size="small"
+            color="secondary"
+            variant="contained"
+            onClick={onHide}
+          >
+            Hide
+          </Button>
+        </Box>
       </MeasurementsContainer>
     </>
   );

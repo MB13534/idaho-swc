@@ -26,46 +26,39 @@ export const BASEMAP_STYLES = [
   },
 ];
 
-export const DEFAULT_MAP_CENTER = [-97.47, 31.05];
+export const DEFAULT_MAP_CENTER = [-112.7609324204845, 43.75590141795723];
 
 export const INIT_MAP_CONFIG = {
   style: BASEMAP_STYLES[0].url,
   center: DEFAULT_MAP_CENTER,
-  zoom: 11,
+  zoom: 7,
   preserveDrawingBuffer: true,
 };
 
 export const WELLS_LAYER_ID = "clearwater-wells-circle";
 export const INIT_FILTER_VALUES = {
-  aquifers: {
+  locationTypes: {
     layerId: WELLS_LAYER_ID,
-    layerFieldName: "source_aquifer",
+    layerFieldName: "loc_type_name",
     options: [],
     type: "multi-select",
     value: [],
   },
-  primaryUses: {
+  parameterNames: {
     layerId: WELLS_LAYER_ID,
-    layerFieldName: "primary_use",
+    layerFieldName: "parameter_name",
     options: [],
     type: "multi-select",
     value: [],
   },
-  wellStatus: {
+  dataProviders: {
     layerId: WELLS_LAYER_ID,
-    layerFieldName: "well_status",
+    layerFieldName: "data_provider",
     options: [],
     type: "multi-select",
     value: [],
   },
-  /*MJB hide aggregated system control per client (probably temporary)*/
-  // aggregatedSystems: {
-  //   layerId: WELLS_LAYER_ID,
-  //   layerFieldName: "agg_system_name",
-  //   options: [],
-  //   type: "multi-select",
-  //   value: [],
-  // },
+
   hasProduction: {
     layerId: WELLS_LAYER_ID,
     layerFieldName: "has_production",

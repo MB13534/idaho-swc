@@ -6,7 +6,7 @@ module.exports = {
   drawOrder: -100,
   legendOrder: 99,
   layout: {
-    'text-field': ['get', 'cuwcd_well_number'],
+    'text-field': ['get', 'loc_name'],
     'text-size': 14,
     'text-offset': [0, -1.2],
     'text-font': ['literal', ['Roboto Black', 'Arial Unicode MS Bold']],

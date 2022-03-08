@@ -44,20 +44,20 @@ const useFilters = ({ onFilterChange }) => {
   useEffect(() => {
     setFilterValues((prevState) => ({
       ...prevState,
-      aquifers: {
-        ...prevState.aquifers,
-        options: data?.data?.aquifers || [],
-        value: data?.data?.aquifers.map(({ value }) => value) || [],
+      locationTypes: {
+        ...prevState.locationTypes,
+        options: data?.data?.locationTypes || [],
+        value: data?.data?.locationTypes.map(({ value }) => value) || [],
       },
-      primaryUses: {
-        ...prevState.primaryUses,
-        options: data?.data?.primaryUses || [],
-        value: data?.data?.primaryUses.map(({ value }) => value) || [],
+      parameterNames: {
+        ...prevState.parameterNames,
+        options: data?.data?.parameterNames || [],
+        value: data?.data?.parameterNames.map(({ value }) => value) || [],
       },
-      wellStatus: {
-        ...prevState.wellStatus,
-        options: data?.data?.wellStatus || [],
-        value: data?.data?.wellStatus.map(({ value }) => value) || [],
+      dataProviders: {
+        ...prevState.dataProviders,
+        options: data?.data?.dataProviders || [],
+        value: data?.data?.dataProviders.map(({ value }) => value) || [],
       },
       /*MJB hide aggregated system control per client (probably temporary)*/
       // aggregatedSystems: {

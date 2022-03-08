@@ -5,7 +5,7 @@ import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-load
 import Popup from "../../popup";
 import useSources from "../useSources";
 import useLayers from "../useLayers";
-import { MapLogger } from "./mapUtils";
+import { coordinatesGeocoder, MapLogger } from "./mapUtils";
 import { BASEMAP_STYLES } from "../../constants";
 import debounce from "lodash.debounce";
 import createTheme from "../../../../theme";
@@ -24,6 +24,7 @@ import * as MapboxDrawGeodesic from "mapbox-gl-draw-geodesic";
 import { handleCopyCoords, updateArea } from "../../../../utils/map";
 import ResetZoomControl from "../../../../components/map/ResetZoomControl";
 import { isTouchScreenDevice } from "../../../../utils";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
 
 const mapLogger = new MapLogger({
   enabled: process.env.NODE_ENV === "development",
@@ -56,6 +57,7 @@ const useMap = (ref, mapConfig) => {
   const [dataVizVisible, setDataVizVisible] = useState(false);
   const [dataVizWellNumber, setDataVizWellNumber] = useState(null);
   const [dataVizGraphType, setDataVizGraphType] = useState(null);
+  const [measurementsVisible, setMeasurementsVisible] = useState(false);
 
   const [eventsRegistered, setEventsRegistered] = useState(false);
   const popUpRef = useRef(
@@ -68,7 +70,41 @@ const useMap = (ref, mapConfig) => {
   const polygonRef = useRef(null);
   const radiusRef = useRef(null);
   const pointRef = useRef(null);
+  const lineRef = useRef(null);
   const measurementsContainerRef = useRef(null);
+
+  const handleClearMeasurements = () => {
+    draw.deleteAll();
+    polygonRef.current.innerHTML = "";
+    radiusRef.current.innerHTML = "";
+    pointRef.current.innerHTML = "";
+    lineRef.current.innerHTML = "";
+    setMeasurementsVisible(false);
+  };
+
+  //adds control features as extended by MapboxDrawGeodesic (draw circle)
+  let modes = MapboxDraw.modes;
+  modes = MapboxDrawGeodesic.enable(modes);
+
+  const [draw] = useState(
+    new MapboxDraw({
+      modes,
+      controls: {
+        polygon: true,
+        point: true,
+        trash: true,
+        line_string: true,
+      },
+      displayControlsDefault: false,
+      userProperties: true,
+    })
+  );
+
+  useEffect(() => {
+    measurementsVisible
+      ? (measurementsContainerRef.current.style.display = "block")
+      : (measurementsContainerRef.current.style.display = "none");
+  }, [measurementsVisible]);
 
   // Fetch a list of sources  and layers to add to the map
   const { sources } = useSources();
@@ -154,6 +190,7 @@ const useMap = (ref, mapConfig) => {
     if (shouldAddControls) {
       //top left controls
       map.addControl(new mapboxgl.NavigationControl(), "top-left");
+      map.addControl(new mapboxgl.FullscreenControl(), "top-left");
       map.addControl(
         new mapboxgl.GeolocateControl({
           positionOptions: {
@@ -169,7 +206,17 @@ const useMap = (ref, mapConfig) => {
       map.addControl(new ResetZoomControl(), "top-left");
 
       //top right controls
-      map.addControl(new mapboxgl.FullscreenControl(), "top-right");
+      map.addControl(
+        new MapboxGeocoder({
+          accessToken: mapboxgl.accessToken,
+          localGeocoder: coordinatesGeocoder,
+          zoom: 16,
+          mapboxgl: mapboxgl,
+          reverseGeocode: true,
+          placeholder: "Address/Coords Search",
+        }),
+        "top-right"
+      );
 
       //bottom left controls
       map.addControl(
@@ -184,20 +231,6 @@ const useMap = (ref, mapConfig) => {
         "bottom-left"
       );
 
-      //adds control features as extended by MapboxDrawGeodesic (draw circle)
-      let modes = MapboxDraw.modes;
-      modes = MapboxDrawGeodesic.enable(modes);
-      const draw = new MapboxDraw({
-        modes,
-        controls: {
-          polygon: true,
-          point: true,
-          trash: true,
-        },
-        displayControlsDefault: false,
-        userProperties: true,
-      });
-
       //event listener to run function updateArea during each draw action to handle measurements popup
       const drawActions = ["draw.create", "draw.update", "draw.delete"];
       drawActions.forEach((item) => {
@@ -210,8 +243,10 @@ const useMap = (ref, mapConfig) => {
             polygonRef,
             radiusRef,
             pointRef,
+            lineRef,
             measurementsContainerRef,
-            draw
+            draw,
+            setMeasurementsVisible
           );
         });
       });
@@ -223,7 +258,7 @@ const useMap = (ref, mapConfig) => {
         !isTouchScreenDevice() &&
         map.addControl(new DragCircleControl(draw), "bottom-right");
     }
-  }, [map]);
+  }, [map]); // eslint-disable-line
 
   const addMapEvents = useCallback(() => {
     if (process.env.NODE_ENV === "development") {
@@ -307,7 +342,7 @@ const useMap = (ref, mapConfig) => {
       });
 
       // //handles copying coordinates and measurements to the clipboard
-      const copyableRefs = [polygonRef, radiusRef, pointRef];
+      const copyableRefs = [polygonRef, radiusRef, pointRef, lineRef];
       copyableRefs.forEach((ref) => {
         ref.current.addEventListener("click", (e) => {
           handleCopyCoords(e.target.textContent);
@@ -507,10 +542,14 @@ const useMap = (ref, mapConfig) => {
     updateLayerFilters,
     updateLayerStyles,
     updateLayerVisibility,
+    measurementsVisible,
+    setMeasurementsVisible,
     polygonRef,
     radiusRef,
     pointRef,
+    lineRef,
     measurementsContainerRef,
+    handleClearMeasurements,
     dataVizVisible,
     setDataVizVisible,
     dataVizWellNumber,

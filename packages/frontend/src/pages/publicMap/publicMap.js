@@ -22,16 +22,14 @@ import { INIT_MAP_CONFIG, WELLS_SEARCH_OPTIONS } from "./constants";
 
 import DisclaimerDialog from "./components/DisclaimerDialog";
 import MeasurementsPopup from "../../components/map/components/MeasurementsPopup";
-import DataVizControl from "./controls/dataVizControl";
-import DataViz from "./components/DataViz";
 import MainControl from "./controls/mainControl/";
-import AddressSearchControl from "./controls/addressSearchControl";
 import CommaSeparatedWellsSearch from "./filters/commaSeparatedWellsSearch";
 
 import PrintReportDialog from "./components/PrintReportDialog";
 import { useReactToPrint } from "react-to-print";
 import PrintMapFormat from "./components/PrintMapFormat";
 import SplitButton from "../../components/SplitButton";
+import MeasurementsControl from "./controls/MeasurementsControl";
 
 const FiltersBar = styled(Paper)`
   align-items: center;
@@ -92,14 +90,14 @@ const PublicMap = () => {
     updateLayerStyles,
     updateLayerVisibility,
     updateBasemap,
+    measurementsVisible,
+    handleClearMeasurements,
+    setMeasurementsVisible,
     polygonRef,
     radiusRef,
     pointRef,
+    lineRef,
     measurementsContainerRef,
-    dataVizVisible,
-    setDataVizVisible,
-    dataVizWellNumber,
-    dataVizGraphType,
     eventsRegistered,
   } = useMap(mapContainer, INIT_MAP_CONFIG);
   const {
@@ -179,66 +177,51 @@ const PublicMap = () => {
           <FiltersSection>
             <FiltersContainer>
               <FilterControl
-                appliedCount={filterValues?.aquifers?.value?.length}
-                label="Aquifers"
+                appliedCount={filterValues?.locationTypes?.value?.length}
+                label="Location Types"
               >
                 <Filter
-                  label="Aquifers"
-                  name="aquifers"
+                  label="Location Types"
+                  name="locationTypes"
                   onChange={handleFilterValues}
                   onSelectAll={handleSelectAll}
                   onSelectNone={handleSelectNone}
-                  options={filterValues?.aquifers?.options}
-                  type={filterValues?.aquifers?.type}
-                  value={filterValues?.aquifers?.value}
+                  options={filterValues?.locationTypes?.options}
+                  type={filterValues?.locationTypes?.type}
+                  value={filterValues?.locationTypes?.value}
                 />
               </FilterControl>
               <FilterControl
-                appliedCount={filterValues?.primaryUses?.value?.length}
-                label="Primary Use"
+                appliedCount={filterValues?.parameterNames?.value?.length}
+                label="Parameter Names"
               >
                 <Filter
-                  label="Primary Use"
-                  name="primaryUses"
+                  label="Parameter Names"
+                  name="parameterNames"
                   onChange={handleFilterValues}
                   onSelectAll={handleSelectAll}
                   onSelectNone={handleSelectNone}
-                  options={filterValues?.primaryUses?.options}
-                  type={filterValues?.primaryUses?.type}
-                  value={filterValues?.primaryUses?.value}
+                  options={filterValues?.parameterNames?.options}
+                  type={filterValues?.parameterNames?.type}
+                  value={filterValues?.parameterNames?.value}
                 />
               </FilterControl>
               <FilterControl
-                appliedCount={filterValues?.wellStatus?.value?.length}
-                label="Well Status"
+                appliedCount={filterValues?.dataProviders?.value?.length}
+                label="Data Provider"
               >
                 <Filter
-                  label="Well Status"
-                  name="wellStatus"
+                  label="Data Providers"
+                  name="dataProviders"
                   onChange={handleFilterValues}
                   onSelectAll={handleSelectAll}
                   onSelectNone={handleSelectNone}
-                  options={filterValues?.wellStatus?.options}
-                  type={filterValues?.wellStatus?.type}
-                  value={filterValues?.wellStatus?.value}
+                  options={filterValues?.dataProviders?.options}
+                  type={filterValues?.dataProviders?.type}
+                  value={filterValues?.dataProviders?.value}
                 />
               </FilterControl>
-              {/*MJB hide aggregated system control per client (probably temporary)*/}
-              {/*<FilterControl*/}
-              {/*  appliedCount={filterValues?.aggregatedSystems?.value?.length}*/}
-              {/*  label="Aggregated System"*/}
-              {/*>*/}
-              {/*  <Filter*/}
-              {/*    label="Aggregated System"*/}
-              {/*    name="aggregatedSystems"*/}
-              {/*    onChange={handleFilterValues}*/}
-              {/*    onSelectAll={handleSelectAll}*/}
-              {/*    onSelectNone={handleSelectNone}*/}
-              {/*    options={filterValues?.aggregatedSystems?.options}*/}
-              {/*    type={filterValues?.aggregatedSystems?.type}*/}
-              {/*    value={filterValues?.aggregatedSystems?.value}*/}
-              {/*  />*/}
-              {/*</FilterControl>*/}
+
               <FilterControl
                 appliedCount={getMoreFiltersCount(filterValues)}
                 label="More Filters"
@@ -328,17 +311,6 @@ const PublicMap = () => {
         </FiltersSection>
       </FiltersBar>
       <Map ref={mapContainer}>
-        <MeasurementsPopup
-          measurementsContainerRef={measurementsContainerRef}
-          radiusRef={radiusRef}
-          polygonRef={polygonRef}
-          pointRef={pointRef}
-        />
-        <AddressSearchControl
-          onSelect={(coordinates) =>
-            map?.flyTo({ center: coordinates, zoom: 16 })
-          }
-        />
         {eventsRegistered && (
           <MainControl
             activeBasemap={activeBasemap}
@@ -352,16 +324,35 @@ const PublicMap = () => {
         {process.env.NODE_ENV === "development" && (
           <ZoomInfo zoomLevel={zoomLevel} />
         )}
-        <DataVizControl
-          open={dataVizVisible}
-          onClose={() => setDataVizVisible(!dataVizVisible)}
+        {/*<DataVizControl*/}
+        {/*  open={dataVizVisible}*/}
+        {/*  onClose={() => setDataVizVisible(!dataVizVisible)}*/}
+        {/*/>*/}
+        {/*<DataViz*/}
+        {/*  open={dataVizVisible}*/}
+        {/*  dataVizWellNumber={dataVizWellNumber}*/}
+        {/*  dataVizGraphType={dataVizGraphType}*/}
+        {/*  onClose={() => setDataVizVisible(false)}*/}
+        {/*/>*/}
+
+        <MeasurementsPopup
+          measurementsContainerRef={measurementsContainerRef}
+          radiusRef={radiusRef}
+          polygonRef={polygonRef}
+          pointRef={pointRef}
+          lineRef={lineRef}
+          onHide={() => setMeasurementsVisible(false)}
+          onClear={handleClearMeasurements}
         />
-        <DataViz
-          open={dataVizVisible}
-          dataVizWellNumber={dataVizWellNumber}
-          dataVizGraphType={dataVizGraphType}
-          onClose={() => setDataVizVisible(false)}
-        />
+
+        {!measurementsVisible && (
+          <MeasurementsControl
+            open={measurementsVisible}
+            onToggle={() => setMeasurementsVisible(!measurementsVisible)}
+            right={49}
+            bottom={30}
+          />
+        )}
       </Map>
 
       {eventsRegistered && printReportDialogOpen && (

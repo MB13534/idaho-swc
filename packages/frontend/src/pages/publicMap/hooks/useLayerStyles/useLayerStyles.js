@@ -2,53 +2,43 @@ import { useState } from "react";
 import { scaleOrdinal } from "d3-scale";
 import { schemePaired } from "d3-scale-chromatic";
 
-const aquiferValues = [
-  "Middle Trinity",
-  "Pecan",
-  "Alluvium",
-  "Lower Trinity",
-  "Edwards (BFZ)",
-  "Edwards Equivalent",
-  "Ozan",
-  "Upper Trinity",
-  "Austin Chalk",
-  "Lake Waco",
-  "Kemp",
-  "Undeclared",
-  "Buda",
+const locationTypesValues = [
+  "stream gage",
+  "sentinel well",
+  "return flow",
+  "reservoir ",
+  "recharge",
+  "diversion",
+  "precipitation station",
+  "stream reach",
+  "diversion pump",
+  "snotel",
+  "non-sentinel well",
 ];
 
-const primaryUseValues = [
-  "Other",
-  "Industrial",
-  "Ag/Irrigation",
-  "Testing",
-  "Livestock/Poultry",
-  "Domestic",
-  "Not Used",
-  "Public Supply",
-  "Monitoring",
+const parameterNamesValues = [
+  "discharge",
+  "reach gain",
+  "SWE",
+  'Soil Moisture (Avg % at 8")',
+  "depth to water level",
+  "gage height",
+  "recharge",
+  "reservoir contents",
+  "return flow",
+  "total precipitation",
+  "water surface elevation",
 ];
 
-const wellStatusValues = [
-  "Abandoned",
-  "Unknown",
-  "Plugged",
-  "Proposed",
-  "Never Drilled",
-  "Capped",
-  "Active",
-  "Inactive",
-];
-
-const wellTypeValues = [
-  "permitted",
-  "exempt-permitted",
-  "exempt",
-  "monitoring",
-  "exempt-monitoring",
-  "monitoring-permitted",
-  "other",
+const dataProvidersValues = [
+  "BOR - Hydromet",
+  "IDWR",
+  "IDWR Accounting",
+  "IDWR AquaInfo",
+  "NRCS",
+  "USGS",
+  "agrimet",
+  "fill this in",
 ];
 
 const buildScale = (values) => {
@@ -71,67 +61,47 @@ const styleValues = {
       "circle-color": "#1e8dd2",
     },
   },
-  aquifers: {
-    id: "aquifers",
+  locationTypes: {
+    id: "locationTypes",
     layerId,
-    layerFieldName: "source_aquifer",
-    name: "Aquifers",
+    layerFieldName: "loc_type_name",
+    name: "Location Types",
     paint: {
       "circle-color": [
         "match",
-        ["get", "source_aquifer"],
-        ...buildScale(aquiferValues),
+        ["get", "loc_type_name"],
+        ...buildScale(locationTypesValues),
         "#000000",
       ],
     },
   },
-  primaryUses: {
-    id: "primaryUses",
+  parameterNames: {
+    id: "parameterNames",
     layerId,
-    layerFieldName: "primary_use",
-    name: "Primary Uses",
+    layerFieldName: "parameter_name",
+    name: "Parameter Names",
+    paint: {
+      "circle-color": [
+        "match",
+        ["get", "parameter_name"],
+        ...buildScale(parameterNamesValues),
+        "#000000",
+      ],
+    },
+  },
+  dataProviders: {
+    id: "dataProviders",
+    layerId,
+    layerFieldName: "data_provider",
+    name: "Data Providers",
     options: [],
     type: "multi-select",
     value: [],
     paint: {
       "circle-color": [
         "match",
-        ["get", "primary_use"],
-        ...buildScale(primaryUseValues),
-        "#000000",
-      ],
-    },
-  },
-  wellStatus: {
-    id: "wellStatus",
-    layerId,
-    layerFieldName: "well_status",
-    name: "Well Status",
-    options: [],
-    type: "multi-select",
-    value: [],
-    paint: {
-      "circle-color": [
-        "match",
-        ["get", "well_status"],
-        ...buildScale(wellStatusValues),
-        "#000000",
-      ],
-    },
-  },
-  wellType: {
-    id: "wellType",
-    layerId,
-    layerFieldName: "agg_system_name",
-    name: "Well Type",
-    options: [],
-    type: "multi-select",
-    value: [],
-    paint: {
-      "circle-color": [
-        "match",
-        ["get", "well_type"],
-        ...buildScale(wellTypeValues),
+        ["get", "data_provider"],
+        ...buildScale(dataProvidersValues),
         "#000000",
       ],
     },
