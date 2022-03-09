@@ -23,13 +23,13 @@ import { INIT_MAP_CONFIG, WELLS_SEARCH_OPTIONS } from "./constants";
 import DisclaimerDialog from "./components/DisclaimerDialog";
 import MeasurementsPopup from "../../components/map/components/MeasurementsPopup";
 import MainControl from "./controls/mainControl/";
-import CommaSeparatedWellsSearch from "./filters/commaSeparatedWellsSearch";
 
 import PrintReportDialog from "./components/PrintReportDialog";
 import { useReactToPrint } from "react-to-print";
 import PrintMapFormat from "./components/PrintMapFormat";
 import SplitButton from "../../components/SplitButton";
 import MeasurementsControl from "./controls/MeasurementsControl";
+import CommaSeparatedDataDotsSearch from "./filters/CommaSeparatedDataDotsSearch";
 
 const FiltersBar = styled(Paper)`
   align-items: center;
@@ -166,9 +166,10 @@ const PublicMap = () => {
               <Search onSelect={handleSearchSelect} />
             </FiltersSectionRow>
           )}
-          {filterValues?.search?.value === "comma_separated_wells_search" && (
+          {filterValues?.search?.value ===
+            "comma_separated_data_dots_search" && (
             <FiltersSectionRow>
-              <CommaSeparatedWellsSearch map={map} />
+              <CommaSeparatedDataDotsSearch map={map} />
             </FiltersSectionRow>
           )}
         </FiltersContainer>
@@ -228,42 +229,42 @@ const PublicMap = () => {
               >
                 <Box display="flex" flexDirection="column">
                   <Filter
-                    label="Has Production"
+                    label="Boolean 1"
                     name="hasProduction"
                     onChange={handleFilterValues}
                     type="boolean"
                     value={filterValues?.hasProduction?.value}
                   />
                   <Filter
-                    label="Has Water Levels"
+                    label="Boolean 2"
                     name="hasWaterLevels"
                     onChange={handleFilterValues}
                     type="boolean"
                     value={filterValues?.hasWaterLevels?.value}
                   />
                   <Filter
-                    label="Has Water Quality Data"
+                    label="Boolean 3"
                     name="hasWQData"
                     onChange={handleFilterValues}
                     type="boolean"
                     value={filterValues?.hasWQData?.value}
                   />
                   <Filter
-                    label="Is Permitted"
+                    label="Boolean 4"
                     name="isPermitted"
                     onChange={handleFilterValues}
                     type="boolean"
                     value={filterValues?.isPermitted?.value}
                   />
                   <Filter
-                    label="Is Exempt"
+                    label="Boolean 5"
                     name="isExempt"
                     onChange={handleFilterValues}
                     type="boolean"
                     value={filterValues?.isExempt?.value}
                   />
                   <Filter
-                    label="Is Monitoring"
+                    label="Boolean 6"
                     name="isMonitoring"
                     onChange={handleFilterValues}
                     type="boolean"

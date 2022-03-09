@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useRef, useState } from "react";
 import {
   ClickAwayListener,
   Divider,
+  Grid,
   InputAdornment,
   List,
   ListItem,
@@ -32,10 +33,10 @@ const SearchResults = ({
       transition
     >
       <ClickAwayListener onClickAway={onClose}>
-        <Paper style={{ width: 350, height: 384, overflowY: "auto" }}>
+        <Paper style={{ width: 400, height: 355, overflowY: "auto" }}>
           <List dense component="nav" aria-label="main mailbox folders">
-            {searchResults?.slice(0, 49)?.map((result) => (
-              <React.Fragment key={result?.item?.well_ndx}>
+            {searchResults?.slice(0, 49)?.map((result, i) => (
+              <React.Fragment key={i}>
                 <ListItem
                   style={{
                     flexDirection: "column",
@@ -44,27 +45,44 @@ const SearchResults = ({
                   button
                   onClick={() => onSelect(result?.item)}
                 >
-                  {/* <Typography variant="caption">CUWCD Well Number</Typography> */}
                   <Typography variant="subtitle1">
-                    {result?.item?.cuwcd_well_number}
+                    {result?.item?.loc_name}
                   </Typography>
-                  <div style={{ display: "flex", gap: 16 }}>
-                    <div>
-                      <Typography variant="caption">
-                        State Well Number
-                      </Typography>
+                  <Grid container>
+                    <Grid item xs={4}>
+                      <Typography variant="caption">Location ID</Typography>
                       <Typography variant="body1">
-                        {result?.item?.state_well_number || "N/A"}
+                        {result?.item?.loc_id || "N/A"}
                       </Typography>
-                    </div>
-                    <div>
-                      <Typography variant="caption">Well Owner</Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="caption">Location Index</Typography>
                       <Typography variant="body1">
-                        {result?.item?.well_owner || "N/A"}
+                        {result?.item?.loc_ndx || "N/A"}
                       </Typography>
-                    </div>
-                  </div>
-                  {/* <ListItemText primary={result?.item?.cuwcd_well_number} /> */}
+                    </Grid>
+                    <Grid item xs={4} />
+                  </Grid>
+                  <Grid container>
+                    <Grid item xs={4}>
+                      <Typography variant="caption">Location Type</Typography>
+                      <Typography variant="body1">
+                        {result?.item?.loc_type_name || "N/A"}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="caption">Parameter Name</Typography>
+                      <Typography variant="body1">
+                        {result?.item?.parameter_name || "N/A"}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="caption">Data Provider</Typography>
+                      <Typography variant="body1">
+                        {result?.item?.data_provider || "N/A"}
+                      </Typography>
+                    </Grid>
+                  </Grid>
                 </ListItem>
                 <Divider />
               </React.Fragment>
@@ -107,10 +125,12 @@ const Search = ({ onSelect }) => {
       return new Fuse(options?.data, {
         ignoreLocation: true,
         keys: [
-          "cuwcd_well_number",
-          "state_well_number",
-          "well_owner",
-          "aggregate_system",
+          "loc_name",
+          "loc_ndx",
+          "loc_id",
+          "loc_type",
+          "parameter_name",
+          "data_provider",
         ],
       });
     }
@@ -137,7 +157,7 @@ const Search = ({ onSelect }) => {
     <>
       <TextField
         id="outlined-basic"
-        label="Individual Well Search"
+        label="Individual Data Dot Search"
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -147,9 +167,9 @@ const Search = ({ onSelect }) => {
         }}
         onChange={handleChange}
         onFocus={() => !!value && setOpen(true)}
-        placeholder="Search by well attributes"
+        placeholder="Data dot attributes"
         ref={searchRef}
-        style={{ width: "100%", minWidth: "180px" }}
+        style={{ width: "100%", minWidth: "215px" }}
         type="search"
         value={value}
         variant="outlined"

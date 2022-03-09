@@ -5,12 +5,12 @@
   "description": "LRE Unified Platform Frontend Application",
   "license": "MIT",
   "author": {
-    "name": "Doug Kulak",
-    "email": "dougkulak@gmail.com"
+    "name": "Michael Barry",
+    "email": "michael.barry@lrewater.com"
   },
   "repository": {
     "type": "git",
-    "url": "https://github.com/lre-up/clearwater.git`",
+    "url": "https://github.com/lre-up/idaho-swc.git`",
     "directory": "packages/frontend"
   },
   "browserslist": [

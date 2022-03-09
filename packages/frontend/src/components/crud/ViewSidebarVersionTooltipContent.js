@@ -51,7 +51,7 @@ export function ViewSidebarVersionTooltipContent({
   currentVersion,
   showCompare = false,
 }) {
-  const user = { nickname: "Doug Kulak", picture: null };
+  const user = { nickname: "Michael Barry", picture: null };
   return (
     <TooltipContent
       className={clsx({
@@ -64,7 +64,7 @@ export function ViewSidebarVersionTooltipContent({
           <Avatar alt={user.nickname} src={user.picture} />
         </ListItemAvatar>
         <ListItemText
-          primary={"Doug Kulak"}
+          primary={"Michael Barry"}
           secondary={formatDate(version.created_at)}
         />
       </ListItem>

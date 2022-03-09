@@ -23,7 +23,7 @@ const Container = styled(Paper)`
   max-height: calc(100% - 32px);
   overflow-x: hidden;
   overflow-y: hidden;
-  width: 300px;
+  width: 305px;
   z-index: 3;
 `;
 

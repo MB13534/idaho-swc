@@ -2,31 +2,31 @@ export const BASEMAP_STYLES = [
   {
     style: "outdoors-v11",
     name: "Outdoors",
-    url: "mapbox://styles/txclearwater/ckyj8pr0u1t3a15o7hn1np1l6",
+    url: "mapbox://styles/mapbox/outdoors-v11",
   },
   {
     style: "streets-v11",
     name: "Streets",
-    url: "mapbox://styles/txclearwater/ckyj8qlsm4el014mmsyu6tbt7",
+    url: "mapbox://styles/mapbox/streets-v11",
   },
   {
     style: "satellite-streets-v11",
     name: "Satellite",
-    url: "mapbox://styles/txclearwater/ckyj8r9413cw314ockxj5g5wp",
+    url: "mapbox://styles/mapbox/satellite-streets-v11",
   },
   {
     style: "light-v10",
     name: "Light",
-    url: "mapbox://styles/txclearwater/ckyj8rtgra5jo14o1gli8c9s1",
+    url: "mapbox://styles/mapbox/light-v10",
   },
   {
     style: "dark-v10",
     name: "Dark",
-    url: "mapbox://styles/txclearwater/ckyj8t1h04en914mm98yqwkcg",
+    url: "mapbox://styles/mapbox/dark-v10",
   },
 ];
 
-export const DEFAULT_MAP_CENTER = [-112.7609324204845, 43.75590141795723];
+export const DEFAULT_MAP_CENTER = [-112.80227, 43.52744];
 
 export const INIT_MAP_CONFIG = {
   style: BASEMAP_STYLES[0].url,
@@ -35,7 +35,9 @@ export const INIT_MAP_CONFIG = {
   preserveDrawingBuffer: true,
 };
 
-export const WELLS_LAYER_ID = "clearwater-wells-circle";
+export const WELLS_LAYER_ID = "data-dots-circle";
+export const WELLS_LABELS_LAYER_ID = "data-dots-symbol";
+
 export const INIT_FILTER_VALUES = {
   locationTypes: {
     layerId: WELLS_LAYER_ID,
@@ -110,7 +112,7 @@ export const WELLS_SEARCH_OPTIONS = [
     label: "Attributes",
   },
   {
-    value: "comma_separated_wells_search",
-    label: "Wells",
+    value: "comma_separated_data_dots_search",
+    label: "Ids",
   },
 ];

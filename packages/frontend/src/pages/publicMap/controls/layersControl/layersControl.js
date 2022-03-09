@@ -13,6 +13,7 @@ import {
 
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import ChevronRight from "@material-ui/icons/ChevronRight";
+import { titleize } from "inflected";
 
 /**
  * Utility used to translate a Mapbox paint style
@@ -99,7 +100,7 @@ const LayerLegend = ({ item, open }) => {
         <Box key={text} display="flex" alignItems="center" gridColumnGap={8}>
           <LegendSymbol color={color} />
           <Typography color="textSecondary" variant="body2">
-            {text}
+            {titleize(text)}
           </Typography>
         </Box>
       ))}
@@ -112,7 +113,10 @@ const LayerLegend = ({ item, open }) => {
  * [] Add support for layers search
  */
 const LayersControl = ({ items, onLayerChange }) => {
-  const [expandedItems, setExpandedItems] = useState(["Clearwater Wells"]);
+  const [expandedItems, setExpandedItems] = useState([
+    "Data Dots",
+    "Data Dots Labels",
+  ]);
 
   /**
    * Generate a unique list of items to display in the layer
@@ -168,7 +172,7 @@ const LayersControl = ({ items, onLayerChange }) => {
     });
   };
   return (
-    <Box display="flex" flexDirection="column">
+    <Box style={{ width: "100%" }} display="flex" flexDirection="column">
       <List dense>
         {uniqueItems?.length === 0 && (
           <Box textAlign="center">

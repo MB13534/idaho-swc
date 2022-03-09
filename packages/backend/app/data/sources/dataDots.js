@@ -1,5 +1,5 @@
 module.exports = {
-  id: 'clearwater-wells',
+  id: 'data-dots',
   type: 'geojson',
   data: [],
 };

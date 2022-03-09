@@ -1,8 +1,8 @@
 module.exports = {
-  id: 'clearwater-wells-circle',
-  name: 'Clearwater Wells',
+  id: 'data-dots-circle',
+  name: 'Data Dots',
   type: 'circle',
-  source: 'clearwater-wells',
+  source: 'data-dots',
   drawOrder: -100,
   legendOrder: 100,
   paint: {
@@ -34,7 +34,7 @@ module.exports = {
   },
   lreProperties: {
     popup: {
-      titleField: 'cucwcd_well_number',
+      titleField: 'loc_name',
       excludeFields: [],
     },
   },

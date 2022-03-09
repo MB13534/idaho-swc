@@ -1,8 +1,8 @@
 module.exports = {
-  id: 'clearwater-wells-symbol',
-  name: 'Clearwater Well Labels',
+  id: 'data-dots-symbol',
+  name: 'Data Dots Labels',
   type: 'symbol',
-  source: 'clearwater-wells',
+  source: 'data-dots',
   drawOrder: -100,
   legendOrder: 99,
   layout: {
@@ -10,7 +10,7 @@ module.exports = {
     'text-size': 14,
     'text-offset': [0, -1.2],
     'text-font': ['literal', ['Roboto Black', 'Arial Unicode MS Bold']],
-    visibility: 'none',
+    visibility: 'visible',
   },
   paint: {
     'text-color': 'rgb(49,49,49)',

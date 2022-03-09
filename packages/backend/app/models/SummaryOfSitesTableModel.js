@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const {INTEGER, TEXT, GEOMETRY, BIGINT, DATE, DOUBLE, REAL} = DataTypes;
-  const SummaryOfSites = sequelize.define(
-    'summary_of_sites',
+  const SummaryOfSitesTable = sequelize.define(
+    'summary_of_sites_table',
     {
       loc_ndx: {
         type: INTEGER,
@@ -64,5 +64,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  return SummaryOfSites;
+  return SummaryOfSitesTable;
 };

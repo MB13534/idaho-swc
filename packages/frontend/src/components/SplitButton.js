@@ -73,7 +73,7 @@ const SplitButton = ({ handleExportClick, options }) => {
         role={undefined}
         transition
         disablePortal
-        style={{ zIndex: 2 }}
+        style={{ zIndex: 3 }}
       >
         {({ TransitionProps, placement }) => (
           <Grow

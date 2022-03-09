@@ -50,7 +50,7 @@ const buildScale = (values) => {
   }, []);
 };
 
-const layerId = "clearwater-wells-circle";
+const layerId = "data-dots-circle";
 const styleValues = {
   default: {
     id: "default",

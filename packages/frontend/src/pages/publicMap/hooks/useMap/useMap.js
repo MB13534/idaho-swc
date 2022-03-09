@@ -399,9 +399,9 @@ const useMap = (ref, mapConfig) => {
           }
         }
       });
-      map.setFilter("clearwater-wells-circle", mapFilterExpression);
-      map.setFilter("clearwater-wells-symbol", mapFilterExpression);
-      mapLogger.log("Filters updated on the clearwater-wells-circle layer");
+      map.setFilter("data-dots-circle", mapFilterExpression);
+      map.setFilter("data-dots-symbol", mapFilterExpression);
+      mapLogger.log("Filters updated on the data-dots layers");
     }
   };
 
@@ -430,9 +430,7 @@ const useMap = (ref, mapConfig) => {
           };
         });
       });
-      mapLogger.log(
-        "Paint styles updated on the clearwater-wells-circle layer"
-      );
+      mapLogger.log("Paint styles updated on the data-dots-circle layer");
     }
   };
 

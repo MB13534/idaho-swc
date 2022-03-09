@@ -8,6 +8,7 @@ import "../vendor/perfect-scrollbar.css";
 import {
   Avatar,
   Badge,
+  Box,
   Chip,
   Collapse,
   Drawer as MuiDrawer,
@@ -66,10 +67,6 @@ const Brand = styled(ListItem)`
   &:hover {
     background-color: ${(props) => props.theme.sidebar.header.background};
   }
-`;
-
-const BrandIcon = styled.img`
-  margin-right: ${(props) => props.theme.spacing(2)}px;
 `;
 
 const Category = styled(ListItem)`
@@ -327,12 +324,15 @@ const Sidebar = ({
           // justifyContent: "center",
         }}
       >
-        <BrandIcon
-          src={`/static/img/clearwater-logo-simple.png`}
-          width="150"
-          height="48"
-          alt="Clearwater Icon"
-        />
+        {/*<BrandIcon*/}
+        {/*  src={`/static/img/idaho-swc-logo-full.png`}*/}
+        {/*  width="150"*/}
+        {/*  height="48"*/}
+        {/*  alt="Clearwater Icon"*/}
+        {/*/>*/}
+        <Box ml={1} style={{ fontSize: "0.9rem", display: "flex" }}>
+          Monitoring Dashboard{" "}
+        </Box>
       </Brand>
       <Scrollbar
         style={{

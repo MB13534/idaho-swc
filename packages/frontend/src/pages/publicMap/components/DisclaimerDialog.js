@@ -42,8 +42,7 @@ const DisclaimerDialog = () => {
             been prepared for or suitable for legal, engineering, or surveying
             purposes. It does not represent an on-the-ground survey and
             represents only the approximate relative location of property
-            boundaries. The Clearwater Underground Water Conservation District
-            and the Tax Appraisal District of Bell County expressly disclaim any
+            boundaries. The Idaho Surface Water Coalition expressly disclaim any
             and all liability in connection herewith.
           </DialogContentText>
         </DialogContent>

@@ -29,13 +29,13 @@ const PrintMapFormat = forwardRef(({ title, mapImg, map }, ref) => {
         <Grid container justify={"space-between"} alignItems={"center"}>
           <Grid item xs={3} style={{ textAlign: "left" }}>
             <img
-              src="/static/img/clearwater-logo-full.png"
+              src="/static/img/idaho-swc-logo-full.png"
               width="200px"
-              alt={"Clearwater Underground Water Conservation District"}
+              alt={"Idaho Surface Water Coalition"}
             />
           </Grid>
           <Grid item xs={6}>
-            <Typography variant="h5">CUWCD Map</Typography>
+            <Typography variant="h5">Idaho SWC Map</Typography>
             <Typography variant="h6">{title}</Typography>
             <Typography variant="subtitle2">
               Created: {moment().format("MMMM Do YYYY, h:mma")}

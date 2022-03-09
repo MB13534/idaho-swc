@@ -3,7 +3,7 @@ import mock from "../utils/mock";
 const userData = {
   id: "12345",
   email: "demo@lrewater.com",
-  name: "Doug Kulak",
+  name: "Michael Barry",
 };
 
 mock.onPost("/api/auth/sign-in").reply((config) => {

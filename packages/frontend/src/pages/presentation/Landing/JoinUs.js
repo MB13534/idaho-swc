@@ -15,8 +15,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 
 const Spacer = styled.div(spacing);
 
-const SpanSpacer = styled.span(spacing);
-
 const Typography = styled(MuiTypography)(spacing);
 
 const Wrapper = styled.div`
@@ -60,18 +58,7 @@ function JoinUs() {
             >
               View Dashboard
             </Button>
-            <SpanSpacer ml={4} />
-            <Button
-              color="primary"
-              variant="outlined"
-              onClick={() =>
-                loginWithRedirect({
-                  appState: { returnTo: ROUTES.PAGE_PRODUCTION },
-                })
-              }
-            >
-              Enter Production Data
-            </Button>
+
             <Spacer mb={10} />
             <Subtitle variant="h5" gutterBottom>
               View public resources:
