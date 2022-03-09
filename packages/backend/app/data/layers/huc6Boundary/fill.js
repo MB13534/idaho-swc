@@ -5,7 +5,8 @@ module.exports = {
   source: 'huc-6-boundary',
   'source-layer': 'WBDHU6_UpperSnake-2sudt1',
   paint: {
-    'fill-color': 'hsla(330,53%,53%, 0)',
+    'fill-color': 'hsl(45,100%,57%)',
+    'fill-opacity': 0,
   },
   layout: {
     visibility: 'none',
