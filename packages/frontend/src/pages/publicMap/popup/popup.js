@@ -9,7 +9,7 @@ import { Pagination } from "@material-ui/lab";
 import { titleize } from "inflected";
 
 const PopupWrap = styled.div`
-  height: 250px;
+  height: 200px;
   overflow-y: scroll;
   width: 380px;
 `;
@@ -144,24 +144,14 @@ const Popup = ({
   if (!popupData) return null;
   return (
     <>
+      <h2>{titleize(feature?.layer?.id)}</h2>
       <PopupWrap>
-        <Pagination
-          style={{ display: "flex", justifyContent: "center" }}
-          count={uniqueFeatures.length}
-          size="medium"
-          page={page}
-          variant="outlined"
-          shape="rounded"
-          color="primary"
-          onChange={handlePageChange}
-        />
-        <h2>{titleize(feature?.layer?.id)}</h2>
         <PopupTable>
           <tbody>
             {popupData?.map(([key, value]) => {
               return (
                 <PopupRow key={key}>
-                  <PopupCell>{key}</PopupCell>
+                  <PopupCell>{titleize(key)}</PopupCell>
                   <PopupCell>
                     {/*MJB temporary logic to render links
               PROP_ID from Bell CAD Parcels for external id
