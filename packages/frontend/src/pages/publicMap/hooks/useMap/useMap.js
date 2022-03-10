@@ -62,7 +62,7 @@ const useMap = (ref, mapConfig) => {
   const [eventsRegistered, setEventsRegistered] = useState(false);
   const popUpRef = useRef(
     new mapboxgl.Popup({
-      maxWidth: "375px",
+      maxWidth: "400px",
       offset: 15,
       focusAfterOpen: false,
     })
@@ -287,11 +287,6 @@ const useMap = (ref, mapConfig) => {
       map.on("click", (e) => {
         const features = map.queryRenderedFeatures(e.point);
 
-        //TODO add popup pagination
-        // console.log(
-        //   features.filter((item) => popupLayerIds.includes(item.layer.id))
-        // );
-
         //Ensure that if the map is zoomed out such that multiple
         //copies of the feature are visible, the popup appears
         //over the copy being pointed to.
@@ -309,11 +304,9 @@ const useMap = (ref, mapConfig) => {
           features.length > 0 &&
           popupLayerIds.includes(features[0].layer.id)
         ) {
-          const feature = features[0];
-          // const popup = {};
-          const popup = layers?.find(
-            (layer) => layer?.id === feature?.layer?.id
-          )?.lreProperties?.popup;
+          const myFeatures = features.filter((feature) =>
+            popupLayerIds.includes(feature?.layer?.id)
+          );
           // create popup node
           const popupNode = document.createElement("div");
           ReactDOM.render(
@@ -322,12 +315,11 @@ const useMap = (ref, mapConfig) => {
               <MuiThemeProvider theme={createTheme(theme.currentTheme)}>
                 <ThemeProvider theme={createTheme(theme.currentTheme)}>
                   <Popup
+                    layers={layers}
                     setDataVizVisible={setDataVizVisible}
                     setDataVizWellNumber={setDataVizWellNumber}
                     setDataVizGraphType={setDataVizGraphType}
-                    excludeFields={popup?.excludeFields}
-                    feature={feature}
-                    titleField={popup?.titleField}
+                    features={myFeatures}
                   />
                 </ThemeProvider>
               </MuiThemeProvider>
