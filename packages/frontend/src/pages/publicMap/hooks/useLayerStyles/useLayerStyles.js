@@ -3,42 +3,43 @@ import { scaleOrdinal } from "d3-scale";
 import { schemePaired } from "d3-scale-chromatic";
 
 const locationTypesValues = [
-  "stream gage",
-  "sentinel well",
-  "return flow",
-  "reservoir ",
-  "recharge",
-  "diversion",
-  "precipitation station",
-  "stream reach",
-  "diversion pump",
-  "snotel",
-  "non-sentinel well",
+  "Stream Gage",
+  "Sentinel Well",
+  "Return Flow",
+  "Reservoir",
+  "Recharge",
+  "Diversion",
+  "Precipitation Station",
+  "Stream Reach",
+  "Diversion Pump",
+  "Snotel",
+  "Non-Sentinel Well",
 ];
 
 const parameterNamesValues = [
-  "discharge",
-  "reach gain",
+  "Discharge",
+  "Reach Gain",
   "SWE",
   'Soil Moisture (Avg % at 8")',
-  "depth to water level",
-  "gage height",
-  "recharge",
-  "reservoir contents",
-  "return flow",
-  "total precipitation",
-  "water surface elevation",
+  "Depth to Water Level",
+  "Gage Height",
+  "Recharge",
+  "Reservoir Contents",
+  "Return Flow",
+  "Total Precipitation",
+  "Water Surface Elevation",
 ];
 
 const dataProvidersValues = [
+  "Agrimet",
   "BOR - Hydromet",
+  "Calculation",
   "IDWR",
   "IDWR Accounting",
   "IDWR AquaInfo",
-  "NRCS",
+  "IDWR IWRB and IGWA",
+  "NRCS Snotel",
   "USGS",
-  "agrimet",
-  "fill this in",
 ];
 
 const buildScale = (values) => {

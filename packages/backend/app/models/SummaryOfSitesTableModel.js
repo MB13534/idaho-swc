@@ -57,7 +57,7 @@ module.exports = (sequelize, DataTypes) => {
       },
     },
     {
-      schema: 'data',
+      schema: 'viewer',
       timestamps: false,
       paranoid: true,
       freezeTableName: true,

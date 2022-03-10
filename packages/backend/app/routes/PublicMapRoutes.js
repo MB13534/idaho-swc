@@ -7,7 +7,6 @@ const {
 } = require('../../core/models');
 const sourceData = require('../data/sources');
 const layersData = require('../data/layers');
-const {titleize} = require('inflected');
 
 const router = express.Router();
 
@@ -45,44 +44,45 @@ const cleanLayer = (layer) => {
 };
 
 const locationTypesData = [
-  'stream gage',
-  'sentinel well',
-  'return flow',
-  'reservoir ',
-  'recharge',
-  'diversion',
-  'precipitation station',
-  'stream reach',
-  'diversion pump',
-  'snotel',
-  'non-sentinel well',
+  'Stream Gage',
+  'Sentinel Well',
+  'Return Flow',
+  'Reservoir',
+  'Recharge',
+  'Diversion',
+  'Precipitation Station',
+  'Stream Reach',
+  'Diversion Pump',
+  'Snotel',
+  'Non-Sentinel Well',
 ];
 
 // TODO move to DB and key off of index instead
 const parameterNamesData = [
-  'discharge',
-  'reach gain',
+  'Discharge',
+  'Reach Gain',
   'SWE',
   'Soil Moisture (Avg % at 8")',
-  'depth to water level',
-  'gage height',
-  'recharge',
-  'reservoir contents',
-  'return flow',
-  'total precipitation',
-  'water surface elevation',
+  'Depth to Water Level',
+  'Gage Height',
+  'Recharge',
+  'Reservoir Contents',
+  'Return Flow',
+  'Total Precipitation',
+  'Water Surface Elevation',
 ];
 
 // TODO move to DB and key off of index instead
 const dataProvidersData = [
+  'Agrimet',
   'BOR - Hydromet',
+  'Calculation',
   'IDWR',
   'IDWR Accounting',
   'IDWR AquaInfo',
-  'NRCS',
+  'IDWR IWRB and IGWA',
+  'NRCS Snotel',
   'USGS',
-  'agrimet',
-  'fill this in',
 ];
 
 /**
@@ -197,15 +197,15 @@ router.get('/filters', async (req, res, next) => {
     //   })
     //   .map(({aquifer_name}) => ({display: aquifer_name, value: aquifer_name}));
     const locationTypes = locationTypesData.map((use) => ({
-      display: titleize(use),
+      display: use,
       value: use,
     }));
     const parameterNames = parameterNamesData.map((use) => ({
-      display: titleize(use),
+      display: use,
       value: use,
     }));
     const dataProviders = dataProvidersData.map((use) => ({
-      display: titleize(use),
+      display: use,
       value: use,
     }));
     /*MJB hide aggregated system control per client (probably temporary)*/
