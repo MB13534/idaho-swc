@@ -151,7 +151,9 @@ const Popup = ({
             {popupData?.map(([key, value]) => {
               return (
                 <PopupRow key={key}>
-                  <PopupCell>{titleize(key)}</PopupCell>
+                  <PopupCell>
+                    <strong>{titleize(key)}</strong>
+                  </PopupCell>
                   <PopupCell>
                     {/*MJB temporary logic to render links
               PROP_ID from Bell CAD Parcels for external id
