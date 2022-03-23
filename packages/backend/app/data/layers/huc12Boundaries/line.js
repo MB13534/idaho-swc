@@ -5,7 +5,8 @@ module.exports = {
   source: 'huc-12-boundaries',
   'source-layer': 'WBDHU12_UpperSnake-1w0nan',
   paint: {
-    'line-color': 'hsl(0,100%,27%)',
+    'line-color': '#D12881',
+    'line-width': 1,
   },
   layout: {
     visibility: 'none',
@@ -13,4 +14,5 @@ module.exports = {
   lreProperties: {
     layerGroup: 'huc-12-boundaries',
   },
+  drawOrder: 97,
 };

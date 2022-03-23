@@ -5,7 +5,7 @@ module.exports = {
   source: 'huc-6-boundary',
   'source-layer': 'WBDHU6_UpperSnake-2sudt1',
   paint: {
-    'fill-color': 'hsl(45,100%,57%)',
+    'fill-color': '#1E812B',
     'fill-opacity': 0,
   },
   layout: {
@@ -14,4 +14,5 @@ module.exports = {
   lreProperties: {
     layerGroup: 'huc-6-boundary',
   },
+  drawOrder: 100,
 };

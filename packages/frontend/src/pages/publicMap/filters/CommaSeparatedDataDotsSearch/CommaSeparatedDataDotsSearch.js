@@ -96,6 +96,7 @@ const CommaSeparatedDataDotsSearch = ({ map }) => {
   useLayoutEffect(() => {
     return () => {
       map.setFilter(WELLS_LAYER_ID, null);
+      map.setFilter(WELLS_LABELS_LAYER_ID, null);
       map.removeLayer("boundingBox");
       map.removeSource("boundingBox");
     };
