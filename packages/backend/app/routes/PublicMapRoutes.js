@@ -1,7 +1,7 @@
 const express = require('express');
 const {checkAccessToken, checkRoles} = require('../../core/middleware/auth.js');
 const {
-  summary_of_sites_table,
+  summary_of_sites,
   /*MJB hide aggregated system control per client (probably temporary)*/
   // list_aggregate_systems,
 } = require('../../core/models');
@@ -53,7 +53,7 @@ const locationTypesData = [
   'Precipitation Station',
   'Stream Reach',
   'Diversion Pump',
-  'Snotel',
+  'SNOTEL',
   'Non-Sentinel Well',
 ];
 
@@ -120,7 +120,7 @@ const toGeoJSON = ({data, geometryField}) => {
  */
 router.get('/sources', async (req, res, next) => {
   try {
-    const wellsData = await summary_of_sites_table.findAll();
+    const wellsData = await summary_of_sites.findAll();
     const finalSources = sources.map((source) => {
       if (source.id === 'data-dots') {
         return {
@@ -174,7 +174,7 @@ router.get(
  */
 router.get('/wells', async (req, res, next) => {
   try {
-    const wellsData = await summary_of_sites_table.findAll();
+    const wellsData = await summary_of_sites.findAll();
     res.json(wellsData);
   } catch (err) {
     next(err);

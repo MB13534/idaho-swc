@@ -1,7 +1,6 @@
 import React, { useRef, useState } from "react";
 import styled from "styled-components/macro";
 import {
-  Box,
   MenuItem,
   Paper,
   TextField as MuiTextField,
@@ -66,17 +65,17 @@ const TextField = styled(MuiTextField)`
   display: flex;
 `;
 
-const getMoreFiltersCount = (filterValues) => {
-  const keys = [
-    "hasProduction",
-    "hasWaterLevels",
-    "hasWQData",
-    "isPermitted",
-    "isExempt",
-    "isMonitoring",
-  ];
-  return keys.filter((key) => filterValues[key].value).length;
-};
+// const getMoreFiltersCount = (filterValues) => {
+//   const keys = [
+//     "hasProduction",
+//     "hasWaterLevels",
+//     "hasWQData",
+//     "isPermitted",
+//     "isExempt",
+//     "isMonitoring",
+//   ];
+//   return keys.filter((key) => filterValues[key].value).length;
+// };
 
 const PublicMap = () => {
   const mapContainer = useRef(null);
@@ -223,67 +222,67 @@ const PublicMap = () => {
                 />
               </FilterControl>
 
-              <FilterControl
-                appliedCount={getMoreFiltersCount(filterValues)}
-                label="More Filters"
-              >
-                <Box display="flex" flexDirection="column">
-                  <Filter
-                    label="Boolean 1"
-                    name="hasProduction"
-                    onChange={handleFilterValues}
-                    type="boolean"
-                    value={filterValues?.hasProduction?.value}
-                  />
-                  <Filter
-                    label="Boolean 2"
-                    name="hasWaterLevels"
-                    onChange={handleFilterValues}
-                    type="boolean"
-                    value={filterValues?.hasWaterLevels?.value}
-                  />
-                  <Filter
-                    label="Boolean 3"
-                    name="hasWQData"
-                    onChange={handleFilterValues}
-                    type="boolean"
-                    value={filterValues?.hasWQData?.value}
-                  />
-                  <Filter
-                    label="Boolean 4"
-                    name="isPermitted"
-                    onChange={handleFilterValues}
-                    type="boolean"
-                    value={filterValues?.isPermitted?.value}
-                  />
-                  <Filter
-                    label="Boolean 5"
-                    name="isExempt"
-                    onChange={handleFilterValues}
-                    type="boolean"
-                    value={filterValues?.isExempt?.value}
-                  />
-                  <Filter
-                    label="Boolean 6"
-                    name="isMonitoring"
-                    onChange={handleFilterValues}
-                    type="boolean"
-                    value={filterValues?.isMonitoring?.value}
-                  />
-                </Box>
-              </FilterControl>
+              {/*<FilterControl*/}
+              {/*  appliedCount={getMoreFiltersCount(filterValues)}*/}
+              {/*  label="More Filters"*/}
+              {/*>*/}
+              {/*  <Box display="flex" flexDirection="column">*/}
+              {/*    <Filter*/}
+              {/*      label="Boolean 1"*/}
+              {/*      name="hasProduction"*/}
+              {/*      onChange={handleFilterValues}*/}
+              {/*      type="boolean"*/}
+              {/*      value={filterValues?.hasProduction?.value}*/}
+              {/*    />*/}
+              {/*    <Filter*/}
+              {/*      label="Boolean 2"*/}
+              {/*      name="hasWaterLevels"*/}
+              {/*      onChange={handleFilterValues}*/}
+              {/*      type="boolean"*/}
+              {/*      value={filterValues?.hasWaterLevels?.value}*/}
+              {/*    />*/}
+              {/*    <Filter*/}
+              {/*      label="Boolean 3"*/}
+              {/*      name="hasWQData"*/}
+              {/*      onChange={handleFilterValues}*/}
+              {/*      type="boolean"*/}
+              {/*      value={filterValues?.hasWQData?.value}*/}
+              {/*    />*/}
+              {/*    <Filter*/}
+              {/*      label="Boolean 4"*/}
+              {/*      name="isPermitted"*/}
+              {/*      onChange={handleFilterValues}*/}
+              {/*      type="boolean"*/}
+              {/*      value={filterValues?.isPermitted?.value}*/}
+              {/*    />*/}
+              {/*    <Filter*/}
+              {/*      label="Boolean 5"*/}
+              {/*      name="isExempt"*/}
+              {/*      onChange={handleFilterValues}*/}
+              {/*      type="boolean"*/}
+              {/*      value={filterValues?.isExempt?.value}*/}
+              {/*    />*/}
+              {/*    <Filter*/}
+              {/*      label="Boolean 6"*/}
+              {/*      name="isMonitoring"*/}
+              {/*      onChange={handleFilterValues}*/}
+              {/*      type="boolean"*/}
+              {/*      value={filterValues?.isMonitoring?.value}*/}
+              {/*    />*/}
+              {/*  </Box>*/}
+              {/*</FilterControl>*/}
             </FiltersContainer>
           </FiltersSection>
         )}
 
         <FiltersSection>
           <FiltersContainer>
-            <FilterControl label={`Color wells by ${activeStyle.name}`}>
+            <FilterControl label={`Color Data Dots by ${activeStyle.name}`}>
               <Typography variant="subtitle1" gutterBottom>
                 Color wells by
               </Typography>
               <WellStylesControl
-                label="Color wells by"
+                label="Color Data Dots by"
                 name="wellStyles"
                 onChange={handleActiveStyle}
                 options={styleOptions}

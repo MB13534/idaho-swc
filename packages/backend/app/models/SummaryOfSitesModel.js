@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const {INTEGER, TEXT, GEOMETRY, BIGINT, DATE, DOUBLE, REAL} = DataTypes;
-  const SummaryOfSitesTable = sequelize.define(
-    'summary_of_sites_table',
+  const SummaryOfSites = sequelize.define(
+    'summary_of_sites',
     {
       loc_ndx: {
         type: INTEGER,
@@ -55,6 +55,9 @@ module.exports = (sequelize, DataTypes) => {
       location_geometry: {
         type: GEOMETRY,
       },
+      loc_url: {
+        type: TEXT,
+      },
     },
     {
       schema: 'viewer',
@@ -64,5 +67,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  return SummaryOfSitesTable;
+  return SummaryOfSites;
 };

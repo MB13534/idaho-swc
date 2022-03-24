@@ -25,6 +25,7 @@ import { handleCopyCoords, updateArea } from "../../../../utils/map";
 import ResetZoomControl from "../../../../components/map/ResetZoomControl";
 import { isTouchScreenDevice } from "../../../../utils";
 import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import { styleValues } from "../useLayerStyles/useLayerStyles";
 
 const mapLogger = new MapLogger({
   enabled: process.env.NODE_ENV === "development",
@@ -179,11 +180,14 @@ const useMap = (ref, mapConfig) => {
           }
         });
 
+      //MJB if the default color is not default, this will repaint for the hardcoded default value
+      updateLayerStyles(styleValues.locationTypes);
+
       mapLogger.log("Layers added to map");
 
       setDataAdded(true);
     }
-  }, [dataAdded, layers, map, sources]);
+  }, [dataAdded, layers, map, sources]); //eslint-disable-line
 
   const addMapControls = useCallback(() => {
     const shouldAddControls = !!map;

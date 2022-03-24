@@ -12,7 +12,7 @@ const locationTypesValues = [
   "Precipitation Station",
   "Stream Reach",
   "Diversion Pump",
-  "Snotel",
+  "SNOTEL",
   "Non-Sentinel Well",
 ];
 
@@ -52,16 +52,7 @@ const buildScale = (values) => {
 };
 
 const layerId = "data-dots-circle";
-const styleValues = {
-  default: {
-    id: "default",
-    layerId,
-    layerFieldName: "",
-    name: "Default",
-    paint: {
-      "circle-color": "#1e8dd2",
-    },
-  },
+export const styleValues = {
   locationTypes: {
     id: "locationTypes",
     layerId,
@@ -107,10 +98,19 @@ const styleValues = {
       ],
     },
   },
+  default: {
+    id: "default",
+    layerId,
+    layerFieldName: "",
+    name: "Default",
+    paint: {
+      "circle-color": "#1e8dd2",
+    },
+  },
 };
 
 const useLayerStyles = ({ onLayerStyleChange }) => {
-  const [activeStyle, setActiveStyle] = useState(styleValues.default);
+  const [activeStyle, setActiveStyle] = useState(styleValues.locationTypes);
   const styleOptions = Object.entries(styleValues).map(([key, value]) => ({
     display: value.name,
     value: key,

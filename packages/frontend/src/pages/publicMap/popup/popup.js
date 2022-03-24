@@ -152,7 +152,9 @@ const Popup = ({
               return (
                 <PopupRow key={key}>
                   <PopupCell>
-                    <strong>{titleize(key)}</strong>
+                    <strong>
+                      {key === "loc_url" ? "USDA AWS Plot" : titleize(key)}
+                    </strong>
                   </PopupCell>
                   <PopupCell>
                     {/*MJB temporary logic to render links
@@ -160,13 +162,9 @@ const Popup = ({
               list_of_attachments from Clearwater Wells to link attachments
               parse renders string html element into
               */}
-                    {key === "PROP_ID" ? (
-                      <a
-                        target="_blank"
-                        href={`https://esearch.bellcad.org/Property/View/${value}`}
-                        rel="noreferrer"
-                      >
-                        <>{value}</>
+                    {key === "loc_url" ? (
+                      <a target="_blank" href={value} rel="noreferrer">
+                        <>{feature.properties.parameter_name}</>
                       </a>
                     ) : typeof value === "string" && value.startsWith("<a ") ? (
                       <PopupUl>

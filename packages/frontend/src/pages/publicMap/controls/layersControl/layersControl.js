@@ -13,7 +13,6 @@ import {
 
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import ChevronRight from "@material-ui/icons/ChevronRight";
-import { titleize } from "inflected";
 
 /**
  * Utility used to translate a Mapbox paint style
@@ -100,7 +99,7 @@ const LayerLegend = ({ item, open }) => {
         <Box key={text} display="flex" alignItems="center" gridColumnGap={8}>
           <LegendSymbol color={color} />
           <Typography color="textSecondary" variant="body2">
-            {titleize(text)}
+            {text}
           </Typography>
         </Box>
       ))}
