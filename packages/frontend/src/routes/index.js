@@ -6,55 +6,33 @@ import { useAuth0 } from "@auth0/auth0-react";
 import async from "../components/Async";
 
 import {
-  Activity,
   Archive,
-  BookOpen,
-  Briefcase,
   Database,
   FileText,
-  Folder,
-  Grid,
   Home,
-  List,
   Monitor,
   Users,
   Map,
   Share2,
-  CreditCard,
+  Folder,
+  Briefcase,
 } from "react-feather";
 
 import AuthGuard from "../components/AuthGuard";
-import DeveloperGuard from "../components/DeveloperGuard";
-import DeveloperVisibilityFilter from "../components/DeveloperVisibilityFilter";
 import AdminGuard from "../components/AdminGuard";
 import AdminVisibilityFilter from "../components/AdminVisibilityFilter";
 
 import Blank from "../pages/pages/Blank";
-import Changelog from "../pages/docs/Changelog";
 import Landing from "../pages/presentation/Landing";
 import ProtectedPage from "../pages/protected/ProtectedPage";
-import Introduction from "../pages/docs/Introduction";
-import Support from "../pages/docs/Support";
-import { All, EXAMPLE_COMPONENTS } from "../pages/components/All";
-import { DocumentationProvider } from "../pages/docs/DocumentationProvider";
 import * as inflector from "inflected";
-import { dasherize, underscore } from "inflected";
-import GettingStarted from "../pages/docs/GettingStarted";
 import Default from "../pages/dashboards/Default";
 import { CrudProvider } from "../CrudProvider";
-import CRUD from "../pages/docs/CRUD";
-import Deploy from "../pages/docs/Deploy";
 
 // TODO MAYBE LAZY IMPORT
 import PublicMap from "../pages/publicMap";
-import Production from "../pages/dashboards/data entry/Production";
 import UserVisibilityFilter from "../components/UserVisibilityFilter";
-import PDI from "../pages/dataAccess/reports/PDI";
-import UiReportAllPermitsReport from "../pages/dataAccess/reports/UiReportAllPermitsReport";
-import WaterQuality from "../pages/dashboards/data entry/WaterQuality";
-import CurrentExemptWellUseSummaryReport from "../pages/dataAccess/reports/CurrentExemptWellUseSummaryReport";
-import WaterLevels from "../pages/dashboards/data entry/WaterLevels";
-import Rolodex from "../pages/dashboards/data entry/Rolodex";
+
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
 
@@ -118,39 +96,25 @@ const crudSidebarMenu = [...getSidebarMenu(CRUD_MODELS)];
 const modelCrudRoutes = [...getCrudRoutes(CRUD_MODELS)];
 
 const dataManagementRoutes = {
-  id: "Rolodex",
-  icon: <CreditCard />,
-  path: "/data-access/rolodex",
-  name: "Rolodex",
-  component: Rolodex,
+  header: "Data Management",
+  id: "A Table",
+  icon: <Database />,
+  path: "/data-management/rolodex",
+  name: "A Table",
+  component: Blank,
   guard: AdminGuard,
   visibilityFilter: AdminVisibilityFilter,
 };
 
-const dataEntryRoutes = {
+const dataAccessRoutes = {
   header: "Data Access",
-  id: "Well Data Entry",
+  id: "Time Series",
   icon: <Share2 />,
   children: [
     {
-      path: "/data-access/well-production-data-entry",
-      name: "Production",
-      component: Production,
-      guard: AuthGuard,
-    },
-    {
-      path: "/data-access/well-water-quality-data-entry",
-      name: "Water Quality",
-      component: WaterQuality,
-      guard: AdminGuard,
-      visibilityFilter: AdminVisibilityFilter,
-    },
-    {
-      path: "/data-access/well-water-level-data-entry",
-      name: "Water Level",
-      component: WaterLevels,
-      guard: AdminGuard,
-      visibilityFilter: AdminVisibilityFilter,
+      path: "/data-access/time-series",
+      name: "A Time Series",
+      component: Blank,
     },
   ],
   guard: AuthGuard,
@@ -162,78 +126,14 @@ const reportsRoutes = {
   icon: <FileText />,
   children: [
     {
-      path: "/data-access/reports/all-permits",
-      name: "All Permits",
-      component: UiReportAllPermitsReport,
-    },
-    {
-      path: "/data-access/reports/current-exempt-well-use",
-      name: "Current Exempt Well Use",
-      component: CurrentExemptWellUseSummaryReport,
-    },
-    {
-      path: "/data-access/pdi",
-      name: "PDI",
-      component: PDI,
-    },
-    {
-      path: "/data-access/reports/production",
-      name: "Production",
-      component: Blank,
-      guard: DeveloperGuard,
-      visibilityFilter: DeveloperVisibilityFilter,
-    },
-    {
-      path: "/data-access/reports/permits",
-      name: "Permits",
-      component: Blank,
-      guard: DeveloperGuard,
-      visibilityFilter: DeveloperVisibilityFilter,
-    },
-    {
-      path: "/data-access/reports/ect",
-      name: "Ect...",
-      component: Blank,
-      guard: DeveloperGuard,
-      visibilityFilter: DeveloperVisibilityFilter,
-    },
-  ],
-  guard: AdminGuard,
-  visibilityFilter: AdminVisibilityFilter,
-};
-
-const timeseriesRoutes = {
-  id: "Time Series",
-  icon: <Activity />,
-  children: [
-    {
-      path: "/data-access/graphs/streamflow",
-      name: "Streamflow",
-      component: Blank,
-    },
-    {
-      path: "/data-access/graphs/flow-vs-targets",
-      name: "Flow vs Targets",
-      component: Blank,
-    },
-    {
-      path: "/data-access/graphs/temperature",
-      name: "Temperature",
+      path: "/data-access/reports",
+      name: "A Report",
       component: Blank,
     },
   ],
-  guard: DeveloperGuard,
-  visibilityFilter: DeveloperVisibilityFilter,
+  guard: AuthGuard,
+  visibilityFilter: UserVisibilityFilter,
 };
-
-// const mapRoutes = {
-//   header: "Public Resources",
-//   link: "external",
-//   id: "Map",
-//   icon: <Map />,
-//   path: "/public-map",
-//   name: "Map",
-// };
 
 const publicMapRoutes = {
   header: "Public Resources",
@@ -248,33 +148,29 @@ const publicFilesRoutes = {
   id: "Public Files",
   header: "Documents",
   icon: <Archive />,
-  path: "/data-access/documents/public-files",
+  path: "/documents/public-files",
   name: "Public Files",
   component: Blank,
-  guard: DeveloperGuard,
-  visibilityFilter: DeveloperVisibilityFilter,
 };
 
-const clientDocsRoutes = {
-  id: "Client Docs",
+const userDocsRoutes = {
+  id: "User Docs",
   icon: <Folder />,
-  path: "/data-access/documents/client-docs",
-  name: "Client Documents",
+  path: "/documents/user-docs",
+  name: "User Docs",
   component: Blank,
-  // guard: AdminGuard,
-  // visibilityFilter: AdminVisibilityFilter,
-  guard: DeveloperGuard,
-  visibilityFilter: DeveloperVisibilityFilter,
+  guard: AuthGuard,
+  visibilityFilter: UserVisibilityFilter,
 };
 
-const DeveloperDocsRoutes = {
-  id: "Developer Docs",
+const adminDocsRoutes = {
+  id: "Admin Docs",
   icon: <Briefcase />,
-  path: "/data-access/documents/developer-docs",
-  name: "Developer Documents",
+  path: "/documents/admin-docs",
+  name: "Admin Docs",
   component: Blank,
-  guard: DeveloperGuard,
-  visibilityFilter: DeveloperVisibilityFilter,
+  guard: AdminGuard,
+  visibilityFilter: AdminVisibilityFilter,
 };
 
 const accountRoutes = {
@@ -312,7 +208,8 @@ const landingRoutes = {
 };
 
 const mainRoutes = {
-  id: "Dashboard",
+  header: "Dashboards",
+  id: "A Dashboard",
   path: "/dashboard",
   icon: <Home />,
   component: Default,
@@ -320,118 +217,6 @@ const mainRoutes = {
   containsHome: true,
   guard: AuthGuard,
   visibilityFilter: UserVisibilityFilter,
-};
-
-const pageRoutes = {
-  id: "Pages",
-  path: "/pages",
-  icon: <Monitor />,
-  component: Blank,
-  children: [
-    {
-      path: "/dashboard/default",
-      name: "Dashboard",
-      component: Default,
-    },
-    {
-      path: ROUTES.PAGE_ABOUT,
-      name: "About LRE Water Unified Platform",
-      component: Blank,
-    },
-    {
-      path: ROUTES.PAGE_SUPPORT,
-      name: "Support",
-      component: Blank,
-    },
-    {
-      path: ROUTES.PAGE_DOCUMENTATION,
-      name: "Documentation",
-      component: Blank,
-    },
-    {
-      path: ROUTES.PAGE_BLANK,
-      name: "Blank",
-      component: Blank,
-    },
-  ],
-};
-
-const documentationRoutes = {
-  id: "Documentation",
-  path: ROUTES.PAGE_DOCUMENTATION,
-  icon: <BookOpen />,
-  provider: DocumentationProvider,
-  children: [
-    {
-      path: ROUTES.PAGE_DOCS_INTRODUCTION,
-      name: "Introduction",
-      component: Introduction,
-    },
-    {
-      path: ROUTES.PAGE_DOCS_GETTING_STARTED,
-      name: "Getting Started",
-      component: GettingStarted,
-    },
-    {
-      path: ROUTES.PAGE_DOCS_CRUD,
-      name: "CRUD",
-      component: CRUD,
-    },
-    {
-      path: ROUTES.PAGE_DOCS_DEPLOY,
-      name: "Deploy",
-      component: Deploy,
-    },
-    {
-      path: ROUTES.PAGE_DOCS_SUPPORT,
-      name: "Support",
-      component: Support,
-    },
-    {
-      path: ROUTES.PAGE_CHANGELOG,
-      name: "Changelog",
-      component: Changelog,
-    },
-  ],
-  component: null,
-  guard: DeveloperGuard,
-  visibilityFilter: DeveloperVisibilityFilter,
-};
-
-const slugify = (str) => {
-  return dasherize(underscore(str));
-};
-
-const componentsRoutes = {
-  id: "Components",
-  path: "/components",
-  header: "UI Kit",
-  icon: <Grid />,
-  children: [
-    {
-      path: "/components/all",
-      name: "All",
-      component: All,
-    },
-    ...EXAMPLE_COMPONENTS.map((x) => ({
-      name: x.title,
-      path: `/components/${slugify(x.title)}`,
-      component: () => All({ exampleComponent: x }),
-    })),
-  ],
-  component: null,
-  guard: DeveloperGuard,
-  visibilityFilter: DeveloperVisibilityFilter,
-};
-
-const changelogRoutes = {
-  id: "Changelog",
-  path: "/changelog",
-  badge: process.env.REACT_APP_VERSION || "v1.0.0",
-  icon: <List />,
-  component: Changelog,
-  provider: DocumentationProvider,
-  children: null,
 };
 
 // This route is only visible while signed in
@@ -444,50 +229,16 @@ const protectedPageRoutes = {
   guard: AuthGuard,
 };
 
-const adminRoutes = {
-  id: "Users",
-  header: "Administration",
-  path: "/admin/users",
-  icon: <Users />,
-  component: Blank,
-  children: [
-    {
-      path: "/admin/users",
-      name: "Users",
-      component: Blank,
-    },
-    {
-      path: "/admin/roles",
-      name: "Roles",
-      component: Blank,
-    },
-    {
-      path: "/admin/permissions",
-      name: "Permissions",
-      component: Blank,
-    },
-  ],
-  guard: DeveloperGuard,
-  visibilityFilter: DeveloperVisibilityFilter,
-};
-
 // Routes using the Dashboard layout
 export const dashboardLayoutRoutes = [
-  pageRoutes,
   mainRoutes,
-  changelogRoutes,
   dataManagementRoutes,
-  dataEntryRoutes,
+  dataAccessRoutes,
   reportsRoutes,
-  // mapRoutes,
-  timeseriesRoutes,
   publicFilesRoutes,
-  clientDocsRoutes,
-  DeveloperDocsRoutes,
+  userDocsRoutes,
+  adminDocsRoutes,
   accountRoutes,
-  documentationRoutes,
-  componentsRoutes,
-  adminRoutes,
 ];
 
 export const dashboardMaxContentLayoutRoutes = [
@@ -513,14 +264,10 @@ export const sidebarRoutes = [
   mainRoutes,
   ...crudSidebarMenu,
   dataManagementRoutes,
-  dataEntryRoutes,
+  dataAccessRoutes,
   reportsRoutes,
-  timeseriesRoutes,
   publicMapRoutes,
   publicFilesRoutes,
-  clientDocsRoutes,
-  DeveloperDocsRoutes,
-  adminRoutes,
-  componentsRoutes,
-  documentationRoutes,
+  userDocsRoutes,
+  adminDocsRoutes,
 ];

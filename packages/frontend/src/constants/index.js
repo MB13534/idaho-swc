@@ -1,9 +1,3 @@
-import React from "react";
-import { Droplet, CheckSquare } from "react-feather";
-import CallMerge from "@material-ui/icons/CallMerge";
-import AdminGuard from "../components/AdminGuard";
-import AdminVisibilityFilter from "../components/AdminVisibilityFilter";
-
 export const STARTING_LOCATION = [-97.4718189239502, 31.050691282461912];
 
 export const EDIT_CRUD_TABLES_DISABLED = [];
@@ -12,51 +6,12 @@ export const DELETE_CRUD_TABLES_DISABLED = [];
 
 export const CREATE_NEW_CRUD_TABLES_DISABLED = [];
 
-export const DELETE_BUTTON_LABEL = [{ DmPermit: "CANCEL" }];
+export const DELETE_BUTTON_LABEL = [];
 
 // Configuration
-export const CRUD_MODELS = [
-  {
-    header: "Data Management",
-    name: "DmPermits",
-    sidebarName: "Active Permits",
-    icon: <CheckSquare />,
-    guard: AdminGuard,
-    visibilityFilter: AdminVisibilityFilter,
-  },
-  {
-    name: "DmWells",
-    sidebarName: "Wells",
-    icon: <Droplet />,
-    guard: AdminGuard,
-    visibilityFilter: AdminVisibilityFilter,
-  },
-  {
-    name: "DmAggregateSystems",
-    sidebarName: "Aggregated Systems",
-    icon: <CallMerge />,
-    guard: AdminGuard,
-    visibilityFilter: AdminVisibilityFilter,
-  },
-];
+export const CRUD_MODELS = [];
 
-export const CRUD_LOOKUP_TABLES = [
-  "ui_list_permit_holders",
-  "list_aggregate_systems",
-  "list_aquifers",
-  "list_water_uses",
-  "list_well_statuses",
-  "list_booleans",
-  "list_measurement_methods",
-  "list_permit_types",
-  "list_permit_terms",
-  "list_pumping_statuses",
-  "list_collected_bys",
-  "list_tested_bys",
-  "list_wq_presence_absences",
-  "current_wells_to_rolodex_owners_texts",
-  "current_wells_to_rolodex_contacts_texts",
-];
+export const CRUD_LOOKUP_TABLES = [];
 
 export const THEME = {
   MAIN_SIDEBAR_WIDTH: 258,

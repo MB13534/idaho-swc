@@ -13,7 +13,6 @@ import {
   withWidth,
 } from "@material-ui/core";
 
-import ThemesToggle from "../../../components/ThemesToggle";
 import { ROUTES } from "../../../constants";
 import Link from "@material-ui/core/Link";
 
@@ -51,7 +50,7 @@ function AppBarComponent({ width }) {
 
             <Grid item xs />
             <Grid item>
-              <ThemesToggle />
+              {/*<ThemesToggle />*/}
               <Button
                 ml={2}
                 color="primary"

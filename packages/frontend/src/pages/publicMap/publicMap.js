@@ -29,6 +29,7 @@ import PrintMapFormat from "./components/PrintMapFormat";
 import SplitButton from "../../components/SplitButton";
 import MeasurementsControl from "./controls/MeasurementsControl";
 import CommaSeparatedDataDotsSearch from "./filters/CommaSeparatedDataDotsSearch";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
 
 const FiltersBar = styled(Paper)`
   align-items: center;
