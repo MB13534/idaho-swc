@@ -502,7 +502,7 @@ const useMap = (ref, mapConfig) => {
         setDataAdded(false);
         loadMapData();
       }
-    }, 100);
+    }, 1000);
   };
 
   // initialize and render the map
