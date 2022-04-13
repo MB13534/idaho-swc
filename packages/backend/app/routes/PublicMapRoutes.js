@@ -1,10 +1,6 @@
 const express = require('express');
 const {checkAccessToken, checkRoles} = require('../../core/middleware/auth.js');
-const {
-  summary_of_sites,
-  /*MJB hide aggregated system control per client (probably temporary)*/
-  // list_aggregate_systems,
-} = require('../../core/models');
+const {summary_of_sites} = require('../../core/models');
 const sourceData = require('../data/sources');
 const layersData = require('../data/layers');
 
@@ -85,6 +81,79 @@ const dataProvidersData = [
   'USGS',
 ];
 
+const huc8NamesData = [
+  'American Falls',
+  'Beaver-Camas',
+  'Big Lost',
+  'Big Wood',
+  'Blackfoot',
+  'Idaho Falls',
+  'Lake Walcott',
+  'Little Lost',
+  'Little Wood',
+  'Lower Henrys',
+  'Portneuf',
+  'Raft',
+  'Teton',
+  'Upper Henrys',
+  'Upper Snake-Rock',
+  'Willow',
+];
+
+const huc10NamesData = [
+  'American Falls Reservoir',
+  'Big Cottonwood Creek',
+  'Birch Creek-Snake River',
+  'Black Butte Hills-Big Wood River',
+  'Black Ridge Crater',
+  'Box Canyon',
+  'Brigham Point-Snake River',
+  'Calder Creek-Raft River',
+  'Camas Creek',
+  'Camp Holly Lake-Town of Rupert',
+  'Cedar Butte',
+  'City of Aberdeen',
+  'City of Shelley-Snake River',
+  'Crater Lake',
+  'East Main Canal-Little Wood River',
+  'Fish Creek',
+  'Garden Creek-Marsh Creek',
+  'Headwaters Camas Creek',
+  'Headwaters Willow Creek',
+  'Island Park Reservoir-Henrys Fork',
+  'Kettle Butte',
+  'Laidlaw Park',
+  'Lanes Creek-Diamond Creek',
+  'Little Fish Creek-Little Wood River',
+  'Lower Blackfoot River',
+  'Lower Fall River',
+  'Lower Little Lost River',
+  'Lower Portneuf River',
+  'Lyons Creek-Snake River',
+  'Massacre Rocks-Snake River',
+  'Middle Big Lost River',
+  'Middle Portneuf River',
+  'Milner Dam-Snake River',
+  'Muldoon Creek',
+  'North Fork Big Lost River',
+  'Outlet Willow Creek',
+  'Pleasant Valley-Lake Channel Canyon',
+  'Rising River-Watson Slough',
+  'Rock Creek',
+  'Ross Fork',
+  'Sand Creek',
+  'Sand Creek-Henrys Fork',
+  'South Teton River-Teton River',
+  'Star Hope Creek',
+  'Teton Basin-Teton River',
+  'Town of Springfield-Danielson Creek',
+  'Trail Creek-Teton River',
+  'Twin Falls Main Canal-Snake River',
+  'Upper Bannock Creek',
+  'Upper Blackfoot River',
+  'Wet Creek',
+];
+
 /**
  * Utility used to build up valid geojson from provided json
  * @param {array} options.data Array of objects representing data that is being
@@ -122,7 +191,7 @@ router.get('/sources', async (req, res, next) => {
   try {
     const wellsData = await summary_of_sites.findAll();
     const finalSources = sources.map((source) => {
-      if (source.id === 'data-dots') {
+      if (source.id === 'data-points') {
         return {
           ...source,
           data: toGeoJSON({
@@ -191,11 +260,6 @@ router.get('/wells', async (req, res, next) => {
  */
 router.get('/filters', async (req, res, next) => {
   try {
-    // const aquifers = await list_aquifers
-    //   .findAll({
-    //     order: [['aquifer_name', 'ASC']],
-    //   })
-    //   .map(({aquifer_name}) => ({display: aquifer_name, value: aquifer_name}));
     const locationTypes = locationTypesData.map((use) => ({
       display: use,
       value: use,
@@ -208,22 +272,21 @@ router.get('/filters', async (req, res, next) => {
       display: use,
       value: use,
     }));
-    /*MJB hide aggregated system control per client (probably temporary)*/
-    // const aggregatedSystems = await list_aggregate_systems
-    //   .findAll({
-    //     order: [['agg_system_name', 'asc']],
-    //   })
-    //   .map(({agg_system_name}) => ({
-    //     display: agg_system_name,
-    //     value: agg_system_name,
-    //   }));
+    const huc8Names = huc8NamesData.map((use) => ({
+      display: use,
+      value: use,
+    }));
+    const huc10Names = huc10NamesData.map((use) => ({
+      display: use,
+      value: use,
+    }));
+
     res.json({
       locationTypes: locationTypes || [],
       parameterNames,
       dataProviders,
-      /*MJB hide aggregated system control per client (probably temporary)*/
-      // aggregatedSystems:
-      //   [...aggregatedSystems, {display: '--', value: '--'}] || [],
+      huc8Names,
+      huc10Names,
     });
   } catch (err) {
     next(err);

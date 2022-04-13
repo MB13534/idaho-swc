@@ -223,6 +223,38 @@ const PublicMap = () => {
                 />
               </FilterControl>
 
+              <FilterControl
+                appliedCount={filterValues?.huc8Names?.value?.length}
+                label="HUC8 Names"
+              >
+                <Filter
+                  label="HUC8 Names"
+                  name="huc8Names"
+                  onChange={handleFilterValues}
+                  onSelectAll={handleSelectAll}
+                  onSelectNone={handleSelectNone}
+                  options={filterValues?.huc8Names?.options}
+                  type={filterValues?.huc8Names?.type}
+                  value={filterValues?.huc8Names?.value}
+                />
+              </FilterControl>
+
+              <FilterControl
+                appliedCount={filterValues?.huc10Names?.value?.length}
+                label="HUC10 Names"
+              >
+                <Filter
+                  label="HUC10 Names"
+                  name="huc10Names"
+                  onChange={handleFilterValues}
+                  onSelectAll={handleSelectAll}
+                  onSelectNone={handleSelectNone}
+                  options={filterValues?.huc10Names?.options}
+                  type={filterValues?.huc10Names?.type}
+                  value={filterValues?.huc10Names?.value}
+                />
+              </FilterControl>
+
               {/*<FilterControl*/}
               {/*  appliedCount={getMoreFiltersCount(filterValues)}*/}
               {/*  label="More Filters"*/}
@@ -278,12 +310,12 @@ const PublicMap = () => {
 
         <FiltersSection>
           <FiltersContainer>
-            <FilterControl label={`Color Data Dots by ${activeStyle.name}`}>
+            <FilterControl label={`Color Data Points by ${activeStyle.name}`}>
               <Typography variant="subtitle1" gutterBottom>
                 Color wells by
               </Typography>
               <WellStylesControl
-                label="Color Data Dots by"
+                label="Color Data Points by"
                 name="wellStyles"
                 onChange={handleActiveStyle}
                 options={styleOptions}
@@ -314,6 +346,7 @@ const PublicMap = () => {
       <Map ref={mapContainer}>
         {eventsRegistered && (
           <MainControl
+            activeStyle={activeStyle}
             activeBasemap={activeBasemap}
             basemaps={basemaps}
             layers={layers}

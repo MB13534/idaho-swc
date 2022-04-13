@@ -395,9 +395,9 @@ const useMap = (ref, mapConfig) => {
           }
         }
       });
-      map.setFilter("data-dots-circle", mapFilterExpression);
-      map.setFilter("data-dots-symbol", mapFilterExpression);
-      mapLogger.log("Filters updated on the data-dots layers");
+      map.setFilter("data-points-circle", mapFilterExpression);
+      map.setFilter("data-points-symbol", mapFilterExpression);
+      mapLogger.log("Filters updated on the data-points layers");
     }
   };
 
@@ -426,7 +426,7 @@ const useMap = (ref, mapConfig) => {
           };
         });
       });
-      mapLogger.log("Paint styles updated on the data-dots-circle layer");
+      mapLogger.log("Paint styles updated on the data-points-circle layer");
     }
   };
 

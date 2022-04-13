@@ -44,6 +44,7 @@ const MainControl = ({
   onBasemapChange,
   onLayerChange,
   value,
+  activeStyle,
 }) => {
   const [expandedItem, setExpandedItem] = useState("layers");
 
@@ -89,7 +90,11 @@ const MainControl = ({
           </Box>
         </AccordionSummary>
         <AccordionDetails>
-          <LayersControl items={layers} onLayerChange={onLayerChange} />
+          <LayersControl
+            items={layers}
+            onLayerChange={onLayerChange}
+            activeStyle={activeStyle}
+          />
         </AccordionDetails>
       </Accordion>
     </Container>

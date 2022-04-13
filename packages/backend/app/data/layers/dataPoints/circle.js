@@ -1,8 +1,8 @@
 module.exports = {
-  id: 'data-dots-circle',
-  name: 'Data Dots',
+  id: 'data-points-circle',
+  name: 'Data Points',
   type: 'circle',
-  source: 'data-dots',
+  source: 'data-points',
   drawOrder: -100,
   legendOrder: 100,
   paint: {

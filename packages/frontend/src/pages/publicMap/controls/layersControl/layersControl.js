@@ -9,7 +9,6 @@ import {
   ListItemSecondaryAction,
   Typography,
 } from "@material-ui/core";
-// import SearchIcon from "@material-ui/icons/Search";
 
 import ExpandMore from "@material-ui/icons/ExpandMore";
 import ChevronRight from "@material-ui/icons/ChevronRight";
@@ -111,10 +110,10 @@ const LayerLegend = ({ item, open }) => {
  * TODOS
  * [] Add support for layers search
  */
-const LayersControl = ({ items, onLayerChange }) => {
+const LayersControl = ({ items, onLayerChange, activeStyle }) => {
   const [expandedItems, setExpandedItems] = useState([
-    "Data Dots",
-    "Data Dots Labels",
+    "Data Points",
+    "Data Points Labels",
   ]);
 
   /**
@@ -203,7 +202,11 @@ const LayersControl = ({ items, onLayerChange }) => {
                     inputProps={{ "aria-labelledby": "test" }}
                   />
                   <ListItemText
-                    primary={item?.name}
+                    primary={
+                      item?.id === activeStyle?.layerId
+                        ? activeStyle?.name
+                        : item?.name
+                    }
                     primaryTypographyProps={{
                       color: layerVisible ? "textPrimary" : "textSecondary",
                     }}

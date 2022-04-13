@@ -49,6 +49,12 @@ module.exports = (sequelize, DataTypes) => {
       loc_region: {
         type: TEXT,
       },
+      huc10_name: {
+        type: TEXT,
+      },
+      huc8_name: {
+        type: TEXT,
+      },
       irgg_type: {
         type: TEXT,
       },

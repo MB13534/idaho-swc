@@ -59,12 +59,16 @@ const useFilters = ({ onFilterChange }) => {
         options: data?.data?.dataProviders || [],
         value: data?.data?.dataProviders.map(({ value }) => value) || [],
       },
-      /*MJB hide aggregated system control per client (probably temporary)*/
-      // aggregatedSystems: {
-      //     ...prevState.aggregatedSystems,
-      //     options: data?.data?.aggregatedSystems || [],
-      //     value: data?.data?.aggregatedSystems.map(({ value }) => value) || [],
-      //   },
+      huc8Names: {
+        ...prevState.huc8Names,
+        options: data?.data?.huc8Names || [],
+        value: data?.data?.huc8Names.map(({ value }) => value) || [],
+      },
+      huc10Names: {
+        ...prevState.huc10Names,
+        options: data?.data?.huc10Names || [],
+        value: data?.data?.huc10Names.map(({ value }) => value) || [],
+      },
     }));
   }, [data?.data]);
 

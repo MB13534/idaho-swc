@@ -33,7 +33,7 @@ const SearchResults = ({
       transition
     >
       <ClickAwayListener onClickAway={onClose}>
-        <Paper style={{ width: 400, height: 355, overflowY: "auto" }}>
+        <Paper style={{ width: 500, height: 470, overflowY: "auto" }}>
           <List dense component="nav" aria-label="main mailbox folders">
             {searchResults?.slice(0, 49)?.map((result, i) => (
               <React.Fragment key={i}>
@@ -83,6 +83,21 @@ const SearchResults = ({
                       </Typography>
                     </Grid>
                   </Grid>
+                  <Grid container>
+                    <Grid item xs={4}>
+                      <Typography variant="caption">HUC8 Name</Typography>
+                      <Typography variant="body1">
+                        {result?.item?.huc8_name || "N/A"}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4}>
+                      <Typography variant="caption">HUC10 Name</Typography>
+                      <Typography variant="body1">
+                        {result?.item?.huc10_name || "N/A"}
+                      </Typography>
+                    </Grid>
+                    <Grid item xs={4} />
+                  </Grid>
                 </ListItem>
                 <Divider />
               </React.Fragment>
@@ -131,6 +146,8 @@ const Search = ({ onSelect }) => {
           "loc_type",
           "parameter_name",
           "data_provider",
+          "huc8_name",
+          "huc10_name",
         ],
       });
     }
@@ -157,7 +174,8 @@ const Search = ({ onSelect }) => {
     <>
       <TextField
         id="outlined-basic"
-        label="Individual Data Dot Search"
+        autoComplete="off"
+        label="Individual Data Point Search"
         InputProps={{
           startAdornment: (
             <InputAdornment position="start">
@@ -167,9 +185,9 @@ const Search = ({ onSelect }) => {
         }}
         onChange={handleChange}
         onFocus={() => !!value && setOpen(true)}
-        placeholder="Data dot attributes"
+        placeholder="Data point attributes"
         ref={searchRef}
-        style={{ width: "100%", minWidth: "215px" }}
+        style={{ width: "100%", minWidth: "226px" }}
         type="search"
         value={value}
         variant="outlined"

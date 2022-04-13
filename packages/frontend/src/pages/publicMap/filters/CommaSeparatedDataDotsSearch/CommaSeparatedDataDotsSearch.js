@@ -122,8 +122,8 @@ const CommaSeparatedDataDotsSearch = ({ map }) => {
     const dataDotsArray = value.replaceAll(" ", "").toUpperCase().split(",");
     const uniqueDataDotsArray = [...new Set(dataDotsArray)];
 
-    const allDataDots = map.querySourceFeatures("data-dots", {
-      sourceLayer: "data-dots",
+    const allDataDots = map.querySourceFeatures("data-points", {
+      sourceLayer: "data-points",
     });
 
     const filteredDataDots = allDataDots.filter((item) => {
@@ -153,8 +153,8 @@ const CommaSeparatedDataDotsSearch = ({ map }) => {
       <form style={{ width: "100%" }} onSubmit={handleSubmit}>
         <TextField
           style={{ width: "100%", minWidth: "275px" }}
-          id="comma-separated-data-dots-search"
-          label="Multiple Data Dots Filter"
+          id="comma-separated-data-points-search"
+          label="Multiple Data Points Filter"
           InputProps={{
             startAdornment: (
               <InputAdornment position="start">
@@ -164,7 +164,7 @@ const CommaSeparatedDataDotsSearch = ({ map }) => {
           }}
           autoComplete="off"
           onChange={handleChange}
-          placeholder="Comma separated data dot ids"
+          placeholder="Comma separated data point ids"
           type="search"
           value={value}
           variant="outlined"

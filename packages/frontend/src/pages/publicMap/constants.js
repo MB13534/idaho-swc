@@ -35,8 +35,8 @@ export const INIT_MAP_CONFIG = {
   preserveDrawingBuffer: true,
 };
 
-export const WELLS_LAYER_ID = "data-dots-circle";
-export const WELLS_LABELS_LAYER_ID = "data-dots-symbol";
+export const WELLS_LAYER_ID = "data-points-circle";
+export const WELLS_LABELS_LAYER_ID = "data-points-symbol";
 
 export const INIT_FILTER_VALUES = {
   locationTypes: {
@@ -56,6 +56,20 @@ export const INIT_FILTER_VALUES = {
   dataProviders: {
     layerId: WELLS_LAYER_ID,
     layerFieldName: "data_provider",
+    options: [],
+    type: "multi-select",
+    value: [],
+  },
+  huc8Names: {
+    layerId: WELLS_LAYER_ID,
+    layerFieldName: "huc8_name",
+    options: [],
+    type: "multi-select",
+    value: [],
+  },
+  huc10Names: {
+    layerId: WELLS_LAYER_ID,
+    layerFieldName: "huc10_name",
     options: [],
     type: "multi-select",
     value: [],

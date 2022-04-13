@@ -1,5 +1,5 @@
 module.exports = {
-  id: 'data-dots',
+  id: 'data-points',
   type: 'geojson',
   data: [],
 };

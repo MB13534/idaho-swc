@@ -1,8 +1,8 @@
 module.exports = {
-  id: 'data-dots-symbol',
-  name: 'Data Dots Labels',
+  id: 'data-points-symbol',
+  name: 'Data Points Labels',
   type: 'symbol',
-  source: 'data-dots',
+  source: 'data-points',
   drawOrder: -100,
   legendOrder: 99,
   layout: {

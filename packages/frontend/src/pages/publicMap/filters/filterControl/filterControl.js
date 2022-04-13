@@ -23,6 +23,8 @@ const FilterAvatar = styled("span")(({ theme }) => ({
 
 const FilterContainer = styled(Paper)(({ theme }) => ({
   padding: theme.spacing(4),
+  maxHeight: "460px",
+  overflow: "auto",
 }));
 
 const FilterControl = ({ appliedCount, children, label }) => {
@@ -62,7 +64,10 @@ const FilterControl = ({ appliedCount, children, label }) => {
         open={open}
         anchorEl={buttonRef?.current}
         placement="bottom-start"
-        style={{ zIndex: 2, border: "1px solid #ddd" }}
+        style={{
+          zIndex: 2,
+          border: "1px solid #ddd",
+        }}
         transition
       >
         {({ TransitionProps }) => (
