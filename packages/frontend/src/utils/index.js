@@ -33,6 +33,28 @@ export const copyToClipboard = (data, columns, callback) => {
   callback();
 };
 
+/**
+ * Utility method for extracting the date in "YYYY-MM-DD" format
+ * Ideal for extracting the date for a Material-UI date picker
+ * @param {*} date
+ */
+export const extractDate = (date) => {
+  if (date) {
+    const properDate = new Date(date);
+    const year = properDate.getFullYear();
+    const month =
+      properDate.getMonth() + 1 < 10
+        ? `0${properDate.getMonth() + 1}`
+        : properDate.getMonth() + 1;
+    const day =
+      properDate.getDate() < 10
+        ? `0${properDate.getDate()}`
+        : properDate.getDate();
+    return `${year}-${month}-${day}`;
+  }
+  return "";
+};
+
 export const formatBooleanTrueFalse = (value) => {
   if (typeof value !== "boolean") {
     return value;
@@ -170,6 +192,16 @@ export const renderStatusChip = (status, colors) => {
 //     : [];
 // };
 
+export const groupByValue = (array, key) => {
+  return Object.values(
+    array.reduce((acc, curr) => {
+      if (!acc[curr[key]]) acc[curr[key]] = [];
+      acc[curr[key]].push(curr);
+      return acc;
+    }, {})
+  );
+};
+
 export const applyInflectorOverrides = (str) => {
   const myStr = str ? str : "";
   return myStr.replace("Curf", "Curve");
@@ -188,6 +220,8 @@ export const lastOfCurrentMonth = new Date(
 export const lastOfYear = new Date(new Date().getFullYear(), 11, 31);
 
 export const oneYearAgo = add(new Date(), { years: -1 });
+
+export const oneWeekAgo = add(new Date(), { weeks: -1 });
 
 export const filterDataForWellOwner = (data, user) => {
   return data

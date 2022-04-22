@@ -32,6 +32,7 @@ import { CrudProvider } from "../CrudProvider";
 // TODO MAYBE LAZY IMPORT
 import PublicMap from "../pages/publicMap";
 import UserVisibilityFilter from "../components/UserVisibilityFilter";
+import TimeSeriesComparison from "../pages/dataAccess/timeSeries/TimeSeriesComparison";
 
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
@@ -115,6 +116,11 @@ const dataAccessRoutes = {
       path: "/data-access/time-series",
       name: "A Time Series",
       component: Blank,
+    },
+    {
+      path: "/data-access/time-series-comparison",
+      name: "Time Series Comparisons",
+      component: TimeSeriesComparison,
     },
   ],
   guard: AuthGuard,

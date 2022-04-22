@@ -1,13 +1,13 @@
-import React, { forwardRef, useEffect } from "react";
+import React, { forwardRef } from "react";
 import { withTheme } from "styled-components/macro";
 
-import { Chart, Bar, Scatter } from "react-chartjs-2";
+import { Chart, Bar, Line } from "react-chartjs-2";
 import "chartjs-adapter-moment";
 import zoomPlugin from "chartjs-plugin-zoom";
+// import { add } from "date-fns";
 import Loader from "../Loader";
 import { Typography } from "@material-ui/core";
 import { lineColors } from "../../utils";
-import { add } from "date-fns";
 
 Chart.register(zoomPlugin);
 
@@ -16,31 +16,28 @@ const TimeseriesLineChart = forwardRef(
     {
       data,
       error,
-      isLoading,
-      filterValues = "",
-      yLLabel,
-      type = "bar",
-      yLReverse = false,
+      isLoading = true,
+      filterValues,
+      locationsOptions = [true],
+      yLLabel = null,
       reverseLegend = true,
       xLabelUnit = "day",
-      xLabelFormat = "MMM YYYY",
-      tooltipFormat = "MM-DD-YYYY",
-      yRLLabel = null,
+      xLabelFormat = "MM-DD-YYYY",
+      tooltipFormat = "MM-DD-YYYY, h:mm A",
+      yRLabel = null,
+      type = "line",
       theme,
-      displayLegend = true,
-      setIsGraphRefCurrent = () => {},
+      suggestedMin = null,
+      minL = null,
+      maxL = null,
+      minR = null,
+      maxR = null,
+      footerLabel = null,
       stacked = false,
-      maxTicksX = 8.3,
-      maxTicksYL = 11,
-      maxTicksYR = 11,
-      align = "center",
+      interactionMode = "index",
     },
     ref
   ) => {
-    useEffect(() => {
-      setIsGraphRefCurrent(true);
-    }, []); //eslint-disable-line
-
     const plugins = [
       {
         id: "chartFillBackground",
@@ -59,58 +56,80 @@ const TimeseriesLineChart = forwardRef(
           } = chart;
           if (chart.options.plugins.zoom.zoom.wheel.enabled) {
             ctx.save();
-            ctx.strokeStyle = lineColors.maroon;
+            ctx.strokeStyle = "#800000";
             ctx.lineWidth = 3;
             ctx.strokeRect(left, top, width, height);
             ctx.restore();
           }
         },
       },
-      // {
-      //   id: "annotatedVerticalLine",
-      //   afterDraw(chart) {
-      //     if (chart.tooltip?._active?.length) {
-      //       let x = chart.tooltip._active[0].element.x;
-      //       let yAxis = chart.scales.yL;
-      //       let ctx = chart.ctx;
-      //       ctx.save();
-      //       ctx.beginPath();
-      //       ctx.moveTo(x, yAxis.top);
-      //       ctx.lineTo(x, yAxis.bottom);
-      //       ctx.lineWidth = 9;
-      //       ctx.strokeStyle = "rgba(181, 1, 40, 0.2)";
-      //       ctx.stroke();
-      //
-      //       ctx.beginPath();
-      //       ctx.moveTo(x, yAxis.top);
-      //       ctx.lineTo(x, yAxis.bottom);
-      //       ctx.lineWidth = 1;
-      //       ctx.strokeStyle = "rgba(181, 1, 40, 0.4)";
-      //       ctx.stroke();
-      //       ctx.restore();
-      //     }
-      //   },
-      // },
+      {
+        id: "annotatedVerticalLine",
+        afterDraw(chart) {
+          if (chart.config.type === "line" && chart.tooltip?._active?.length) {
+            let x = chart.tooltip._active[0].element.x;
+            let yAxis = chart.scales.yL;
+            let ctx = chart.ctx;
+            ctx.save();
+            ctx.beginPath();
+            ctx.moveTo(x, yAxis.top);
+            ctx.lineTo(x, yAxis.bottom);
+            ctx.lineWidth = 9;
+            ctx.strokeStyle = "rgba(0, 0, 255, 0.2)";
+            ctx.stroke();
+
+            ctx.beginPath();
+            ctx.moveTo(x, yAxis.top);
+            ctx.lineTo(x, yAxis.bottom);
+            ctx.lineWidth = 1;
+            ctx.strokeStyle = "rgba(0, 0, 255, 0.4)";
+            ctx.stroke();
+            ctx.restore();
+          }
+        },
+      },
     ];
 
     const options = {
+      // parsing: false,
       responsive: true,
       maintainAspectRatio: false,
       interaction: {
         intersect: false,
-        mode: "index",
+        mode: "nearest",
+        // axis: "xy",
       },
       plugins: {
         filler: {
           propagate: false,
         },
         tooltip: {
+          reverse: reverseLegend,
           callbacks: {
             footer: (tooltipItems) => {
-              return (
-                tooltipItems[0].dataset.popupInfo &&
-                tooltipItems[0].dataset.popupInfo[tooltipItems[0].dataIndex]
-              );
+              const footerValue =
+                tooltipItems[0]?.dataset?.popupInfo === "total"
+                  ? tooltipItems
+                      .reduce(
+                        (accum, next) =>
+                          accum +
+                          (!tooltipItems[0]?.dataset?.excludedTooltipTotal.includes(
+                            next.dataset.label
+                          )
+                            ? next.raw
+                            : 0),
+                        0
+                      )
+                      .toFixed(1)
+                  : tooltipItems.filter((item) => item.dataset?.popupInfo)
+                      .length
+                  ? tooltipItems.filter((item) => item.dataset?.popupInfo)[0]
+                      .dataset?.popupInfo[tooltipItems[0]?.dataIndex]
+                  : null;
+              return footerValue !== null && `${footerLabel}: ` + footerValue;
+            },
+            label: function (tooltipItems) {
+              return `${tooltipItems.dataset.label}: ${tooltipItems.formattedValue} ${tooltipItems.dataset.units}`;
             },
           },
           footerAlign: "center",
@@ -118,33 +137,23 @@ const TimeseriesLineChart = forwardRef(
           // footerColor: ctx =>
         },
         legend: {
-          display: displayLegend,
+          display: true,
           reverse: reverseLegend,
-          onClick: () =>
-            // e, legendItem, legend
-            {
-              return null;
-              // const currentIndex = legendItem.datasetIndex;
-              // ref.current.setDatasetVisibility(
-              //   currentIndex,
-              //   !ref.current.isDatasetVisible(currentIndex)
-              // );
-            },
           labels: {
-            filter: (legendItem) => {
-              return !legendItem.hidden;
-            },
-            usePointStyle: true,
+            // boxHeight: 5,
+            // boxWidth: 25,
+            usePointStyle: false,
             color: lineColors.darkGray,
           },
         },
         zoom: {
           pan: {
             enabled: true,
-            mode: "x",
+            mode: "xy",
           },
           zoom: {
-            mode: "x",
+            mode: "xy",
+            overScaleMode: "y",
             wheel: {
               enabled: false,
             },
@@ -158,20 +167,20 @@ const TimeseriesLineChart = forwardRef(
 
       scales: {
         x: {
+          stacked: stacked,
           type: "time",
-          offset: false,
-          min:
-            filterValues.previousDays === ""
-              ? null
-              : filterValues.checked
-              ? add(new Date().getTime(), { days: -filterValues.previousDays })
-              : filterValues.startDate,
-          max:
-            filterValues.previousDays === ""
-              ? null
-              : filterValues.checked
-              ? new Date()
-              : filterValues.endDate,
+          // min:
+          //   filterValues.previousDays === "" && filterValues.checked
+          //     ? null
+          //     : filterValues.checked && filterValues.previousDays !== ""
+          //     ? add(new Date().getTime(), { days: -filterValues.previousDays })
+          //     : filterValues.startDate,
+          // max:
+          //   filterValues.previousDays === "" && filterValues.checked
+          //     ? null
+          //     : filterValues.checked && filterValues.previousDays !== ""
+          //     ? new Date()
+          //     : filterValues.endDate,
           time: {
             unit: xLabelUnit,
             displayFormats: {
@@ -184,16 +193,18 @@ const TimeseriesLineChart = forwardRef(
           },
           ticks: {
             color: lineColors.darkGray,
-            maxTicksLimit: maxTicksX,
-            source: data.labels?.length === 1 ? "labels" : "auto",
-            align: align,
+            maxTicksLimit: 9,
           },
-          stacked: stacked,
         },
+
         yL: {
+          stacked: stacked,
+          min: minL,
+          max: maxL,
+          suggestedMin: suggestedMin,
+          // suggestedMax: 7,
           position: "left",
-          reverse: yLReverse,
-          display: true,
+          display: !!yLLabel,
           title: {
             display: true,
             text: yLLabel,
@@ -201,7 +212,6 @@ const TimeseriesLineChart = forwardRef(
           },
           ticks: {
             color: lineColors.darkGray,
-            maxTicksLimit: maxTicksYL,
           },
           grid: {
             color: theme.palette.text.gridLines,
@@ -209,19 +219,20 @@ const TimeseriesLineChart = forwardRef(
             drawBorder: true,
             drawTicks: true,
           },
-          stacked: stacked,
         },
         yR: {
+          min: minR,
+          max: maxR,
+          suggestedMin: suggestedMin,
           position: "right",
-          display: !!yRLLabel,
+          display: !!yRLabel,
           title: {
             display: true,
-            text: yRLLabel,
+            text: yRLabel,
             color: lineColors.darkGray,
           },
           ticks: {
             color: lineColors.darkGray,
-            maxTicksLimit: maxTicksYR,
           },
           grid: {
             display: false,
@@ -245,9 +256,9 @@ const TimeseriesLineChart = forwardRef(
           <Loader />
         ) : (
           <>
-            {data?.datasets?.length > 0 ? (
-              type === "scatter" ? (
-                <Scatter
+            {data?.datasets?.length > 0 && locationsOptions?.length ? (
+              type === "line" ? (
+                <Line
                   plugins={plugins}
                   ref={ref}
                   data={data}
