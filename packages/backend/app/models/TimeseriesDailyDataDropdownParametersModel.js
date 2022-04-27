@@ -1,5 +1,5 @@
 module.exports = (sequelize, DataTypes) => {
-  const {INTEGER, TEXT} = DataTypes;
+  const {INTEGER, TEXT, ARRAY} = DataTypes;
   const TimeseriesDailyDataDropdownParameters = sequelize.define(
     'timeseries_daily_data_dropdown_parameters',
     {
@@ -9,6 +9,9 @@ module.exports = (sequelize, DataTypes) => {
       },
       parameter_name: {
         type: TEXT,
+      },
+      huc8_ndx_array: {
+        type: ARRAY(INTEGER),
       },
     },
     {

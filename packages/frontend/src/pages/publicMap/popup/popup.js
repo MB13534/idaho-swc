@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 // import "./styles.css";
 import parse from "html-react-parser";
 import styled from "styled-components/macro";
-import { isNullOrUndef } from "chart.js/helpers";
+// import { isNullOrUndef } from "chart.js/helpers";
 import { formatBooleanTrueFalse } from "../../../utils";
 import Button from "@material-ui/core/Button";
 import { Pagination } from "@material-ui/lab";
@@ -134,9 +134,10 @@ const Popup = ({
     ? Object.entries(feature?.properties).reduce((acc, [key, value]) => {
         //MJB also removing entry if the value is an empty string, null, or undefined
         if (
-          !excludeFields.includes(key) &&
-          value !== "" &&
-          !isNullOrUndef(value)
+          !excludeFields.includes(key)
+          // &&
+          // value !== "" &&
+          // !isNullOrUndef(value)
         ) {
           acc.push([key, value]);
         }

@@ -398,7 +398,10 @@ const TimeSeriesComparison = () => {
                           outlineColor="primary"
                           labelColor="primary"
                           margin="normal"
-                          data={Parameters}
+                          data={filterLocationsByHuc8s(
+                            Parameters,
+                            filterValues.huc8s
+                          )}
                           value={filterValues.parameterLeft}
                           onChange={handleFilter}
                           width={250}
@@ -435,7 +438,10 @@ const TimeSeriesComparison = () => {
                           outlineColor="primary"
                           labelColor="primary"
                           margin="normal"
-                          data={Parameters}
+                          data={filterLocationsByHuc8s(
+                            Parameters,
+                            filterValues.huc8s
+                          )}
                           value={filterValues.parameterRight}
                           onChange={handleFilter}
                           width={250}

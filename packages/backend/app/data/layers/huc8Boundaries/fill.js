@@ -13,6 +13,10 @@ module.exports = {
   },
   lreProperties: {
     layerGroup: 'huc-8-boundaries',
+    popup: {
+      titleField: 'loc_name',
+      excludeFields: [],
+    },
   },
   drawOrder: 99,
 };
