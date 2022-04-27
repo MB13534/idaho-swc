@@ -174,6 +174,8 @@ const TimeSeriesComparison = () => {
       if (name === "huc8s") {
         newValues["locationsLeft"] = [];
         newValues["locationsRight"] = [];
+        newValues["parameterLeft"] = "";
+        newValues["parameterRight"] = "";
       }
 
       newValues[name] = value;
