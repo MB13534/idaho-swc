@@ -1,9 +1,9 @@
 import React, { useEffect, useRef, useState } from "react";
 import { useQuery } from "react-query";
 import axios from "axios";
-import { useAuth0 } from "@auth0/auth0-react";
 import { DatePicker, MultiSelect, Select } from "@lrewater/lre-react";
 import {
+  dateFormatter,
   extractDate,
   groupByValue,
   lineColors,
@@ -24,6 +24,10 @@ import ExpandMoreIcon from "@material-ui/icons/ExpandMore";
 import Panel from "../../../components/panels/Panel";
 import SaveGraphButton from "../../../components/graphs/SaveGraphButton";
 import { spacing } from "@material-ui/system";
+import { customSecondary } from "../../../theme/variants";
+import { Alert } from "@material-ui/lab";
+import Map from "../../../components/map/Map";
+import Table from "../../../components/Table";
 
 const Grid = styled(MuiGrid)(spacing);
 const Typography = styled(MuiTypography)(spacing);
@@ -31,30 +35,87 @@ const Typography = styled(MuiTypography)(spacing);
 const TableWrapper = styled.div`
   overflow-y: auto;
   max-width: calc(100vw - ${(props) => props.theme.spacing(12)}px);
-  height: calc(100% - 154px);
+  height: calc(100%);
   width: 100%;
 `;
 
 const TimeseriesContainer = styled.div`
-  height: 662px;
+  height: 600px;
   // overflow-y: auto;
+  width: 100%;
+`;
+
+const SubmitGrid = styled(Grid)`
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-right: 4px;
+  margin-left: 4px;
+  margin-top: 10px;
+  width: 100%;
+`;
+
+const SidebarSection = styled(MuiTypography)`
+  ${spacing}
+  color: ${() => customSecondary[500]};
+  padding: ${(props) => props.theme.spacing(2)}px
+    ${(props) => props.theme.spacing(7)}px
+    ${(props) => props.theme.spacing(1)}px;
+  opacity: 0.9;
+  font-weight: ${(props) => props.theme.typography.fontWeightBold};
+  display: block;
+`;
+
+const MapContainer = styled.div`
+  height: 350px;
   width: 100%;
 `;
 
 const TimeSeriesComparison = () => {
   const saveRef = useRef(null);
-  const { getAccessTokenSilently } = useAuth0();
+
+  const [filterValues, setFilterValues] = useState({
+    huc8s: [],
+    parameterLeft: 7,
+    locationsLeft: [16],
+    parameterRight: 2,
+    locationsRight: [48],
+    startDate: extractDate(oneWeekAgo),
+    endDate: extractDate(new Date()),
+  });
+
+  const { data: Huc8s } = useQuery(
+    ["timeseries-daily-data-dropdown-huc8"],
+    async () => {
+      try {
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_ENDPOINT}/api/timeseries-daily-data-dropdown-huc8`
+        );
+
+        setFilterValues((prevState) => {
+          let newValues = { ...prevState };
+          const selectAllHuc8s = data.map((huc8) => huc8.huc8_ndx);
+          newValues["huc8s"] = selectAllHuc8s;
+          return newValues;
+        });
+
+        return data;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    {
+      keepPreviousData: true,
+      refetchOnWindowFocus: false,
+    }
+  );
 
   const { data: Parameters } = useQuery(
     ["timeseries-daily-data-dropdown-parameters"],
     async () => {
       try {
-        const token = await getAccessTokenSilently();
-        const headers = { Authorization: `Bearer ${token}` };
-
         const { data } = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/timeseries-daily-data-dropdown-parameters`,
-          { headers }
+          `${process.env.REACT_APP_ENDPOINT}/api/timeseries-daily-data-dropdown-parameters`
         );
         return data;
       } catch (err) {
@@ -71,12 +132,8 @@ const TimeSeriesComparison = () => {
     ["timeseries-daily-data-dropdown-locations-assoc-param"],
     async () => {
       try {
-        const token = await getAccessTokenSilently();
-        const headers = { Authorization: `Bearer ${token}` };
-
         const { data } = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/timeseries-daily-data-dropdown-locations-assoc-param`,
-          { headers }
+          `${process.env.REACT_APP_ENDPOINT}/api/timeseries-daily-data-dropdown-locations-assoc-param`
         );
         return data;
       } catch (err) {
@@ -89,18 +146,16 @@ const TimeSeriesComparison = () => {
     }
   );
 
-  const [filterValues, setFilterValues] = useState({
-    parameterLeft: 7,
-    locationsLeft: [16],
-    parameterRight: 2,
-    locationsRight: [48],
-    startDate: extractDate(oneWeekAgo),
-    endDate: extractDate(new Date()),
-  });
-
-  const filterLocations = (locations, parameter) => {
+  const filterLocationsByParameter = (locations, parameter) => {
     return locations.filter((location) =>
       location.parameter_ndx_array.includes(parameter)
+    );
+  };
+
+  const filterLocationsByHuc8s = (locations, huc8s) => {
+    return locations.filter(
+      (location) =>
+        huc8s.filter((huc8) => location.huc8_ndx_array.includes(huc8)).length
     );
   };
 
@@ -116,6 +171,11 @@ const TimeSeriesComparison = () => {
         newValues["locationsRight"] = [];
       }
 
+      if (name === "huc8s") {
+        newValues["locationsLeft"] = [];
+        newValues["locationsRight"] = [];
+      }
+
       newValues[name] = value;
 
       return newValues;
@@ -126,17 +186,12 @@ const TimeSeriesComparison = () => {
     ["timeseries-daily-data"],
     async () => {
       try {
-        const token = await getAccessTokenSilently();
-        const headers = { Authorization: `Bearer ${token}` };
-
         const { data: dataLeftAxis } = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/timeseries-daily-data/${filterValues.parameterLeft}/${filterValues.locationsLeft}/${filterValues.startDate}/${filterValues.endDate}`,
-          { headers }
+          `${process.env.REACT_APP_ENDPOINT}/api/timeseries-daily-data/${filterValues.parameterLeft}/${filterValues.locationsLeft}/${filterValues.startDate}/${filterValues.endDate}`
         );
 
         const { data: dataRightAxis } = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/timeseries-daily-data/${filterValues.parameterRight}/${filterValues.locationsRight}/${filterValues.startDate}/${filterValues.endDate}`,
-          { headers }
+          `${process.env.REACT_APP_ENDPOINT}/api/timeseries-daily-data/${filterValues.parameterRight}/${filterValues.locationsRight}/${filterValues.startDate}/${filterValues.endDate}`
         );
 
         const groupedData = {
@@ -155,6 +210,31 @@ const TimeSeriesComparison = () => {
       enabled: false,
     }
   );
+
+  const tableColumns = [
+    { title: "HUC8", field: "huc8" },
+    { title: "Parameter Name", field: "parameter_name" },
+    { title: "Location Name", field: "loc_name" },
+    { title: "Result", field: "result_value_daily" },
+    { title: "Units", field: "units_name" },
+    {
+      title: "Last Report",
+      field: "rdate",
+      render: (rowData) => {
+        return dateFormatter(rowData.rdate, "MM/DD/YYYY, h:mm A");
+      },
+    },
+    { title: "Data Provider Name", field: "data_provider_name" },
+    { title: "Location Type Name", field: "loc_type_name" },
+    { title: "HUC10", field: "huc10" },
+    // { title: "Units Index", field: "units_ndx" },
+    // { title: "Parameter Index", field: "parameter_ndx" },
+    // { title: "HUC8 Index", field: "huc8_ndx" },
+    // { title: "HUC10 Index", field: "huc10_ndx" },
+    // { title: "Location Type Index", field: "loc_type_ndx" },
+    // { title: "Data Provider Index", field: "data_provider_ndx" },
+    // { title: "Location Index", field: "loc_ndx" },
+  ];
 
   const [graphData, setGraphData] = useState([]);
   useEffect(() => {
@@ -215,26 +295,6 @@ const TimeSeriesComparison = () => {
             };
           }),
         ],
-
-        // labels: data[0].map((item) => item.rdate),
-        // yLLabel: `${data[0][0]?.parameter_name} (${data[0][0]?.units_name})`,
-        // datasets: [
-        //   data.map((location, i) => {
-        //     return {
-        //       data: location.map((item) => item.result_value_daily),
-        //       units: location[0].units_name,
-        //       pointStyle: "point",
-        //       fill: false,
-        //       borderWidth: 2,
-        //       pointRadius: 0,
-        //       pointHoverRadius: 4,
-        //       label: location[0].loc_name,
-        //       borderColor: Object.values(lineColors)[i],
-        //       backgroundColor: Object.values(lineColors)[i],
-        //       tension: 0.5,
-        //     };
-        //   }),
-        // ][0],
       };
       setGraphData(graphData);
     }
@@ -242,7 +302,37 @@ const TimeSeriesComparison = () => {
 
   return (
     <>
-      {Parameters && Locations && (
+      {Locations && Huc8s && (
+        <Grid container spacing={6}>
+          <Grid item xs={12}>
+            <Accordion defaultExpanded>
+              <AccordionSummary
+                expandIcon={<ExpandMoreIcon />}
+                aria-controls="map"
+                id="map"
+              >
+                <Typography variant="h4" ml={2}>
+                  Map
+                </Typography>
+              </AccordionSummary>
+              <AccordionDetails>
+                <MapContainer>
+                  <Map
+                    selectedHuc8Locations={filterLocationsByHuc8s(
+                      Locations,
+                      filterValues.huc8s
+                    ).map((location) => location.loc_ndx)}
+                    selectedLeftLocations={filterValues.locationsLeft}
+                    selectedRightLocations={filterValues.locationsRight}
+                  />
+                </MapContainer>
+              </AccordionDetails>
+            </Accordion>
+          </Grid>
+        </Grid>
+      )}
+
+      {Parameters && Locations && Huc8s && (
         <>
           <Grid container spacing={6}>
             <Grid item xs={12}>
@@ -253,123 +343,152 @@ const TimeSeriesComparison = () => {
                   id="time-series"
                 >
                   <Typography variant="h4" ml={2}>
-                    Graph
+                    Filter Controls
                   </Typography>
                 </AccordionSummary>
                 <Panel>
                   <AccordionDetails>
-                    <TimeseriesContainer>
-                      <Grid container pb={6} mt={2}>
-                        <Grid
-                          item
-                          style={{
-                            flexGrow: 1,
-                            maxWidth: "calc(100% - 154px)",
-                          }}
-                        >
-                          <Grid container>
-                            <Grid item xs={12}>
-                              <Select
-                                name="parameterLeft"
-                                label="Parameters"
-                                variant="outlined"
-                                valueField="parameter_ndx"
-                                displayField="parameter_name"
-                                outlineColor="primary"
-                                labelColor="primary"
-                                margin="normal"
-                                data={Parameters}
-                                value={filterValues.parameterLeft}
-                                onChange={handleFilter}
-                                width={200}
-                              />
-                              <MultiSelect
-                                name="locationsLeft"
-                                label="Locations"
-                                variant="outlined"
-                                valueField="loc_ndx"
-                                displayField="loc_name"
-                                outlineColor="primary"
-                                labelColor="primary"
-                                margin="normal"
-                                data={filterLocations(
-                                  Locations,
-                                  filterValues.parameterLeft
-                                )}
-                                value={filterValues.locationsLeft}
-                                onChange={handleFilter}
-                                width="calc(100% - 215px - 215px)"
-                              />
-                              <DatePicker
-                                name="startDate"
-                                label="Start Date"
-                                variant="outlined"
-                                outlineColor="primary"
-                                labelColor="primary"
-                                value={filterValues.startDate}
-                                onChange={handleFilter}
-                                width={200}
-                              />
-                            </Grid>
-                            <Grid item xs={12}>
-                              <Select
-                                name="parameterRight"
-                                label="Parameters"
-                                variant="outlined"
-                                valueField="parameter_ndx"
-                                displayField="parameter_name"
-                                outlineColor="primary"
-                                labelColor="primary"
-                                margin="normal"
-                                data={Parameters}
-                                value={filterValues.parameterRight}
-                                onChange={handleFilter}
-                                width={200}
-                              />
-                              <MultiSelect
-                                name="locationsRight"
-                                label="Locations"
-                                variant="outlined"
-                                valueField="loc_ndx"
-                                displayField="loc_name"
-                                outlineColor="primary"
-                                labelColor="primary"
-                                margin="normal"
-                                data={filterLocations(
-                                  Locations,
-                                  filterValues.parameterRight
-                                )}
-                                value={filterValues.locationsRight}
-                                onChange={handleFilter}
-                                width="calc(100% - 215px - 215px)"
-                              />
-                              <DatePicker
-                                name="endDate"
-                                label="End Date"
-                                variant="outlined"
-                                outlineColor="primary"
-                                labelColor="primary"
-                                value={filterValues.endDate}
-                                onChange={handleFilter}
-                                width={200}
-                              />
-                            </Grid>
-                          </Grid>
+                    <Grid container pb={6} mt={2}>
+                      <Grid item xs={12}>
+                        <SidebarSection>Filters</SidebarSection>
+                        <MultiSelect
+                          name="huc8s"
+                          label="Huc8s"
+                          variant="outlined"
+                          valueField="huc8_ndx"
+                          displayField="huc8"
+                          outlineColor="primary"
+                          labelColor="primary"
+                          margin="normal"
+                          data={Huc8s}
+                          value={filterValues.huc8s}
+                          onChange={handleFilter}
+                          width="calc(100% - 212px - 212px)"
+                        />
+                        <DatePicker
+                          name="startDate"
+                          label="Start Date"
+                          variant="outlined"
+                          outlineColor="primary"
+                          labelColor="primary"
+                          value={filterValues.startDate}
+                          onChange={handleFilter}
+                          width={200}
+                        />
+                        <DatePicker
+                          name="endDate"
+                          label="End Date"
+                          variant="outlined"
+                          outlineColor="primary"
+                          labelColor="primary"
+                          value={filterValues.endDate}
+                          onChange={handleFilter}
+                          width={200}
+                        />
+                      </Grid>
+
+                      <Grid item xs={12}>
+                        <SidebarSection>Left Axis</SidebarSection>
+                        <Select
+                          name="parameterLeft"
+                          label="Parameters"
+                          variant="outlined"
+                          valueField="parameter_ndx"
+                          displayField="parameter_name"
+                          outlineColor="primary"
+                          labelColor="primary"
+                          margin="normal"
+                          data={Parameters}
+                          value={filterValues.parameterLeft}
+                          onChange={handleFilter}
+                          width={250}
+                        />
+                        <MultiSelect
+                          name="locationsLeft"
+                          label="Locations"
+                          variant="outlined"
+                          valueField="loc_ndx"
+                          displayField="loc_name"
+                          outlineColor="primary"
+                          labelColor="primary"
+                          margin="normal"
+                          data={filterLocationsByParameter(
+                            filterLocationsByHuc8s(
+                              Locations,
+                              filterValues.huc8s
+                            ),
+                            filterValues.parameterLeft
+                          )}
+                          value={filterValues.locationsLeft}
+                          onChange={handleFilter}
+                          width="calc(100% - 266px)"
+                        />
+                      </Grid>
+                      <Grid item xs={12}>
+                        <SidebarSection>Right Axis</SidebarSection>
+                        <Select
+                          name="parameterRight"
+                          label="Parameters"
+                          variant="outlined"
+                          valueField="parameter_ndx"
+                          displayField="parameter_name"
+                          outlineColor="primary"
+                          labelColor="primary"
+                          margin="normal"
+                          data={Parameters}
+                          value={filterValues.parameterRight}
+                          onChange={handleFilter}
+                          width={250}
+                        />
+                        <MultiSelect
+                          name="locationsRight"
+                          label="Locations"
+                          variant="outlined"
+                          valueField="loc_ndx"
+                          displayField="loc_name"
+                          outlineColor="primary"
+                          labelColor="primary"
+                          margin="normal"
+                          data={filterLocationsByParameter(
+                            filterLocationsByHuc8s(
+                              Locations,
+                              filterValues.huc8s
+                            ),
+                            filterValues.parameterRight
+                          )}
+                          value={filterValues.locationsRight}
+                          onChange={handleFilter}
+                          width="calc(100% - 266px)"
+                        />
+                      </Grid>
+                      <SubmitGrid item container>
+                        <Grid item style={{ width: "calc(100% - 162px)" }}>
+                          {(data?.leftAxis?.length === 0 ||
+                            data?.rightAxis?.length === 0) && (
+                            <Alert severity="warning">
+                              No data available for{" "}
+                              {data?.leftAxis?.length === 0 &&
+                              data?.rightAxis?.length === 0
+                                ? "left or right"
+                                : data?.leftAxis?.length === 0
+                                ? "left"
+                                : "right"}{" "}
+                              axis
+                            </Alert>
+                          )}
                         </Grid>
-                        <Grid
-                          item
-                          style={{
-                            width: "153px",
-                            display: "flex",
-                            alignItems: "center",
-                          }}
-                        >
+                        <Grid item>
+                          <SaveGraphButton
+                            ref={saveRef}
+                            title="Timeseries Comparison Graph"
+                          />
                           <Button
                             onClick={() => refetch()}
                             type="submit"
                             color="secondary"
                             variant="contained"
                             size="large"
+                            style={{ marginLeft: "10px" }}
                             disabled={
                               !filterValues.locationsLeft.length ||
                               !filterValues.locationsRight.length
@@ -377,41 +496,87 @@ const TimeSeriesComparison = () => {
                           >
                             Submit
                           </Button>
-                          <SaveGraphButton
-                            ref={saveRef}
-                            title="Timeseries Comparison Graph"
-                          />
                         </Grid>
-                      </Grid>
-
-                      <TableWrapper>
-                        <TimeseriesLineChart
-                          data={graphData}
-                          error={error}
-                          isLoading={isFetching}
-                          filterValues={filterValues}
-                          locationsOptions={Locations}
-                          yLLabel={graphData?.yLLabel}
-                          yRLabel={graphData?.yRLabel}
-                          xLabelUnit="week"
-                          // yRLLabel={
-                          //   graphData &&
-                          //   graphData[filterValues["yR"]] &&
-                          //   `${graphData[filterValues["yR"]][0]?.parameter} (${
-                          //     graphData[filterValues["yR"]][0]?.units
-                          //   })`
-                          // }
-                          ref={saveRef}
-                          tooltipFormat="MM-DD-YYYY"
-                          footerLabel="Hours Pumped"
-                        />
-                      </TableWrapper>
-                    </TimeseriesContainer>
+                      </SubmitGrid>
+                    </Grid>
                   </AccordionDetails>
                 </Panel>
               </Accordion>
             </Grid>
           </Grid>
+
+          {data && (
+            <Grid container spacing={6}>
+              <Grid item xs={12}>
+                <Accordion defaultExpanded>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="time-series"
+                    id="time-series"
+                  >
+                    <Typography variant="h4" ml={2}>
+                      Graph
+                    </Typography>
+                  </AccordionSummary>
+                  <Panel>
+                    <AccordionDetails>
+                      <TimeseriesContainer>
+                        <TableWrapper>
+                          <TimeseriesLineChart
+                            data={graphData}
+                            error={error}
+                            isLoading={isFetching}
+                            filterValues={filterValues}
+                            locationsOptions={Locations}
+                            yLLabel={graphData?.yLLabel}
+                            yRLabel={graphData?.yRLabel}
+                            xLabelUnit="week"
+                            ref={saveRef}
+                            tooltipFormat="MM-DD-YYYY"
+                            footerLabel="Hours Pumped"
+                          />
+                        </TableWrapper>
+                      </TimeseriesContainer>
+                    </AccordionDetails>
+                  </Panel>
+                </Accordion>
+              </Grid>
+            </Grid>
+          )}
+
+          {data && (
+            <Grid container spacing={6}>
+              <Grid item xs={12}>
+                <Accordion defaultExpanded>
+                  <AccordionSummary
+                    expandIcon={<ExpandMoreIcon />}
+                    aria-controls="table-content"
+                    id="table-header"
+                  >
+                    <Typography variant="h4" ml={2}>
+                      Table
+                    </Typography>
+                  </AccordionSummary>
+                  <Panel>
+                    <AccordionDetails>
+                      <TableWrapper>
+                        <Table
+                          // isLoading={isLoading}
+                          label="Daily Groundwater Elevation Timeseries Table"
+                          columns={tableColumns}
+                          data={[
+                            ...[].concat.apply([], data?.leftAxis),
+                            ...[].concat.apply([], data?.rightAxis),
+                          ]}
+                          height="590px"
+                        />
+                      </TableWrapper>
+                    </AccordionDetails>
+                  </Panel>
+                </Accordion>
+              </Grid>
+            </Grid>
+          )}
         </>
       )}
     </>

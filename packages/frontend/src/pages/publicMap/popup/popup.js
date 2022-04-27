@@ -9,9 +9,9 @@ import { Pagination } from "@material-ui/lab";
 import { titleize } from "inflected";
 
 const PopupWrap = styled.div`
-  height: 200px;
+  height: ${({ height }) => height};
   overflow-y: scroll;
-  width: 380px;
+  width: ${({ width }) => width};
 `;
 
 const PopupTable = styled.table`
@@ -45,6 +45,8 @@ const Popup = ({
   setDataVizGraphType,
   features,
   layers,
+  height = "200px",
+  width = "380px",
 }) => {
   const dataVizTypes = {
     count_production: "Production Graph",
@@ -145,7 +147,7 @@ const Popup = ({
   return (
     <>
       <h2>{titleize(feature?.layer?.id)}</h2>
-      <PopupWrap>
+      <PopupWrap height={height} width={width}>
         <PopupTable>
           <tbody>
             {popupData?.map(([key, value]) => {

@@ -3,7 +3,7 @@ import Papa from "papaparse";
 import moment from "moment";
 import React from "react";
 import styled from "styled-components/macro";
-import { Chip as MuiChip } from "@material-ui/core";
+import { Chip as MuiChip, darken, lighten } from "@material-ui/core";
 import { spacing } from "@material-ui/system";
 import html2canvas from "html2canvas";
 import { add } from "date-fns";
@@ -147,6 +147,47 @@ export const lineColors = {
   olive: "#808000",
   tan: "#ffd8b1",
   royalBlue: "#000075",
+
+  lightenRed: lighten("#e6194b", 0.5),
+  lightenGreen: lighten("#3cb44b", 0.5),
+  lightenOrange: lighten("#f58231", 0.5),
+  lightenBlue: lighten("#4363d8", 0.5),
+  lightenPurple: lighten("#911eb4", 0.5),
+  lightenCyan: lighten("#2CF5F7", 0.5),
+  lightenPink: lighten("#f032e6", 0.5),
+  lightenYellow: lighten("#ffe119", 0.5),
+  lightenNeon: lighten("#bcf60c", 0.5),
+  lightenPeach: lighten("#fabebe", 0.5),
+  lightenAqua: lighten("#008080", 0.5),
+  lightenLavender: lighten("#e6beff", 0.5),
+  lightenBrown: lighten("#9a6324", 0.5),
+  lightenCream: lighten("#fffac8", 0.5),
+  lightenMaroon: lighten("#800000", 0.5),
+  lightenTurquoise: lighten("#aaffc3", 0.5),
+  lightenOlive: lighten("#808000", 0.5),
+  lightenTan: lighten("#ffd8b1", 0.5),
+  lightenRoyalBlue: lighten("#000075", 0.5),
+
+  darkenRed: darken("#e6194b", 0.5),
+  darkenGreen: darken("#3cb44b", 0.5),
+  darkenOrange: darken("#f58231", 0.5),
+  darkenBlue: darken("#4363d8", 0.5),
+  darkenPurple: darken("#911eb4", 0.5),
+  darkenCyan: darken("#2CF5F7", 0.5),
+  darkenPink: darken("#f032e6", 0.5),
+  darkenYellow: darken("#ffe119", 0.5),
+  darkenNeon: darken("#bcf60c", 0.5),
+  darkenPeach: darken("#fabebe", 0.5),
+  darkenAqua: darken("#008080", 0.5),
+  darkenLavender: darken("#e6beff", 0.5),
+  darkenBrown: darken("#9a6324", 0.5),
+  darkenCream: darken("#fffac8", 0.5),
+  darkenMaroon: darken("#800000", 0.5),
+  darkenTurquoise: darken("#aaffc3", 0.5),
+  darkenOlive: darken("#808000", 0.5),
+  darkenTan: darken("#ffd8b1", 0.5),
+  darkenRoyalBlue: darken("#000075", 0.5),
+
   lightBlue: "#74E0FF",
   gray: "#8D9093",
   lightGray: "#eee",

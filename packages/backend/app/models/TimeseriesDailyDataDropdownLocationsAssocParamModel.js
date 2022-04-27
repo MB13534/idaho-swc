@@ -13,6 +13,9 @@ module.exports = (sequelize, DataTypes) => {
       parameter_ndx_array: {
         type: ARRAY(INTEGER),
       },
+      huc8_ndx_array: {
+        type: ARRAY(INTEGER),
+      },
     },
     {
       defaultScope: {

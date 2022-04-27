@@ -1,6 +1,6 @@
 const express = require('express');
 const {
-  timeseries_daily_data_dropdown_parameters: model,
+  timeseries_daily_data_dropdown_huc8: model,
 } = require('../../core/models');
 const router = express.Router();
 

@@ -113,18 +113,11 @@ const dataAccessRoutes = {
   icon: <Share2 />,
   children: [
     {
-      path: "/data-access/time-series",
-      name: "A Time Series",
-      component: Blank,
-    },
-    {
       path: "/data-access/time-series-comparison",
       name: "Time Series Comparisons",
       component: TimeSeriesComparison,
     },
   ],
-  guard: AuthGuard,
-  visibilityFilter: UserVisibilityFilter,
 };
 
 const reportsRoutes = {
