@@ -217,7 +217,13 @@ const TimeSeriesComparison = () => {
     { title: "HUC8", field: "huc8" },
     { title: "Parameter Name", field: "parameter_name" },
     { title: "Location Name", field: "loc_name" },
-    { title: "Result", field: "result_value_daily" },
+    {
+      title: "Result",
+      field: "result_value_daily",
+      render: (rowData) => {
+        return rowData.result_value_daily.toFixed(2);
+      },
+    },
     { title: "Units", field: "units_name" },
     {
       title: "Last Report",

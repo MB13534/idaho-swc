@@ -17,4 +17,17 @@ module.exports = {
     'text-halo-color': 'rgba(255,255,255,1)',
     'text-halo-width': 3,
   },
+  lreProperties: {
+    popup: {
+      titleField: 'loc_name',
+      excludeFields: [
+        'loc_ndx',
+        'loc_type_ndx',
+        'loc_id',
+        'num_days',
+        'num_years',
+        'location_geometry',
+      ],
+    },
+  },
 };

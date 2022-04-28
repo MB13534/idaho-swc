@@ -35,7 +35,14 @@ module.exports = {
   lreProperties: {
     popup: {
       titleField: 'loc_name',
-      excludeFields: [],
+      excludeFields: [
+        'loc_ndx',
+        'loc_type_ndx',
+        'loc_id',
+        'num_days',
+        'num_years',
+        'location_geometry',
+      ],
     },
   },
 };

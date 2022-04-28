@@ -13,6 +13,16 @@ module.exports = {
   },
   lreProperties: {
     layerGroup: 'huc-12-boundaries',
+    popup: {
+      titleField: 'Name',
+      excludeFields: [
+        'GNIS_ID',
+        'LoadDate',
+        'Shape_Area',
+        'Shape_Leng',
+        'TNMID',
+      ],
+    },
   },
   drawOrder: 97,
 };
