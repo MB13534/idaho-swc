@@ -67,7 +67,7 @@ const SidebarSection = styled(MuiTypography)`
 `;
 
 const MapContainer = styled.div`
-  height: 350px;
+  height: 406px;
   width: 100%;
 `;
 
@@ -235,13 +235,6 @@ const TimeSeriesComparison = () => {
     { title: "Data Provider Name", field: "data_provider_name" },
     { title: "Location Type Name", field: "loc_type_name" },
     { title: "HUC10", field: "huc10" },
-    // { title: "Units Index", field: "units_ndx" },
-    // { title: "Parameter Index", field: "parameter_ndx" },
-    // { title: "HUC8 Index", field: "huc8_ndx" },
-    // { title: "HUC10 Index", field: "huc10_ndx" },
-    // { title: "Location Type Index", field: "loc_type_ndx" },
-    // { title: "Data Provider Index", field: "data_provider_ndx" },
-    // { title: "Location Index", field: "loc_ndx" },
   ];
 
   const [graphData, setGraphData] = useState([]);
@@ -310,9 +303,9 @@ const TimeSeriesComparison = () => {
 
   return (
     <>
-      {Locations && Huc8s && (
-        <Grid container spacing={6}>
-          <Grid item xs={12}>
+      <Grid container spacing={6}>
+        {Locations && Huc8s && (
+          <Grid item xs={12} md={12} lg={12} xl={5}>
             <Accordion defaultExpanded>
               <AccordionSummary
                 expandIcon={<ExpandMoreIcon />}
@@ -337,13 +330,11 @@ const TimeSeriesComparison = () => {
               </AccordionDetails>
             </Accordion>
           </Grid>
-        </Grid>
-      )}
+        )}
 
-      {Parameters && Locations && Huc8s && (
-        <>
-          <Grid container spacing={6}>
-            <Grid item xs={12}>
+        {Parameters && Locations && Huc8s && (
+          <>
+            <Grid item xs={12} md={12} lg={12} xl={7}>
               <Accordion defaultExpanded>
                 <AccordionSummary
                   expandIcon={<ExpandMoreIcon />}
@@ -371,7 +362,7 @@ const TimeSeriesComparison = () => {
                           data={Huc8s}
                           value={filterValues.huc8s}
                           onChange={handleFilter}
-                          width="calc(100% - 212px - 212px)"
+                          width="calc(100% - 162px - 162px)"
                         />
                         <DatePicker
                           name="startDate"
@@ -381,7 +372,7 @@ const TimeSeriesComparison = () => {
                           labelColor="primary"
                           value={filterValues.startDate}
                           onChange={handleFilter}
-                          width={200}
+                          width={150}
                         />
                         <DatePicker
                           name="endDate"
@@ -391,7 +382,7 @@ const TimeSeriesComparison = () => {
                           labelColor="primary"
                           value={filterValues.endDate}
                           onChange={handleFilter}
-                          width={200}
+                          width={150}
                         />
                       </Grid>
 
@@ -412,7 +403,7 @@ const TimeSeriesComparison = () => {
                           )}
                           value={filterValues.parameterLeft}
                           onChange={handleFilter}
-                          width={250}
+                          width={220}
                         />
                         <MultiSelect
                           name="locationsLeft"
@@ -432,7 +423,7 @@ const TimeSeriesComparison = () => {
                           )}
                           value={filterValues.locationsLeft}
                           onChange={handleFilter}
-                          width="calc(100% - 266px)"
+                          width="calc(100% - 236px)"
                         />
                       </Grid>
                       <Grid item xs={12}>
@@ -452,7 +443,7 @@ const TimeSeriesComparison = () => {
                           )}
                           value={filterValues.parameterRight}
                           onChange={handleFilter}
-                          width={250}
+                          width={220}
                         />
                         <MultiSelect
                           name="locationsRight"
@@ -472,7 +463,7 @@ const TimeSeriesComparison = () => {
                           )}
                           value={filterValues.locationsRight}
                           onChange={handleFilter}
-                          width="calc(100% - 266px)"
+                          width="calc(100% - 236px)"
                         />
                       </Grid>
                       <SubmitGrid item container>
@@ -517,8 +508,12 @@ const TimeSeriesComparison = () => {
                 </Panel>
               </Accordion>
             </Grid>
-          </Grid>
+          </>
+        )}
+      </Grid>
 
+      {Parameters && Locations && Huc8s && (
+        <>
           {data && (
             <Grid container spacing={6}>
               <Grid item xs={12}>
