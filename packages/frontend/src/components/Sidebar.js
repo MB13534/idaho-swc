@@ -8,7 +8,6 @@ import "../vendor/perfect-scrollbar.css";
 import {
   Avatar,
   Badge,
-  Box,
   Chip,
   Collapse,
   Drawer as MuiDrawer,
@@ -215,6 +214,10 @@ const SidebarFooterBadge = styled(Badge)`
   }
 `;
 
+const BrandIcon = styled.img`
+  margin-right: ${(props) => props.theme.spacing(2)}px;
+`;
+
 const initOpenRoutes = (location) => {
   /* Open collapse element that matches current url */
   const pathName = location.pathname;
@@ -324,15 +327,15 @@ const Sidebar = ({
           // justifyContent: "center",
         }}
       >
-        {/*<BrandIcon*/}
-        {/*  src={`/static/img/idaho-swc-logo-full.png`}*/}
-        {/*  width="150"*/}
-        {/*  height="48"*/}
-        {/*  alt="Clearwater Icon"*/}
-        {/*/>*/}
-        <Box ml={1} style={{ fontSize: "0.9rem", display: "flex" }}>
-          Monitoring Dashboard{" "}
-        </Box>
+        <BrandIcon
+          src={`/static/img/idaho-swc-logo-full.png`}
+          width="110"
+          height="48"
+          alt="Idaho-SWC Icon"
+        />
+        {/*<Box ml={1} style={{ fontSize: "0.9rem", display: "flex" }}>*/}
+        {/*  Monitoring Dashboard{" "}*/}
+        {/*</Box>*/}
       </Brand>
       <Scrollbar
         style={{

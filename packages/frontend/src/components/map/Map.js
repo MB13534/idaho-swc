@@ -74,6 +74,71 @@ const Map = ({
     { url: "satellite-streets-v11", icon: "satellite_alt" },
   ];
 
+  const locationsLayer = {
+    id: "locations",
+    type: "circle",
+    source: "locations",
+    paint: {
+      "circle-stroke-width": [
+        "case",
+        ["in", ["get", "index"], ["literal", selectedLeftLocations]],
+        5,
+        ["in", ["get", "index"], ["literal", selectedRightLocations]],
+        5,
+        1,
+      ],
+      "circle-stroke-color": [
+        "case",
+        ["in", ["get", "index"], ["literal", selectedLeftLocations]],
+        lineColors.yellow,
+        ["in", ["get", "index"], ["literal", selectedRightLocations]],
+        lineColors.red,
+        "black",
+      ],
+      "circle-radius": 7,
+      "circle-color": [
+        "case",
+        ["==", ["get", "huc8"], "American Falls"],
+        "#1F77B4",
+        ["==", ["get", "huc8"], "Beaver-Camas"],
+        "#AEC7E8",
+        ["==", ["get", "huc8"], "Big Lost"],
+        "#FF7F0E",
+        ["==", ["get", "huc8"], "Blackfoot"],
+        "#FFBB78",
+        ["==", ["get", "huc8"], "Idaho Falls"],
+        "#2CA02C",
+        ["==", ["get", "huc8"], "Lake Walcott"],
+        "#98DF8A",
+        ["==", ["get", "huc8"], "Little Lost"],
+        "#D62728",
+        ["==", ["get", "huc8"], "Little Wood"],
+        "#FF9896",
+        ["==", ["get", "huc8"], "Lower Henrys"],
+        "#9467BD",
+        ["==", ["get", "huc8"], "Portneuf"],
+        "#C5B0D5",
+        ["==", ["get", "huc8"], "Raft"],
+        "#8C564B",
+        ["==", ["get", "huc8"], "Teton"],
+        "#C49C94",
+        ["==", ["get", "huc8"], "Upper Henrys"],
+        "#E377C2",
+        ["==", ["get", "huc8"], "Upper Snake-Rock"],
+        "#F7B6D2",
+        ["==", ["get", "huc8"], "Willow"],
+        "#7F7F7F",
+        lineColors.black,
+      ],
+    },
+    lreProperties: {
+      popup: {
+        titleField: "description",
+        excludeFields: ["index", "description"],
+      },
+    },
+  };
+
   const huc8Fill = {
     id: "huc-8-boundaries-fill",
     name: "HUC 8 Boundaries",
@@ -195,7 +260,9 @@ const Map = ({
                 properties: {
                   description: location.loc_name,
                   index: location.loc_ndx,
+                  locType: location.loc_type_name,
                   huc8: location.huc8_name,
+                  huc10: location.huc10_name,
                 },
                 geometry: {
                   type: location.location_geometry.type,
@@ -206,64 +273,7 @@ const Map = ({
           },
         });
         // Add a layer showing the places.
-        map.addLayer({
-          id: "locations",
-          type: "circle",
-          source: "locations",
-          paint: {
-            "circle-stroke-width": [
-              "case",
-              ["in", ["get", "index"], ["literal", selectedLeftLocations]],
-              5,
-              ["in", ["get", "index"], ["literal", selectedRightLocations]],
-              5,
-              1,
-            ],
-            "circle-stroke-color": [
-              "case",
-              ["in", ["get", "index"], ["literal", selectedLeftLocations]],
-              lineColors.yellow,
-              ["in", ["get", "index"], ["literal", selectedRightLocations]],
-              lineColors.red,
-              "black",
-            ],
-            "circle-radius": 7,
-            "circle-color": [
-              "case",
-              ["==", ["get", "huc8"], "American Falls"],
-              "#1F77B4",
-              ["==", ["get", "huc8"], "Beaver-Camas"],
-              "#AEC7E8",
-              ["==", ["get", "huc8"], "Big Lost"],
-              "#FF7F0E",
-              ["==", ["get", "huc8"], "Blackfoot"],
-              "#FFBB78",
-              ["==", ["get", "huc8"], "Idaho Falls"],
-              "#2CA02C",
-              ["==", ["get", "huc8"], "Lake Walcott"],
-              "#98DF8A",
-              ["==", ["get", "huc8"], "Little Lost"],
-              "#D62728",
-              ["==", ["get", "huc8"], "Little Wood"],
-              "#FF9896",
-              ["==", ["get", "huc8"], "Lower Henrys"],
-              "#9467BD",
-              ["==", ["get", "huc8"], "Portneuf"],
-              "#C5B0D5",
-              ["==", ["get", "huc8"], "Raft"],
-              "#8C564B",
-              ["==", ["get", "huc8"], "Teton"],
-              "#C49C94",
-              ["==", ["get", "huc8"], "Upper Henrys"],
-              "#E377C2",
-              ["==", ["get", "huc8"], "Upper Snake-Rock"],
-              "#F7B6D2",
-              ["==", ["get", "huc8"], "Willow"],
-              "#7F7F7F",
-              lineColors.black,
-            ],
-          },
-        });
+        map.addLayer(locationsLayer);
 
         map.on("click", "huc-8-boundaries-fill", (e) => {
           const feature = map
@@ -297,7 +307,12 @@ const Map = ({
             <StylesProvider jss={jss}>
               <MuiThemeProvider theme={createTheme(theme.currentTheme)}>
                 <ThemeProvider theme={createTheme(theme.currentTheme)}>
-                  <Popup features={myFeatures} height="100%" width="100%" />
+                  <Popup
+                    layers={[locationsLayer]}
+                    features={myFeatures}
+                    height="100%"
+                    width="100%"
+                  />
                 </ThemeProvider>
               </MuiThemeProvider>
             </StylesProvider>,

@@ -33,6 +33,8 @@ import { CrudProvider } from "../CrudProvider";
 import PublicMap from "../pages/publicMap";
 import UserVisibilityFilter from "../components/UserVisibilityFilter";
 import TimeSeriesComparison from "../pages/dataAccess/timeSeries/TimeSeriesComparison";
+import SentinelWells from "../pages/dataAccess/reports/SentinelWells";
+import DataPointsDetails from "../pages/dataAccess/reports/DataPointsDetails";
 
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
@@ -113,7 +115,7 @@ const dataAccessRoutes = {
   icon: <Share2 />,
   children: [
     {
-      path: "/data-access/time-series-comparison",
+      path: "/data-access/time-series/time-series-comparison",
       name: "Time Series Comparisons",
       component: TimeSeriesComparison,
     },
@@ -125,17 +127,20 @@ const reportsRoutes = {
   icon: <FileText />,
   children: [
     {
-      path: "/data-access/reports",
-      name: "A Report",
-      component: Blank,
+      path: "/data-access/reports/sentinel-wells",
+      name: "Sentinel Wells",
+      component: SentinelWells,
+    },
+    {
+      path: "/data-access/reports/data-points-details",
+      name: "Data Points Details",
+      component: DataPointsDetails,
     },
   ],
-  guard: AuthGuard,
-  visibilityFilter: UserVisibilityFilter,
 };
 
 const publicMapRoutes = {
-  header: "Public Resources",
+  header: "Resources",
   id: "Interactive Map",
   icon: <Map />,
   path: ROUTES.PUBLIC_MAP,
@@ -144,11 +149,11 @@ const publicMapRoutes = {
 };
 
 const publicFilesRoutes = {
-  id: "Public Files",
+  id: "Files",
   header: "Documents",
   icon: <Archive />,
-  path: "/documents/public-files",
-  name: "Public Files",
+  path: "/documents/files",
+  name: "Files",
   component: Blank,
 };
 
