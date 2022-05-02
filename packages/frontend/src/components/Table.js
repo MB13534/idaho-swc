@@ -50,7 +50,7 @@ const Table = ({
         columnsButton: true,
         exportButton: true,
         pageSize: pageSize,
-        pageSizeOptions: [5, 10, 30, 60],
+        pageSizeOptions: [5, 10, 30, 60, 200],
         padding: "dense",
         searchFieldAlignment: "left",
         showTitle: false,

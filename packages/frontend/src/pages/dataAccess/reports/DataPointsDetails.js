@@ -54,10 +54,10 @@ const DataPointsDetails = () => {
       title: "Location Name",
       field: "loc_name",
     },
-    {
-      title: "Location ID",
-      field: "loc_id",
-    },
+    // {
+    //   title: "Location ID",
+    //   field: "loc_id",
+    // },
     {
       title: "Location Type",
       field: "loc_type_name",
@@ -70,10 +70,10 @@ const DataPointsDetails = () => {
       title: "Data Provider",
       field: "data_provider",
     },
-    {
-      title: "Region",
-      field: "loc_region",
-    },
+    // {
+    //   title: "Region",
+    //   field: "loc_region",
+    // },
     {
       title: "HUC8",
       field: "huc8_name",
@@ -82,10 +82,10 @@ const DataPointsDetails = () => {
       title: "HUC10",
       field: "huc10_name",
     },
-    {
-      title: "Irrigation Type",
-      field: "irgg_type",
-    },
+    // {
+    //   title: "Irrigation Type",
+    //   field: "irgg_type",
+    // },
     {
       title: "Starting Period of Record",
       field: "por_start",
@@ -121,12 +121,12 @@ const DataPointsDetails = () => {
       field: "lon_dd",
     },
     {
-      title: "Extra Info",
+      title: "External Data Link",
       field: "loc_url",
       render: (rowData) => {
         return (
           <a target="_blank" href={rowData.loc_url} rel="noreferrer">
-            <>USGS Water Data Graph</>
+            <>{rowData.loc_url && "Link"}</>
           </a>
         );
       },
@@ -157,7 +157,7 @@ const DataPointsDetails = () => {
               columns={tabColumns}
               data={data}
               height="calc(100vh - 64px - 48px - 106px - 48px - 64px - 156px)"
-              pageSize={30}
+              pageSize={200}
             />
           ) : (
             <Loader />
