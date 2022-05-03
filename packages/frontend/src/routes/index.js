@@ -221,8 +221,8 @@ const mainRoutes = {
   component: Default,
   children: null,
   containsHome: true,
-  guard: AuthGuard,
-  visibilityFilter: UserVisibilityFilter,
+  // guard: AuthGuard,
+  // visibilityFilter: UserVisibilityFilter,
 };
 
 const hydrologicHealthRoute = {
@@ -231,8 +231,8 @@ const hydrologicHealthRoute = {
   icon: <Heart />,
   component: HydrologicHealth,
   children: null,
-  guard: AuthGuard,
-  visibilityFilter: UserVisibilityFilter,
+  // guard: AuthGuard,
+  // visibilityFilter: UserVisibilityFilter,
 };
 
 // This route is only visible while signed in
