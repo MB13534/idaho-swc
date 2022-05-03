@@ -16,6 +16,7 @@ import {
   Share2,
   Folder,
   Briefcase,
+  Heart,
 } from "react-feather";
 
 import AuthGuard from "../components/AuthGuard";
@@ -35,6 +36,7 @@ import UserVisibilityFilter from "../components/UserVisibilityFilter";
 import TimeSeriesComparison from "../pages/dataAccess/timeSeries/TimeSeriesComparison";
 import SentinelWells from "../pages/dataAccess/reports/SentinelWells";
 import DataPointsDetails from "../pages/dataAccess/reports/DataPointsDetails";
+import HydrologicHealth from "../pages/dashboards/HydrologicHealth/HydrologicHealth";
 
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
@@ -223,6 +225,16 @@ const mainRoutes = {
   visibilityFilter: UserVisibilityFilter,
 };
 
+const hydrologicHealthRoute = {
+  id: "Hydrologic Health",
+  path: "/hydrologic-health",
+  icon: <Heart />,
+  component: HydrologicHealth,
+  children: null,
+  guard: AuthGuard,
+  visibilityFilter: UserVisibilityFilter,
+};
+
 // This route is only visible while signed in
 const protectedPageRoutes = {
   id: "Private",
@@ -236,6 +248,7 @@ const protectedPageRoutes = {
 // Routes using the Dashboard layout
 export const dashboardLayoutRoutes = [
   mainRoutes,
+  hydrologicHealthRoute,
   dataManagementRoutes,
   dataAccessRoutes,
   reportsRoutes,
@@ -270,6 +283,7 @@ export const sidebarRoutes = [
   dataManagementRoutes,
   dataAccessRoutes,
   reportsRoutes,
+  hydrologicHealthRoute,
   publicMapRoutes,
   publicFilesRoutes,
   userDocsRoutes,

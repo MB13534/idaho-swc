@@ -1,12 +1,10 @@
 import React, { useEffect, useRef, useState } from "react";
 import mapboxgl from "!mapbox-gl"; // eslint-disable-line import/no-webpack-loader-syntax
 import styled, { ThemeProvider } from "styled-components/macro";
-import { useQuery } from "react-query";
 import ResetZoomControl from "./ResetZoomControl";
 import { STARTING_LOCATION } from "../../constants";
 import ToggleBasemapControl from "./ToggleBasemapControl";
 import debounce from "lodash.debounce";
-import { lineColors } from "../../utils";
 import ReactDOM from "react-dom";
 import { jssPreset, StylesProvider } from "@material-ui/core/styles";
 import { ThemeProvider as MuiThemeProvider } from "@material-ui/styles";
@@ -14,7 +12,8 @@ import createTheme from "../../theme";
 import Popup from "../../pages/publicMap/popup";
 import { create } from "jss";
 import { useSelector } from "react-redux";
-import axios from "axios";
+import Legend from "./components/Legend";
+import LegendControl from "./LegendControl";
 
 const jss = create({
   ...jssPreset(),
@@ -50,13 +49,15 @@ const Coordinates = styled.pre`
   display: none;
 `;
 
-const Map = ({
-  selectedHuc8Locations,
-  selectedLeftLocations,
-  selectedRightLocations,
+const TimeseriesComparisonMap = ({
+  selectedYearsOfHistory,
+  data,
+  error,
+  isLoading,
 }) => {
   const theme = useSelector((state) => state.themeReducer);
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
+  const [legendVisible, setLegendVisible] = useState(true);
   const [map, setMap] = useState();
 
   const popUpRef = useRef(
@@ -79,56 +80,22 @@ const Map = ({
     type: "circle",
     source: "locations",
     paint: {
-      "circle-stroke-width": [
-        "case",
-        ["in", ["get", "index"], ["literal", selectedLeftLocations]],
-        5,
-        ["in", ["get", "index"], ["literal", selectedRightLocations]],
-        5,
-        1,
-      ],
-      "circle-stroke-color": [
-        "case",
-        ["in", ["get", "index"], ["literal", selectedLeftLocations]],
-        lineColors.yellow,
-        ["in", ["get", "index"], ["literal", selectedRightLocations]],
-        lineColors.red,
-        "black",
-      ],
+      "circle-stroke-width": 1,
+      "circle-stroke-color": "black",
       "circle-radius": 7,
       "circle-color": [
         "case",
-        ["==", ["get", "huc8"], "American Falls"],
-        "#1F77B4",
-        ["==", ["get", "huc8"], "Beaver-Camas"],
-        "#AEC7E8",
-        ["==", ["get", "huc8"], "Big Lost"],
-        "#FF7F0E",
-        ["==", ["get", "huc8"], "Blackfoot"],
-        "#FFBB78",
-        ["==", ["get", "huc8"], "Idaho Falls"],
-        "#2CA02C",
-        ["==", ["get", "huc8"], "Lake Walcott"],
-        "#98DF8A",
-        ["==", ["get", "huc8"], "Little Lost"],
-        "#D62728",
-        ["==", ["get", "huc8"], "Little Wood"],
-        "#FF9896",
-        ["==", ["get", "huc8"], "Lower Henrys"],
-        "#9467BD",
-        ["==", ["get", "huc8"], "Portneuf"],
-        "#C5B0D5",
-        ["==", ["get", "huc8"], "Raft"],
-        "#8C564B",
-        ["==", ["get", "huc8"], "Teton"],
-        "#C49C94",
-        ["==", ["get", "huc8"], "Upper Henrys"],
-        "#E377C2",
-        ["==", ["get", "huc8"], "Upper Snake-Rock"],
-        "#F7B6D2",
-        ["==", ["get", "huc8"], "Willow"],
-        "#7F7F7F",
-        lineColors.black,
+        ["<=", ["get", "hydroHealthPct"], 10],
+        "#C61717",
+        ["<=", ["get", "hydroHealthPct"], 25],
+        "#F9A825",
+        ["<=", ["get", "hydroHealthPct"], 75],
+        "#FFEB3B",
+        ["<=", ["get", "hydroHealthPct"], 90],
+        "#16F465",
+        ["<=", ["get", "hydroHealthPct"], 1000],
+        "#228044",
+        "black",
       ],
     },
     lreProperties: {
@@ -175,22 +142,6 @@ const Map = ({
     coordinates.current.style.display = "block";
     coordinates.current.innerHTML = `Longitude: ${e.features[0].geometry.coordinates[0]}<br />Latitude: ${e.features[0].geometry.coordinates[1]}`;
   }
-
-  const { data, isLoading, error } = useQuery(
-    ["public-map/wells"],
-    async () => {
-      try {
-        const { data } = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/public-map/wells/`
-        );
-
-        return data.filter((location) => location.location_geometry);
-      } catch (err) {
-        console.error(err);
-      }
-    },
-    { keepPreviousData: true, refetchOnWindowFocus: false }
-  );
 
   useEffect(() => {
     const map = new mapboxgl.Map({
@@ -253,9 +204,9 @@ const Map = ({
           type: "geojson",
           data: {
             type: "FeatureCollection",
-            features: data.map((location) => {
+            features: data.map((location, i) => {
               return {
-                id: location.loc_ndx,
+                id: i,
                 type: "Feature",
                 properties: {
                   description: location.loc_name,
@@ -263,6 +214,10 @@ const Map = ({
                   locType: location.loc_type_name,
                   huc8: location.huc8_name,
                   huc10: location.huc10_name,
+                  indicator: location.indicator,
+                  medianIndicator: location.median_indicator,
+                  hydroHealthPct: location.hydro_health_pct,
+                  yearsIncludedInAverage: location.yrs_inc_in_avg,
                 },
                 geometry: {
                   type: location.location_geometry.type,
@@ -274,6 +229,12 @@ const Map = ({
         });
         // Add a layer showing the places.
         map.addLayer(locationsLayer);
+
+        map.setFilter("locations", [
+          "==",
+          ["get", "yearsIncludedInAverage"],
+          selectedYearsOfHistory,
+        ]);
 
         map.on("click", "huc-8-boundaries-fill", (e) => {
           const feature = map
@@ -300,7 +261,6 @@ const Map = ({
             (feature) => feature.source === "locations"
           );
           const coordinates = [e.lngLat.lng, e.lngLat.lat];
-
           const popupNode = document.createElement("div");
           ReactDOM.render(
             //MJB adding style providers to the popup
@@ -339,46 +299,38 @@ const Map = ({
     }
   }, [isLoading, mapIsLoaded, map, data]); //eslint-disable-line
 
-  //filters the table based on the selected radioValues filters
   useEffect(() => {
     if (map !== undefined && map.getLayer("locations")) {
       map.setFilter("locations", [
-        "in",
-        ["get", "index"],
-        ["literal", selectedHuc8Locations],
+        "==",
+        ["get", "yearsIncludedInAverage"],
+        selectedYearsOfHistory,
       ]);
     }
-  }, [selectedHuc8Locations]); // eslint-disable-line
+  }, [selectedYearsOfHistory]); // eslint-disable-line
 
-  useEffect(() => {
-    if (map !== undefined && map.getLayer("locations")) {
-      map.setPaintProperty("locations", "circle-stroke-width", [
-        "case",
-        ["in", ["get", "index"], ["literal", selectedLeftLocations]],
-        5,
-        ["in", ["get", "index"], ["literal", selectedRightLocations]],
-        5,
-        1,
-      ]);
-      map.setPaintProperty("locations", "circle-stroke-color", [
-        "case",
-        ["in", ["get", "index"], ["literal", selectedLeftLocations]],
-        lineColors.yellow,
-        ["in", ["get", "index"], ["literal", selectedRightLocations]],
-        lineColors.red,
-        "black",
-      ]);
-    }
-  }, [selectedLeftLocations, selectedRightLocations]); //eslint-disable-line
+  const monitoringLegendColors = [
+    { name: `Excellent (>90%)`, color: `#228044` },
+    { name: `Good (77%-90%)`, color: `#16F465` },
+    { name: `Normal (26%-75%)`, color: `#FFEB3B` },
+    { name: `Warning (11%-25%)`, color: `#F9A825` },
+    { name: `Danger (<11%)`, color: `#C61717` },
+    { name: `No data`, color: `black` },
+  ];
 
   if (error) return "An error has occurred: " + error.message;
 
   return (
     <Root>
       <MapContainer ref={mapContainer} />
+      {legendVisible && <Legend legendColors={monitoringLegendColors} />}
+      <LegendControl
+        open={legendVisible}
+        onToggle={() => setLegendVisible(!legendVisible)}
+      />
       <Coordinates ref={coordinates} />
     </Root>
   );
 };
 
-export default Map;
+export default TimeseriesComparisonMap;

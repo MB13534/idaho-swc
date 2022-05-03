@@ -15,6 +15,8 @@ import styled from "styled-components/macro";
 import {
   Accordion,
   AccordionDetails,
+  Breadcrumbs as MuiBreadcrumbs,
+  Divider as MuiDivider,
   Grid as MuiGrid,
   lighten,
   Typography as MuiTypography,
@@ -26,11 +28,16 @@ import SaveGraphButton from "../../../components/graphs/SaveGraphButton";
 import { spacing } from "@material-ui/system";
 import { customSecondary } from "../../../theme/variants";
 import { Alert } from "@material-ui/lab";
-import Map from "../../../components/map/Map";
+import TimeseriesComparisonMap from "../../../components/map/TimeseriesComparisonMap";
 import Table from "../../../components/Table";
+import { Helmet } from "react-helmet-async";
+import Link from "@material-ui/core/Link";
+import { NavLink } from "react-router-dom";
 
 const Grid = styled(MuiGrid)(spacing);
 const Typography = styled(MuiTypography)(spacing);
+const Divider = styled(MuiDivider)(spacing);
+const Breadcrumbs = styled(MuiBreadcrumbs)(spacing);
 
 const TableWrapper = styled.div`
   overflow-y: auto;
@@ -303,6 +310,20 @@ const TimeSeriesComparison = () => {
 
   return (
     <>
+      <Helmet title="Time Series Comparisons" />
+      <Typography variant="h3" gutterBottom display="inline">
+        Time Series Comparisons
+      </Typography>
+
+      <Breadcrumbs aria-label="Breadcrumb" mt={2}>
+        <Link component={NavLink} exact to="/dashboard">
+          Dashboard
+        </Link>
+        <Typography>Time Series Comparisons</Typography>
+      </Breadcrumbs>
+
+      <Divider my={6} />
+
       <Grid container spacing={6}>
         {Locations && Huc8s && (
           <Grid item xs={12} md={12} lg={12} xl={5}>
@@ -318,7 +339,7 @@ const TimeSeriesComparison = () => {
               </AccordionSummary>
               <AccordionDetails>
                 <MapContainer>
-                  <Map
+                  <TimeseriesComparisonMap
                     selectedHuc8Locations={filterLocationsByHuc8s(
                       Locations,
                       filterValues.huc8s
@@ -468,6 +489,14 @@ const TimeSeriesComparison = () => {
                       </Grid>
                       <SubmitGrid item container>
                         <Grid item style={{ width: "calc(100% - 162px)" }}>
+                          {!data && (
+                            <Alert severity="info">
+                              After selecting your timeseries inputs, click the
+                              red 'Submit' button to load an interactive
+                              timeseries plot for comparison across different
+                              locations and parameters.
+                            </Alert>
+                          )}
                           {(data?.leftAxis?.length === 0 ||
                             data?.rightAxis?.length === 0) && (
                             <Alert severity="warning">

@@ -13,6 +13,7 @@ const Table = ({
   isLoading = false,
   height,
   actions = [],
+  options = {},
 }) => {
   const { doToast } = useApp();
   return (
@@ -55,6 +56,7 @@ const Table = ({
         searchFieldAlignment: "left",
         showTitle: false,
         maxBodyHeight: height,
+        ...options,
       }}
     />
   );
