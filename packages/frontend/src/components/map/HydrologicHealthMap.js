@@ -51,9 +51,12 @@ const Coordinates = styled.pre`
 
 const TimeseriesComparisonMap = ({
   selectedYearsOfHistory,
-  data,
-  error,
-  isLoading,
+  dataPointsData,
+  dataPointsError,
+  dataPointsIsLoading,
+  hucData,
+  hucError,
+  hucIsLoading,
 }) => {
   const theme = useSelector((state) => state.themeReducer);
   const [mapIsLoaded, setMapIsLoaded] = useState(false);
@@ -113,8 +116,66 @@ const TimeseriesComparisonMap = ({
     source: "huc-8-boundaries",
     "source-layer": "WBDHU08_UpperSnake-6vc1aa",
     paint: {
-      "fill-color": "#60BAF0",
-      "fill-opacity": 0,
+      "fill-color": [
+        "case",
+        [
+          "<=",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          10,
+        ],
+        "#C61717",
+        [
+          "<=",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          25,
+        ],
+        "#F9A825",
+        [
+          "<=",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          75,
+        ],
+        "#FFEB3B",
+        [
+          "<=",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          90,
+        ],
+        "#16F465",
+        [
+          "<=",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          1000,
+        ],
+        "#228044",
+        "black",
+      ],
+      "fill-opacity": [
+        "case",
+        ["boolean", ["to-boolean", ["feature-state", "1"]]],
+        0.7,
+        0.2,
+      ],
     },
     lreProperties: {
       layerGroup: "huc-8-boundaries",
@@ -190,11 +251,30 @@ const TimeseriesComparisonMap = ({
   }, [map]);
 
   useEffect(() => {
-    if (mapIsLoaded && data?.length > 0 && typeof map != "undefined") {
+    if (
+      mapIsLoaded &&
+      hucData?.length > 0 &&
+      dataPointsData?.length > 0 &&
+      typeof map != "undefined"
+    ) {
       if (!map.getSource("locations")) {
         map.addSource("huc-8-boundaries", {
           type: "vector",
           url: "mapbox://idahoswc.1rdlvyx6",
+          promoteId: "Name",
+        });
+
+        hucData.forEach((row) => {
+          row.forEach((item) => {
+            map.setFeatureState(
+              {
+                source: "huc-8-boundaries",
+                sourceLayer: "WBDHU08_UpperSnake-6vc1aa",
+                id: item.huc8_name,
+              },
+              { [item.yrs_inc_in_avg]: item.hydro_health_pct }
+            );
+          });
         });
 
         map.addLayer(huc8Fill);
@@ -204,7 +284,7 @@ const TimeseriesComparisonMap = ({
           type: "geojson",
           data: {
             type: "FeatureCollection",
-            features: data.map((location, i) => {
+            features: dataPointsData.map((location, i) => {
               return {
                 id: i,
                 type: "Feature",
@@ -296,8 +376,15 @@ const TimeseriesComparisonMap = ({
           map.getCanvas().style.cursor = "";
         });
       }
-    }
-  }, [isLoading, mapIsLoaded, map, data]); //eslint-disable-line
+    } //eslint-disable-next-line
+  }, [
+    dataPointsIsLoading,
+    hucIsLoading,
+    mapIsLoaded,
+    map,
+    dataPointsData,
+    hucData,
+  ]);
 
   useEffect(() => {
     if (map !== undefined && map.getLayer("locations")) {
@@ -306,19 +393,76 @@ const TimeseriesComparisonMap = ({
         ["get", "yearsIncludedInAverage"],
         selectedYearsOfHistory,
       ]);
+      map.setPaintProperty("huc-8-boundaries-fill", "fill-color", [
+        "case",
+        [
+          "<=",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          10,
+        ],
+        "#C61717",
+        [
+          "<=",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          25,
+        ],
+        "#F9A825",
+        [
+          "<=",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          75,
+        ],
+        "#FFEB3B",
+        [
+          "<=",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          90,
+        ],
+        "#16F465",
+        [
+          "<=",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          1000,
+        ],
+        "#228044",
+        "black",
+      ]);
     }
   }, [selectedYearsOfHistory]); // eslint-disable-line
 
   const monitoringLegendColors = [
     { name: `Excellent (>90%)`, color: `#228044` },
-    { name: `Good (77%-90%)`, color: `#16F465` },
+    { name: `Good (76%-90%)`, color: `#16F465` },
     { name: `Normal (26%-75%)`, color: `#FFEB3B` },
     { name: `Warning (11%-25%)`, color: `#F9A825` },
     { name: `Danger (<11%)`, color: `#C61717` },
     { name: `No data`, color: `black` },
   ];
 
-  if (error) return "An error has occurred: " + error.message;
+  if (dataPointsError)
+    return "An error has occurred: " + dataPointsError.message;
+
+  if (hucError) return "An error has occurred: " + hucError.message;
 
   return (
     <Root>

@@ -60,9 +60,9 @@ const HydrologicHealth = () => {
   };
 
   const {
-    data: mapData,
-    isLoading: mapDataIsLoading,
-    error: mapDataError,
+    data: dataPointsMapData,
+    isLoading: dataPointsMapDataIsLoading,
+    error: dataPointsMapDataError,
   } = useQuery(
     ["hydro-health-sites-map"],
     async () => {
@@ -72,6 +72,27 @@ const HydrologicHealth = () => {
         );
 
         return data.filter((location) => location.location_geometry);
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    { keepPreviousData: true, refetchOnWindowFocus: false }
+  );
+
+  const {
+    data: hucMapData,
+    isLoading: hucMapDataIsLoading,
+    error: hucMapDataError,
+  } = useQuery(
+    ["hydro-health-huc-map"],
+    async () => {
+      try {
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_ENDPOINT}/api/hydro-health-huc-map/`
+        );
+        const groupedBy = groupByValue(data, "huc8_name");
+        return groupedBy;
+        // return data;
       } catch (err) {
         console.error(err);
       }
@@ -368,12 +389,17 @@ const HydrologicHealth = () => {
               <Grid container pb={2} mt={2}>
                 <Grid item xs={12}>
                   <MapContainer>
-                    <HydrologicHealthMap
-                      data={mapData}
-                      isLoading={mapDataIsLoading}
-                      error={mapDataError}
-                      selectedYearsOfHistory={selectedYearsOfHistory}
-                    />
+                    {hucMapData && (
+                      <HydrologicHealthMap
+                        dataPointsData={dataPointsMapData}
+                        dataPointsIsLoading={dataPointsMapDataIsLoading}
+                        dataPointsError={dataPointsMapDataError}
+                        hucData={hucMapData}
+                        hucIsLoading={hucMapDataIsLoading}
+                        hucError={hucMapDataError}
+                        selectedYearsOfHistory={selectedYearsOfHistory}
+                      />
+                    )}
                   </MapContainer>
                 </Grid>
                 <Grid item xs={12} pt={2}>
