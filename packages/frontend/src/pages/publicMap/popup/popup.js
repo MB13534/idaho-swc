@@ -47,6 +47,7 @@ const Popup = ({
   layers,
   height = "200px",
   width = "380px",
+  size = "medium",
 }) => {
   const dataVizTypes = {
     count_production: "Production Graph",
@@ -156,7 +157,7 @@ const Popup = ({
 
   return (
     <>
-      <h2>{titleField}</h2>
+      <h2 style={{ width: width }}>{titleField}</h2>
       <PopupWrap height={height} width={width}>
         <PopupTable>
           <tbody>
@@ -197,7 +198,7 @@ const Popup = ({
       <Pagination
         style={{ display: "flex", justifyContent: "center", marginTop: "10px" }}
         count={uniqueFeatures.length}
-        size="medium"
+        size={size}
         page={page}
         variant="outlined"
         shape="rounded"

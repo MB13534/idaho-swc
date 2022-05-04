@@ -177,11 +177,11 @@ const TimeseriesComparisonMap = ({
   }
 
   const { data, isLoading, error } = useQuery(
-    ["public-map/wells"],
+    ["summary-of-sites-tscompare"],
     async () => {
       try {
         const { data } = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/public-map/wells/`
+          `${process.env.REACT_APP_ENDPOINT}/api/summary-of-sites-tscompare`
         );
 
         return data.filter((location) => location.location_geometry);
@@ -261,6 +261,7 @@ const TimeseriesComparisonMap = ({
                   description: location.loc_name,
                   index: location.loc_ndx,
                   locType: location.loc_type_name,
+                  parameters: location.parameter_name_array.join(", "),
                   huc8: location.huc8_name,
                   huc10: location.huc10_name,
                 },
@@ -311,7 +312,8 @@ const TimeseriesComparisonMap = ({
                     layers={[locationsLayer]}
                     features={myFeatures}
                     height="100%"
-                    width="100%"
+                    width="252px"
+                    size="small"
                   />
                 </ThemeProvider>
               </MuiThemeProvider>
