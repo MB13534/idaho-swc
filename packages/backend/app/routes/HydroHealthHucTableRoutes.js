@@ -1,5 +1,5 @@
 const express = require('express');
-const {hydro_health_sites: model} = require('../../core/models');
+const {hydro_health_huc_table: model} = require('../../core/models');
 const router = express.Router();
 
 router.get('/', (req, res, next) => {

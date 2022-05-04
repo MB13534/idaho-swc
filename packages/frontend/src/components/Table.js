@@ -14,11 +14,14 @@ const Table = ({
   height,
   actions = [],
   options = {},
+  sorting = true,
+  sortArrow = null,
 }) => {
   const { doToast } = useApp();
   return (
     <MaterialTable
       id={label}
+      icons={{ ...(sortArrow && { SortArrow: () => sortArrow }) }}
       title={`${label} ${dateFormatter(new Date(), "MM/DD/YYYY, h:mm A")}`}
       columns={columns}
       isLoading={isLoading}
@@ -56,6 +59,7 @@ const Table = ({
         searchFieldAlignment: "left",
         showTitle: false,
         maxBodyHeight: height,
+        sorting: sorting,
         ...options,
       }}
     />

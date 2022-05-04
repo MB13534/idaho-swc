@@ -59,26 +59,16 @@ const HydrologicHealth = () => {
     setSelectedYearsOfHistory(newValue);
   };
 
-  const [tableData, setTableData] = useState([]);
-  const { data, isLoading, error } = useQuery(
-    ["hydro-health-sites"],
+  const {
+    data: mapData,
+    isLoading: mapDataIsLoading,
+    error: mapDataError,
+  } = useQuery(
+    ["hydro-health-sites-map"],
     async () => {
       try {
         const { data } = await axios.get(
-          `${process.env.REACT_APP_ENDPOINT}/api/hydro-health-sites/`
-        );
-
-        const groupedData = groupByValue(data, "loc_name");
-
-        setTableData(
-          groupedData.map((location) => {
-            const obj = {};
-            obj["location_name"] = location[0].loc_name;
-            location.forEach(
-              (item) => (obj[item.avg_start_water_year] = item.hydro_health_pct)
-            );
-            return obj;
-          })
+          `${process.env.REACT_APP_ENDPOINT}/api/hydro-health-sites-map/`
         );
 
         return data.filter((location) => location.location_geometry);
@@ -89,8 +79,204 @@ const HydrologicHealth = () => {
     { keepPreviousData: true, refetchOnWindowFocus: false }
   );
 
+  const [dataPointsTableDataColumns, setDataPointsTableDataColumns] = useState(
+    []
+  );
+  const {
+    data: dataPointsTableData,
+    isLoading: dataPointsTableDataIsLoading,
+    error: dataPointsTableDataError,
+  } = useQuery(
+    ["hydro-health-sites-table"],
+    async () => {
+      try {
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_ENDPOINT}/api/hydro-health-sites-table/`
+        );
+
+        const groupedData = groupByValue(data, "loc_name");
+        const columns = [
+          {
+            title: "Location",
+            field: "location_name",
+            cellStyle: {
+              whiteSpace: "nowrap",
+              padding: "3px 3px 3px 3px",
+              position: "sticky",
+              left: 0,
+              background: "white",
+            },
+            headerStyle: {
+              padding: "3px 3px 3px 3px",
+              fontWeight: 900,
+              position: "sticky",
+              left: 0,
+              background: "white",
+              zIndex: 11,
+            },
+            defaultSort: "asc",
+            position: "sticky",
+            left: 0,
+            background: "white",
+          },
+        ];
+
+        const crossTabbedData = groupedData.map((location) => {
+          const obj = {};
+          obj["location_name"] = location[0].loc_name;
+          location.forEach((item) => {
+            if (item?.water_year) {
+              obj[item.water_year] = item.hydro_health_pct;
+              if (!columns.find((col) => col.title === "" + item.water_year)) {
+                columns.push({
+                  title: "" + item.water_year,
+                  field: "" + item.water_year,
+                  render: (rowData) =>
+                    rowData[item.water_year] === 0 || rowData[item.water_year]
+                      ? `${rowData[item.water_year].toFixed(0)}%`
+                      : null,
+                  cellStyle: (e, rowData) => {
+                    return {
+                      padding: "3px 3px 3px 3px",
+                      backgroundColor: cellColorBackground(
+                        isNaN(rowData[item.water_year])
+                          ? null
+                          : rowData[item.water_year].toFixed(0)
+                      ),
+                      color: cellColor(
+                        isNaN(rowData[item.water_year])
+                          ? null
+                          : rowData[item.water_year].toFixed(0)
+                      ),
+                      textAlign: "center",
+                      borderRight: "1px solid rgba(224, 224, 224, 1)",
+                    };
+                  },
+                  headerStyle: {
+                    padding: "3px 3px 3px 3px",
+                    textAlign: "center",
+                    fontWeight: 900,
+                    borderRight: "1px solid rgba(224, 224, 224, 1)",
+                  },
+                });
+              }
+            }
+          });
+          return obj;
+        });
+        setDataPointsTableDataColumns(
+          columns.sort((a, b) => {
+            return b.title - a.title;
+          })
+        );
+        return crossTabbedData;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    { keepPreviousData: true, refetchOnWindowFocus: false }
+  );
+
+  const [hucTableDataColumns, setHucTableDataColumns] = useState([]);
+  const {
+    data: hucTableData,
+    isLoading: hucTableDataIsLoading,
+    error: hucTableDataError,
+  } = useQuery(
+    ["hydro-health-huc-table"],
+    async () => {
+      try {
+        const { data } = await axios.get(
+          `${process.env.REACT_APP_ENDPOINT}/api/hydro-health-huc-table/`
+        );
+
+        const groupedData = groupByValue(data, "huc8_name");
+        const columns = [
+          {
+            title: "HUC8",
+            field: "huc8_name",
+            cellStyle: {
+              whiteSpace: "nowrap",
+              padding: "3px 3px 3px 3px",
+              position: "sticky",
+              left: 0,
+              background: "white",
+            },
+            headerStyle: {
+              padding: "3px 3px 3px 3px",
+              fontWeight: 900,
+              position: "sticky",
+              left: 0,
+              background: "white",
+              zIndex: 11,
+            },
+            defaultSort: "asc",
+            position: "sticky",
+            left: 0,
+            background: "white",
+          },
+        ];
+
+        const crossTabbedData = groupedData.map((huc) => {
+          const obj = {};
+          obj["huc8_name"] = huc[0].huc8_name;
+          huc.forEach((item) => {
+            if (item?.water_year) {
+              obj[item.water_year] = item.hydro_health_pct;
+              if (!columns.find((col) => col.title === "" + item.water_year)) {
+                columns.push({
+                  title: "" + item.water_year,
+                  field: "" + item.water_year,
+                  render: (rowData) =>
+                    rowData[item.water_year] === 0 || rowData[item.water_year]
+                      ? `${rowData[item.water_year].toFixed(0)}%`
+                      : null,
+                  cellStyle: (e, rowData) => {
+                    return {
+                      padding: "3px 3px 3px 3px",
+                      backgroundColor: cellColorBackground(
+                        isNaN(rowData[item.water_year])
+                          ? null
+                          : rowData[item.water_year].toFixed(0)
+                      ),
+                      color: cellColor(
+                        isNaN(rowData[item.water_year])
+                          ? null
+                          : rowData[item.water_year].toFixed(0)
+                      ),
+                      textAlign: "center",
+                      borderRight: "1px solid rgba(224, 224, 224, 1)",
+                    };
+                  },
+                  headerStyle: {
+                    padding: "3px 3px 3px 3px",
+                    textAlign: "center",
+                    fontWeight: 900,
+                    borderRight: "1px solid rgba(224, 224, 224, 1)",
+                  },
+                });
+              }
+            }
+          });
+          return obj;
+        });
+        setHucTableDataColumns(
+          columns.sort((a, b) => {
+            return b.title - a.title;
+          })
+        );
+        return crossTabbedData;
+      } catch (err) {
+        console.error(err);
+      }
+    },
+    { keepPreviousData: true, refetchOnWindowFocus: false }
+  );
+
   const cellColorBackground = (value) => {
-    if (value <= 10) {
+    if (value === null) {
+      return "black";
+    } else if (value <= 10) {
       return "#C61717";
     } else if (value <= 25) {
       return "#F9A825";
@@ -98,8 +284,10 @@ const HydrologicHealth = () => {
       return "#FFEB3B";
     } else if (value <= 90) {
       return "#16F465";
-    } else if (value <= 1000) {
+    } else if (value <= 100) {
       return "#228044";
+    } else if (value <= 1000) {
+      return "#1155cc";
     } else return "black";
   };
 
@@ -112,69 +300,12 @@ const HydrologicHealth = () => {
       return "black";
     } else if (value <= 90) {
       return "black";
+    } else if (value <= 100) {
+      return "white";
     } else if (value <= 1000) {
       return "white";
     } else return "black";
   };
-
-  const tableDataColumns = [
-    { title: "Location", field: "location_name" },
-    {
-      title: "2022",
-      field: "2022",
-      render: (rowData) => `${rowData[2022].toFixed(0)}%`,
-      cellStyle: (e, rowData) => {
-        return {
-          backgroundColor: cellColorBackground(rowData[2022]),
-          color: cellColor(rowData[2022]),
-        };
-      },
-    },
-    {
-      title: "2021",
-      field: "2021",
-      render: (rowData) => `${rowData[2021].toFixed(0)}%`,
-      cellStyle: (e, rowData) => {
-        return {
-          backgroundColor: cellColorBackground(rowData[2021]),
-          color: cellColor(rowData[2021]),
-        };
-      },
-    },
-    {
-      title: "2020",
-      field: "2020",
-      render: (rowData) => `${rowData[2020].toFixed(0)}%`,
-      cellStyle: (e, rowData) => {
-        return {
-          backgroundColor: cellColorBackground(rowData[2020]),
-          color: cellColor(rowData[2020]),
-        };
-      },
-    },
-    {
-      title: "2019",
-      field: "2019",
-      render: (rowData) => `${rowData[2019].toFixed(0)}%`,
-      cellStyle: (e, rowData) => {
-        return {
-          backgroundColor: cellColorBackground(rowData[2019]),
-          color: cellColor(rowData[2019]),
-        };
-      },
-    },
-    {
-      title: "2018",
-      field: "2018",
-      render: (rowData) => `${rowData[2018].toFixed(0)}%`,
-      cellStyle: (e, rowData) => {
-        return {
-          backgroundColor: cellColorBackground(rowData[2018]),
-          color: cellColor(rowData[2018]),
-        };
-      },
-    },
-  ];
 
   const marks = [
     {
@@ -198,6 +329,12 @@ const HydrologicHealth = () => {
       label: "5 Years",
     },
   ];
+
+  if (dataPointsTableDataError)
+    return "An error has occurred: " + dataPointsTableDataError.message;
+
+  if (hucTableDataError)
+    return "An error has occurred: " + hucTableDataError.message;
 
   return (
     <>
@@ -232,9 +369,9 @@ const HydrologicHealth = () => {
                 <Grid item xs={12}>
                   <MapContainer>
                     <HydrologicHealthMap
-                      data={data}
-                      isLoading={isLoading}
-                      error={error}
+                      data={mapData}
+                      isLoading={mapDataIsLoading}
+                      error={mapDataError}
                       selectedYearsOfHistory={selectedYearsOfHistory}
                     />
                   </MapContainer>
@@ -279,19 +416,51 @@ const HydrologicHealth = () => {
               id="table-header"
             >
               <Typography variant="h4" ml={2}>
-                Table
+                HUC8 Table
               </Typography>
             </AccordionSummary>
             <Panel>
               <AccordionDetails>
                 <TableWrapper>
                   <Table
-                    isLoading={isLoading}
+                    isLoading={hucTableDataIsLoading}
                     pageSize={30}
-                    label="Daily Groundwater Elevation Timeseries Table"
-                    columns={tableDataColumns}
-                    data={tableData}
+                    label="HUC8 Hydrologic Health"
+                    columns={hucTableDataColumns}
+                    data={hucTableData}
                     height="100%"
+                    sortArrow={<React.Fragment />}
+                  />
+                </TableWrapper>
+              </AccordionDetails>
+            </Panel>
+          </Accordion>
+        </Grid>
+      </Grid>
+
+      <Grid container spacing={6}>
+        <Grid item xs={12}>
+          <Accordion defaultExpanded>
+            <AccordionSummary
+              expandIcon={<ExpandMoreIcon />}
+              aria-controls="table-content"
+              id="table-header"
+            >
+              <Typography variant="h4" ml={2}>
+                Data Points Table
+              </Typography>
+            </AccordionSummary>
+            <Panel>
+              <AccordionDetails>
+                <TableWrapper>
+                  <Table
+                    isLoading={dataPointsTableDataIsLoading}
+                    pageSize={30}
+                    label="Data Points Hydrologic Health"
+                    columns={dataPointsTableDataColumns}
+                    data={dataPointsTableData}
+                    height="100%"
+                    sortArrow={<React.Fragment />}
                   />
                 </TableWrapper>
               </AccordionDetails>

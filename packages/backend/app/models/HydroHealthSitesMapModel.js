@@ -1,7 +1,7 @@
 module.exports = (sequelize, DataTypes) => {
   const {INTEGER, TEXT, GEOMETRY, BIGINT, DATE, DOUBLE, REAL} = DataTypes;
-  const HydroHealthSites = sequelize.define(
-    'hydro_health_sites',
+  const HydroHealthSitesMap = sequelize.define(
+    'hydro_health_sites_map',
     {
       loc_ndx: {
         type: INTEGER,
@@ -91,5 +91,5 @@ module.exports = (sequelize, DataTypes) => {
     }
   );
 
-  return HydroHealthSites;
+  return HydroHealthSitesMap;
 };
