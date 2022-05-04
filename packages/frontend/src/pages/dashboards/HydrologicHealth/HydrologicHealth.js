@@ -126,6 +126,7 @@ const HydrologicHealth = () => {
               position: "sticky",
               left: 0,
               background: "white",
+              borderRight: "1px solid rgba(224, 224, 224, 1)",
             },
             headerStyle: {
               padding: "3px 3px 3px 3px",
@@ -134,17 +135,33 @@ const HydrologicHealth = () => {
               left: 0,
               background: "white",
               zIndex: 11,
+              borderRight: "1px solid rgba(224, 224, 224, 1)",
             },
             defaultSort: "asc",
             position: "sticky",
             left: 0,
             background: "white",
           },
+          {
+            title: "HUC8",
+            field: "huc8_name",
+            cellStyle: {
+              whiteSpace: "nowrap",
+              padding: "3px 3px 3px 3px",
+              borderRight: "1px solid rgba(224, 224, 224, 1)",
+            },
+            headerStyle: {
+              padding: "3px 3px 3px 3px",
+              fontWeight: 900,
+              borderRight: "1px solid rgba(224, 224, 224, 1)",
+            },
+          },
         ];
 
         const crossTabbedData = groupedData.map((location) => {
           const obj = {};
           obj["location_name"] = location[0].loc_name;
+          obj["huc8_name"] = location[0].huc8_name;
           location.forEach((item) => {
             if (item?.water_year) {
               obj[item.water_year] = item.hydro_health_pct;
