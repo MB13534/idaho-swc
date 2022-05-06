@@ -68,7 +68,7 @@ function JoinUs() {
               color="primary"
               variant="outlined"
               component={Link}
-              to={ROUTES.PUBLIC_MAP}
+              to="/watershed-overview/map-of-sites"
               ml={50}
             >
               Public Access

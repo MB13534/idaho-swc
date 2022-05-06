@@ -88,16 +88,20 @@ const TimeseriesComparisonMap = ({
       "circle-radius": 7,
       "circle-color": [
         "case",
-        ["<=", ["get", "hydroHealthPct"], 10],
-        "#C61717",
-        ["<=", ["get", "hydroHealthPct"], 25],
-        "#F9A825",
-        ["<=", ["get", "hydroHealthPct"], 75],
-        "#FFEB3B",
-        ["<=", ["get", "hydroHealthPct"], 90],
-        "#16F465",
+        ["<", ["get", "hydroHealthPct"], 50],
+        "#E0393D",
+        ["<=", ["get", "hydroHealthPct"], 69],
+        "#E1AC3E",
+        ["<=", ["get", "hydroHealthPct"], 89],
+        "#E1E63E",
+        ["<=", ["get", "hydroHealthPct"], 109],
+        "#6EE53D",
+        ["<=", ["get", "hydroHealthPct"], 129],
+        "#8AF7E3",
+        ["<=", ["get", "hydroHealthPct"], 149],
+        "#33B6E8",
         ["<=", ["get", "hydroHealthPct"], 1000],
-        "#228044",
+        "#3539FC",
         "black",
       ],
     },
@@ -119,15 +123,35 @@ const TimeseriesComparisonMap = ({
       "fill-color": [
         "case",
         [
-          "<=",
+          "<",
           [
             "coalesce",
             ["feature-state", ["literal", "" + selectedYearsOfHistory]],
             1001,
           ],
-          10,
+          50,
         ],
-        "#C61717",
+        "#E0393D",
+        [
+          "<",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          69,
+        ],
+        "#E1AC3E",
+        [
+          "<",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          89,
+        ],
+        "#E1E63E",
         [
           "<=",
           [
@@ -135,9 +159,9 @@ const TimeseriesComparisonMap = ({
             ["feature-state", ["literal", "" + selectedYearsOfHistory]],
             1001,
           ],
-          25,
+          109,
         ],
-        "#F9A825",
+        "#6EE53D",
         [
           "<=",
           [
@@ -145,9 +169,9 @@ const TimeseriesComparisonMap = ({
             ["feature-state", ["literal", "" + selectedYearsOfHistory]],
             1001,
           ],
-          75,
+          129,
         ],
-        "#FFEB3B",
+        "#8AF7E3",
         [
           "<=",
           [
@@ -155,9 +179,9 @@ const TimeseriesComparisonMap = ({
             ["feature-state", ["literal", "" + selectedYearsOfHistory]],
             1001,
           ],
-          90,
+          149,
         ],
-        "#16F465",
+        "#33B6E8",
         [
           "<=",
           [
@@ -167,7 +191,7 @@ const TimeseriesComparisonMap = ({
           ],
           1000,
         ],
-        "#228044",
+        "#3539FC",
         "black",
       ],
       "fill-opacity": [
@@ -396,15 +420,35 @@ const TimeseriesComparisonMap = ({
       map.setPaintProperty("huc-8-boundaries-fill", "fill-color", [
         "case",
         [
-          "<=",
+          "<",
           [
             "coalesce",
             ["feature-state", ["literal", "" + selectedYearsOfHistory]],
             1001,
           ],
-          10,
+          50,
         ],
-        "#C61717",
+        "#E0393D",
+        [
+          "<",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          69,
+        ],
+        "#E1AC3E",
+        [
+          "<",
+          [
+            "coalesce",
+            ["feature-state", ["literal", "" + selectedYearsOfHistory]],
+            1001,
+          ],
+          89,
+        ],
+        "#E1E63E",
         [
           "<=",
           [
@@ -412,9 +456,9 @@ const TimeseriesComparisonMap = ({
             ["feature-state", ["literal", "" + selectedYearsOfHistory]],
             1001,
           ],
-          25,
+          109,
         ],
-        "#F9A825",
+        "#6EE53D",
         [
           "<=",
           [
@@ -422,9 +466,9 @@ const TimeseriesComparisonMap = ({
             ["feature-state", ["literal", "" + selectedYearsOfHistory]],
             1001,
           ],
-          75,
+          129,
         ],
-        "#FFEB3B",
+        "#8AF7E3",
         [
           "<=",
           [
@@ -432,9 +476,9 @@ const TimeseriesComparisonMap = ({
             ["feature-state", ["literal", "" + selectedYearsOfHistory]],
             1001,
           ],
-          90,
+          149,
         ],
-        "#16F465",
+        "#33B6E8",
         [
           "<=",
           [
@@ -444,18 +488,20 @@ const TimeseriesComparisonMap = ({
           ],
           1000,
         ],
-        "#228044",
+        "#3539FC",
         "black",
       ]);
     }
   }, [selectedYearsOfHistory]); // eslint-disable-line
 
   const monitoringLegendColors = [
-    { name: `Excellent (>90%)`, color: `#228044` },
-    { name: `Good (76%-90%)`, color: `#16F465` },
-    { name: `Normal (26%-75%)`, color: `#FFEB3B` },
-    { name: `Warning (11%-25%)`, color: `#F9A825` },
-    { name: `Danger (<11%)`, color: `#C61717` },
+    { name: `≥ 150%`, color: `#3439FC` },
+    { name: `130% - 149%`, color: `#36B8EA` },
+    { name: `110% - 129%`, color: `#8BF9E5` },
+    { name: `90% - 109%`, color: `#6FE73F` },
+    { name: `70% - 89%`, color: `#E0E53C` },
+    { name: `50% - 69%`, color: `#E0AB3D` },
+    { name: `< 50%`, color: `#E13A3E` },
     { name: `No data`, color: `black` },
   ];
 

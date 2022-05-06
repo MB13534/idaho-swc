@@ -75,11 +75,7 @@ function Footer() {
               </Grid>
               <Grid item>
                 <List>
-                  <ListItem
-                    button={true}
-                    component="a"
-                    href="/documentation/introduction"
-                  >
+                  <ListItem button={true} component="a" href="#">
                     <ListItemText primary="Documentation" />
                   </ListItem>
                   <ListItem button={true} component="a" href="#">

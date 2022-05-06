@@ -6,7 +6,6 @@ import { useAuth0 } from "@auth0/auth0-react";
 import async from "../components/Async";
 
 import {
-  Archive,
   Database,
   FileText,
   Home,
@@ -15,13 +14,12 @@ import {
   Map,
   Share2,
   Folder,
-  Briefcase,
   Heart,
+  Clipboard,
+  Droplet,
 } from "react-feather";
 
 import AuthGuard from "../components/AuthGuard";
-import AdminGuard from "../components/AdminGuard";
-import AdminVisibilityFilter from "../components/AdminVisibilityFilter";
 
 import Blank from "../pages/pages/Blank";
 import Landing from "../pages/presentation/Landing";
@@ -32,7 +30,6 @@ import { CrudProvider } from "../CrudProvider";
 
 // TODO MAYBE LAZY IMPORT
 import PublicMap from "../pages/publicMap";
-import UserVisibilityFilter from "../components/UserVisibilityFilter";
 import TimeSeriesComparison from "../pages/dataAccess/timeSeries/TimeSeriesComparison";
 import SentinelWells from "../pages/dataAccess/reports/SentinelWells";
 import DataPointsDetails from "../pages/dataAccess/reports/DataPointsDetails";
@@ -100,85 +97,82 @@ const getCrudRoutes = (list) => {
 const crudSidebarMenu = [...getSidebarMenu(CRUD_MODELS)];
 const modelCrudRoutes = [...getCrudRoutes(CRUD_MODELS)];
 
-const dataManagementRoutes = {
-  header: "Data Management",
-  id: "A Table",
-  icon: <Database />,
-  path: "/data-management/rolodex",
-  name: "A Table",
-  component: Blank,
-  guard: AdminGuard,
-  visibilityFilter: AdminVisibilityFilter,
+//MAIN DASH
+const mainRoutes = {
+  header: "Dashboards",
+  id: "Landing Dashboard",
+  path: "/dashboard",
+  icon: <Home />,
+  component: Default,
+  children: null,
+  containsHome: true,
 };
 
-const dataAccessRoutes = {
-  header: "Data Access",
-  id: "Time Series",
-  icon: <Share2 />,
-  children: [
-    {
-      path: "/data-access/time-series/time-series-comparison",
-      name: "Time Series Comparisons",
-      component: TimeSeriesComparison,
-    },
-  ],
-};
-
-const reportsRoutes = {
-  id: "Reports",
-  icon: <FileText />,
-  children: [
-    {
-      path: "/data-access/reports/sentinel-wells",
-      name: "Sentinel Wells",
-      component: SentinelWells,
-    },
-    {
-      path: "/data-access/reports/data-points-details",
-      name: "Data Points Details",
-      component: DataPointsDetails,
-    },
-  ],
-};
-
-const publicMapRoutes = {
-  header: "Resources",
-  id: "Interactive Map",
+//WATERSHED OVERVIEW
+const publicMapRoute = {
+  header: "Watershed Overview",
+  id: "Map of Sites",
   icon: <Map />,
-  path: ROUTES.PUBLIC_MAP,
-  name: "Interactive Map",
+  path: "/watershed-overview/map-of-sites",
+  name: "Map of Sites",
   component: PublicMap,
 };
 
-const publicFilesRoutes = {
-  id: "Files",
-  header: "Documents",
-  icon: <Archive />,
-  path: "/documents/files",
+const siteSummaryTableRoute = {
+  id: "Site Summary Table",
+  icon: <Clipboard />,
+  path: "/watershed-overview/site-summary-table",
+  name: "Site Summary Table",
+  component: DataPointsDetails,
+};
+
+//DATA ANALYSIS TOOLS
+const timeSeriesComparisonsRoute = {
+  header: "Data Analysis Tools",
+  id: "Time Series Comparisons",
+  icon: <Share2 />,
+  path: "/data-analysis-tools/time-series-comparison",
+  name: "Time Series Comparisons",
+  component: TimeSeriesComparison,
+};
+
+const hydrologicHealthRoute = {
+  id: "Hydrologic Health",
+  icon: <Heart />,
+  path: "/data-analysis-tools/hydrologic-health",
+  name: "Hydrologic Health",
+  component: HydrologicHealth,
+};
+
+const sentinelWellDashboardRoute = {
+  id: "Sentinel Well Dashboard",
+  icon: <Droplet />,
+  path: "/data-analysis-tools/sentinel-well-dashboard",
+  name: "Sentinel Well Dashboard",
+  component: SentinelWells,
+};
+
+//RESOURCES
+const summaryOfDatasetsRoute = {
+  header: "Resources",
+  id: "Summary of Datasets",
+  icon: <FileText />,
+  path: "/resources/summary-of-datasets",
   name: "Files",
   component: Blank,
 };
 
-const userDocsRoutes = {
-  id: "User Docs",
+//DOCUMENTS
+const documentsRoutes = {
+  header: "Documents",
+  id: "Public Files",
   icon: <Folder />,
-  path: "/documents/user-docs",
-  name: "User Docs",
+  path: "/documents/public-docs",
+  name: "Public Files",
   component: Blank,
-  guard: AuthGuard,
-  visibilityFilter: UserVisibilityFilter,
 };
 
-const adminDocsRoutes = {
-  id: "Admin Docs",
-  icon: <Briefcase />,
-  path: "/documents/admin-docs",
-  name: "Admin Docs",
-  component: Blank,
-  guard: AdminGuard,
-  visibilityFilter: AdminVisibilityFilter,
-};
-
+//OTHER
 const accountRoutes = {
   id: "Account",
   path: "/account",
@@ -213,28 +207,6 @@ const landingRoutes = {
   children: null,
 };
 
-const mainRoutes = {
-  header: "Dashboards",
-  id: "A Dashboard",
-  path: "/dashboard",
-  icon: <Home />,
-  component: Default,
-  children: null,
-  containsHome: true,
-  // guard: AuthGuard,
-  // visibilityFilter: UserVisibilityFilter,
-};
-
-const hydrologicHealthRoute = {
-  id: "Hydrologic Health",
-  path: "/hydrologic-health",
-  icon: <Heart />,
-  component: HydrologicHealth,
-  children: null,
-  // guard: AuthGuard,
-  // visibilityFilter: UserVisibilityFilter,
-};
-
 // This route is only visible while signed in
 const protectedPageRoutes = {
   id: "Private",
@@ -248,24 +220,23 @@ const protectedPageRoutes = {
 // Routes using the Dashboard layout
 export const dashboardLayoutRoutes = [
   mainRoutes,
+  siteSummaryTableRoute,
+  timeSeriesComparisonsRoute,
   hydrologicHealthRoute,
-  dataManagementRoutes,
-  dataAccessRoutes,
-  reportsRoutes,
-  publicFilesRoutes,
-  userDocsRoutes,
-  adminDocsRoutes,
+  sentinelWellDashboardRoute,
+  summaryOfDatasetsRoute,
+  documentsRoutes,
   accountRoutes,
 ];
 
 export const dashboardMaxContentLayoutRoutes = [
   ...crudSidebarMenu,
   ...modelCrudRoutes,
-  publicMapRoutes,
+  publicMapRoute,
 ];
 
 // Routes using the Auth layout
-export const authLayoutRoutes = [accountRoutes];
+export const authLayoutRoutes = [];
 
 // Routes using the Presentation layout
 export const presentationLayoutRoutes = [landingRoutes];
@@ -280,12 +251,11 @@ export const protectedRoutes = [protectedPageRoutes];
 export const sidebarRoutes = [
   mainRoutes,
   ...crudSidebarMenu,
-  dataManagementRoutes,
-  dataAccessRoutes,
-  reportsRoutes,
+  publicMapRoute,
+  siteSummaryTableRoute,
+  timeSeriesComparisonsRoute,
   hydrologicHealthRoute,
-  publicMapRoutes,
-  publicFilesRoutes,
-  userDocsRoutes,
-  adminDocsRoutes,
+  sentinelWellDashboardRoute,
+  summaryOfDatasetsRoute,
+  documentsRoutes,
 ];

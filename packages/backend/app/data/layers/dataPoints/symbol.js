@@ -8,7 +8,7 @@ module.exports = {
   layout: {
     'text-field': ['get', 'loc_name'],
     'text-size': 14,
-    'text-offset': [0, -1.2],
+    'text-offset': [0, -1.5],
     'text-font': ['literal', ['Roboto Black', 'Arial Unicode MS Bold']],
     visibility: 'visible',
   },
@@ -19,6 +19,7 @@ module.exports = {
   },
   lreProperties: {
     popup: {
+      excludePopup: true,
       titleField: 'loc_name',
       excludeFields: [
         'loc_ndx',

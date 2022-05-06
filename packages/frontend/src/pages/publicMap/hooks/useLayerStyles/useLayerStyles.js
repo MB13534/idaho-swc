@@ -27,7 +27,7 @@ const parameterNamesValues = [
   "Recharge",
   "Reservoir Contents",
   "Return Flow",
-  "Total Precipitation",
+  "Daily Precipitation",
   "Water Surface Elevation",
 ];
 

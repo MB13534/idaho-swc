@@ -314,32 +314,36 @@ const HydrologicHealth = () => {
   const cellColorBackground = (value) => {
     if (value === null) {
       return "black";
-    } else if (value <= 10) {
-      return "#C61717";
-    } else if (value <= 25) {
-      return "#F9A825";
-    } else if (value <= 75) {
-      return "#FFEB3B";
-    } else if (value <= 90) {
-      return "#16F465";
-    } else if (value <= 100) {
-      return "#228044";
+    } else if (value < 50) {
+      return "#E0393D";
+    } else if (value <= 69) {
+      return "#E1AC3E";
+    } else if (value <= 89) {
+      return "#E1E63E";
+    } else if (value <= 109) {
+      return "#6EE53D";
+    } else if (value <= 129) {
+      return "#8AF7E3";
+    } else if (value <= 149) {
+      return "#33B6E8";
     } else if (value <= 1000) {
-      return "#1155cc";
+      return "#3539FC";
     } else return "black";
   };
 
   const cellColor = (value) => {
-    if (value <= 10) {
+    if (value < 50) {
       return "white";
-    } else if (value <= 25) {
+    } else if (value <= 69) {
       return "black";
-    } else if (value <= 75) {
+    } else if (value <= 89) {
       return "black";
-    } else if (value <= 90) {
+    } else if (value <= 109) {
       return "black";
-    } else if (value <= 100) {
-      return "white";
+    } else if (value <= 129) {
+      return "black";
+    } else if (value <= 149) {
+      return "black";
     } else if (value <= 1000) {
       return "white";
     } else return "black";
