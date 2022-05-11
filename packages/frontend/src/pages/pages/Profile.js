@@ -464,9 +464,6 @@ function Profile() {
       <Grid container justify="space-between">
         <Grid item>
           <Breadcrumbs aria-label="Breadcrumb" mt={2}>
-            <Link component={NavLink} exact to="/dashboard">
-              Dashboard
-            </Link>
             <Link component={NavLink} exact to="/account">
               Account
             </Link>

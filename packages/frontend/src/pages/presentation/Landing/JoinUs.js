@@ -10,7 +10,7 @@ import {
 
 import { spacing } from "@material-ui/system";
 import { Link } from "react-router-dom";
-import { ROUTES } from "../../../constants";
+// import { ROUTES } from "../../../constants";
 import { useAuth0 } from "@auth0/auth0-react";
 
 const Spacer = styled.div(spacing);
@@ -52,7 +52,7 @@ function JoinUs() {
               variant="contained"
               onClick={() =>
                 loginWithRedirect({
-                  appState: { returnTo: ROUTES.PAGE_DASHBOARD },
+                  appState: { returnTo: "/watershed-overview/map-of-sites" },
                 })
               }
             >

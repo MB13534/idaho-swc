@@ -8,7 +8,7 @@ import async from "../components/Async";
 import {
   Database,
   FileText,
-  Home,
+  // Home,
   Monitor,
   Users,
   Map,
@@ -25,15 +25,15 @@ import Blank from "../pages/pages/Blank";
 import Landing from "../pages/presentation/Landing";
 import ProtectedPage from "../pages/protected/ProtectedPage";
 import * as inflector from "inflected";
-import Default from "../pages/dashboards/Default";
+// import Default from "../pages/dashboards/Default";
 import { CrudProvider } from "../CrudProvider";
 
 // TODO MAYBE LAZY IMPORT
 import PublicMap from "../pages/publicMap";
 import TimeSeriesComparison from "../pages/dataAccess/timeSeries/TimeSeriesComparison";
 import SentinelWells from "../pages/dataAccess/reports/SentinelWells";
-import DataPointsDetails from "../pages/dataAccess/reports/DataPointsDetails";
 import HydrologicHealth from "../pages/dashboards/HydrologicHealth/HydrologicHealth";
+import SitesSummaryTable from "../pages/dataAccess/reports/SitesSummaryTable";
 
 const Account = async(() => import("../pages/pages/Account"));
 const Profile = async(() => import("../pages/pages/Profile"));
@@ -98,15 +98,15 @@ const crudSidebarMenu = [...getSidebarMenu(CRUD_MODELS)];
 const modelCrudRoutes = [...getCrudRoutes(CRUD_MODELS)];
 
 //MAIN DASH
-const mainRoutes = {
-  header: "Dashboards",
-  id: "Landing Dashboard",
-  path: "/dashboard",
-  icon: <Home />,
-  component: Default,
-  children: null,
-  containsHome: true,
-};
+// const mainRoutes = {
+//   header: "Dashboards",
+//   id: "Landing Dashboard",
+//   path: "/dashboard",
+//   icon: <Home />,
+//   component: Default,
+//   children: null,
+//   containsHome: true,
+// };
 
 //WATERSHED OVERVIEW
 const publicMapRoute = {
@@ -123,7 +123,7 @@ const siteSummaryTableRoute = {
   icon: <Clipboard />,
   path: "/watershed-overview/site-summary-table",
   name: "Site Summary Table",
-  component: DataPointsDetails,
+  component: SitesSummaryTable,
 };
 
 //DATA ANALYSIS TOOLS
@@ -219,7 +219,7 @@ const protectedPageRoutes = {
 
 // Routes using the Dashboard layout
 export const dashboardLayoutRoutes = [
-  mainRoutes,
+  // mainRoutes,
   siteSummaryTableRoute,
   timeSeriesComparisonsRoute,
   hydrologicHealthRoute,
@@ -249,7 +249,7 @@ export const protectedRoutes = [protectedPageRoutes];
 
 // Routes visible in the sidebar
 export const sidebarRoutes = [
-  mainRoutes,
+  // mainRoutes,
   ...crudSidebarMenu,
   publicMapRoute,
   siteSummaryTableRoute,

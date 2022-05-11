@@ -3,7 +3,7 @@ import styled from "styled-components/macro";
 import {
   Accordion,
   AccordionDetails,
-  Breadcrumbs as MuiBreadcrumbs,
+  // Breadcrumbs as MuiBreadcrumbs,
   Divider as MuiDivider,
   Grid as MuiGrid,
   Slider,
@@ -16,8 +16,8 @@ import { spacing } from "@material-ui/system";
 import { customSecondary } from "../../../theme/variants";
 import { Helmet } from "react-helmet-async";
 import HydrologicHealthMap from "../../../components/map/HydrologicHealthMap";
-import Link from "@material-ui/core/Link";
-import { NavLink } from "react-router-dom";
+// import Link from "@material-ui/core/Link";
+// import { NavLink } from "react-router-dom";
 import { MinusCircle, PlusCircle } from "react-feather";
 import { useQuery } from "react-query";
 import axios from "axios";
@@ -27,7 +27,7 @@ import { groupByValue } from "../../../utils";
 const Grid = styled(MuiGrid)(spacing);
 const Typography = styled(MuiTypography)(spacing);
 const Divider = styled(MuiDivider)(spacing);
-const Breadcrumbs = styled(MuiBreadcrumbs)(spacing);
+// const Breadcrumbs = styled(MuiBreadcrumbs)(spacing);
 
 const TableWrapper = styled.div`
   overflow-y: auto;
@@ -137,7 +137,6 @@ const HydrologicHealth = () => {
               zIndex: 11,
               borderRight: "1px solid rgba(224, 224, 224, 1)",
             },
-            defaultSort: "asc",
             position: "sticky",
             left: 0,
             background: "white",
@@ -155,6 +154,7 @@ const HydrologicHealth = () => {
               fontWeight: 900,
               borderRight: "1px solid rgba(224, 224, 224, 1)",
             },
+            defaultSort: "asc",
           },
         ];
 
@@ -385,12 +385,12 @@ const HydrologicHealth = () => {
         Hydrologic Health
       </Typography>
 
-      <Breadcrumbs aria-label="Breadcrumb" mt={2}>
-        <Link component={NavLink} exact to="/dashboard">
-          Dashboard
-        </Link>
-        <Typography>Hydrologic Health</Typography>
-      </Breadcrumbs>
+      {/*<Breadcrumbs aria-label="Breadcrumb" mt={2}>*/}
+      {/*  <Link component={NavLink} exact to="/dashboard">*/}
+      {/*    Dashboard*/}
+      {/*  </Link>*/}
+      {/*  <Typography>Hydrologic Health</Typography>*/}
+      {/*</Breadcrumbs>*/}
 
       <Divider my={6} />
 

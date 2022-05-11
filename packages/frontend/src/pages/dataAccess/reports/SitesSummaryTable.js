@@ -2,7 +2,7 @@ import React from "react";
 import { useQuery } from "react-query";
 
 import {
-  Breadcrumbs as MuiBreadcrumbs,
+  // Breadcrumbs as MuiBreadcrumbs,
   Divider as MuiDivider,
   Typography,
 } from "@material-ui/core";
@@ -12,8 +12,8 @@ import styled from "styled-components/macro";
 import Table from "../../../components/Table";
 import { spacing } from "@material-ui/system";
 import Panel from "../../../components/panels/Panel";
-import Link from "@material-ui/core/Link";
-import { NavLink } from "react-router-dom";
+// import Link from "@material-ui/core/Link";
+// import { NavLink } from "react-router-dom";
 
 import { Helmet } from "react-helmet-async";
 import Loader from "../../../components/Loader";
@@ -27,10 +27,10 @@ const TableWrapper = styled.div`
 `;
 
 const Divider = styled(MuiDivider)(spacing);
-const Breadcrumbs = styled(MuiBreadcrumbs)(spacing);
+// const Breadcrumbs = styled(MuiBreadcrumbs)(spacing);
 
 //388px
-const DataPointsDetails = () => {
+const SitesSummaryTable = () => {
   const { data, isFetching, error } = useQuery(
     ["public-map/wells"],
     async () => {
@@ -81,6 +81,8 @@ const DataPointsDetails = () => {
     {
       title: "HUC10",
       field: "huc10_name",
+      hidden: true,
+      hiddenByColumnsButton: true,
     },
     // {
     //   title: "Irrigation Type",
@@ -103,6 +105,8 @@ const DataPointsDetails = () => {
     {
       title: "Days",
       field: "num_days",
+      hidden: true,
+      hiddenByColumnsButton: true,
     },
     {
       title: "Years",
@@ -111,6 +115,8 @@ const DataPointsDetails = () => {
     {
       title: "Samples",
       field: "total_samples",
+      hidden: true,
+      hiddenByColumnsButton: true,
     },
     {
       title: "Latitude",
@@ -135,24 +141,24 @@ const DataPointsDetails = () => {
 
   return (
     <>
-      <Helmet title="Data Points Details" />
+      <Helmet title="Site Summary Table" />
       <Typography variant="h3" gutterBottom display="inline">
-        Data Points Details
+        Site Summary Table
       </Typography>
 
-      <Breadcrumbs aria-label="Breadcrumb" mt={2}>
-        <Link component={NavLink} exact to="/dashboard">
-          Dashboard
-        </Link>
-        <Typography>Data Points Details</Typography>
-      </Breadcrumbs>
+      {/*<Breadcrumbs aria-label="Breadcrumb" mt={2}>*/}
+      {/*  <Link component={NavLink} exact to="/dashboard">*/}
+      {/*    Dashboard*/}
+      {/*  </Link>*/}
+      {/*  <Typography>Site Summary Table</Typography>*/}
+      {/*</Breadcrumbs>*/}
 
       <Divider my={6} />
       <Panel>
         <TableWrapper>
           {data ? (
             <Table
-              label="Data Points Details"
+              label="Site Summary Table"
               isLoading={isFetching}
               columns={tabColumns}
               data={data}
@@ -168,4 +174,4 @@ const DataPointsDetails = () => {
   );
 };
 
-export default DataPointsDetails;
+export default SitesSummaryTable;

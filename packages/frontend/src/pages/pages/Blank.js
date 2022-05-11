@@ -1,14 +1,14 @@
 import React from "react";
 import styled from "styled-components/macro";
-import { NavLink } from "react-router-dom";
+// import { NavLink } from "react-router-dom";
 
 import { Helmet } from "react-helmet-async";
 
 import {
   CardContent,
   Grid,
-  Link,
-  Breadcrumbs as MuiBreadcrumbs,
+  // Link,
+  // Breadcrumbs as MuiBreadcrumbs,
   Card as MuiCard,
   Divider as MuiDivider,
   Typography,
@@ -20,7 +20,7 @@ const Card = styled(MuiCard)(spacing);
 
 const Divider = styled(MuiDivider)(spacing);
 
-const Breadcrumbs = styled(MuiBreadcrumbs)(spacing);
+// const Breadcrumbs = styled(MuiBreadcrumbs)(spacing);
 
 function EmptyCard() {
   return (
@@ -45,12 +45,12 @@ function Blank() {
         Blank Page
       </Typography>
 
-      <Breadcrumbs aria-label="Breadcrumb" mt={2}>
-        <Link component={NavLink} exact to="/dashboard">
-          Dashboard
-        </Link>
-        <Typography>Blank Page</Typography>
-      </Breadcrumbs>
+      {/*<Breadcrumbs aria-label="Breadcrumb" mt={2}>*/}
+      {/*  <Link component={NavLink} exact to="/dashboard">*/}
+      {/*    Dashboard*/}
+      {/*  </Link>*/}
+      {/*  <Typography>Blank Page</Typography>*/}
+      {/*</Breadcrumbs>*/}
 
       <Divider my={6} />
 

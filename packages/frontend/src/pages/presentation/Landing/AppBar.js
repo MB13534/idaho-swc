@@ -13,7 +13,6 @@ import {
   withWidth,
 } from "@material-ui/core";
 
-import { ROUTES } from "../../../constants";
 import Link from "@material-ui/core/Link";
 
 const Button = styled(MuiButton)(spacing);
@@ -57,7 +56,7 @@ function AppBarComponent({ width }) {
                 variant="contained"
                 onClick={() =>
                   loginWithRedirect({
-                    appState: { returnTo: ROUTES.PAGE_DASHBOARD },
+                    appState: { returnTo: "/watershed-overview/map-of-sites" },
                   })
                 }
               >
