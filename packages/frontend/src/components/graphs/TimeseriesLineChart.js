@@ -20,6 +20,8 @@ const TimeseriesLineChart = forwardRef(
       filterValues,
       locationsOptions = [true],
       yLLabel = null,
+      yLReverse = false,
+      yRReverse = false,
       reverseLegend = true,
       xLabelUnit = "day",
       xLabelFormat = "MM-DD-YYYY",
@@ -198,6 +200,7 @@ const TimeseriesLineChart = forwardRef(
         },
 
         yL: {
+          reverse: yLReverse,
           stacked: stacked,
           min: minL,
           max: maxL,
@@ -221,6 +224,7 @@ const TimeseriesLineChart = forwardRef(
           },
         },
         yR: {
+          reverse: yRReverse,
           min: minR,
           max: maxR,
           suggestedMin: suggestedMin,

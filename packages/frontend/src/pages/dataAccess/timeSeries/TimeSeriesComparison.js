@@ -560,6 +560,8 @@ const TimeSeriesComparison = () => {
                       <TimeseriesContainer>
                         <TableWrapper>
                           <TimeseriesLineChart
+                            yLReverse={filterValues.parameterLeft === 7}
+                            yRReverse={filterValues.parameterRight === 7}
                             data={graphData}
                             error={error}
                             isLoading={isFetching}
