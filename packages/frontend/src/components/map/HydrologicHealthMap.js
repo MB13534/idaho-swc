@@ -34,21 +34,6 @@ const MapContainer = styled.div`
   height: 100%;
 `;
 
-const Coordinates = styled.pre`
-  background: rgba(0, 0, 0, 0.5);
-  color: #fff;
-  position: absolute;
-  bottom: 40px;
-  left: 10px;
-  padding: 5px 10px;
-  margin: 0;
-  font-size: 11px;
-  line-height: 18px;
-  border-radius: 3px;
-  z-index: 1;
-  display: none;
-`;
-
 const TimeseriesComparisonMap = ({
   selectedYearsOfHistory,
   dataPointsData,
@@ -71,7 +56,7 @@ const TimeseriesComparisonMap = ({
     })
   );
   const mapContainer = useRef(null); // create a reference to the map container
-  const coordinates = useRef(null);
+
   const DUMMY_BASEMAP_LAYERS = [
     { url: "streets-v11", icon: "commute" },
     { url: "outdoors-v11", icon: "park" },
@@ -222,11 +207,6 @@ const TimeseriesComparisonMap = ({
     },
     drawOrder: 99,
   };
-
-  function onPointClick(e) {
-    coordinates.current.style.display = "block";
-    coordinates.current.innerHTML = `Longitude: ${e.features[0].geometry.coordinates[0]}<br />Latitude: ${e.features[0].geometry.coordinates[1]}`;
-  }
 
   useEffect(() => {
     const map = new mapboxgl.Map({
@@ -388,8 +368,6 @@ const TimeseriesComparisonMap = ({
             .addTo(map);
         });
 
-        map.on("click", "locations", onPointClick);
-
         // Change the cursor to a pointer when the mouse is over the places layer.
         map.on("mouseenter", "locations", () => {
           map.getCanvas().style.cursor = "pointer";
@@ -518,7 +496,6 @@ const TimeseriesComparisonMap = ({
         open={legendVisible}
         onToggle={() => setLegendVisible(!legendVisible)}
       />
-      <Coordinates ref={coordinates} />
     </Root>
   );
 };

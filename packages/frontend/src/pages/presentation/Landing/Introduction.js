@@ -72,9 +72,9 @@ function Introduction() {
               <Grid container justify="center" spacing={4}>
                 <Grid item xs={12} lg={10}>
                   <Subtitle color="textSecondary">
-                    Enter and analyze data. <br />
-                    Access and visualize wells & properties. <br />
-                    View reports & analytics. <br />
+                    Access, visualize, & analyze <br />
+                    hydrologic, meteorological and <br />
+                    water management information. <br />
                   </Subtitle>
                 </Grid>
               </Grid>
